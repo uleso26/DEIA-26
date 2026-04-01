@@ -1,0 +1,31 @@
+[
+  {
+    "headline": "Eli Lilly highlights late-stage momentum for oral GLP-1 candidate orforglipron",
+    "publish_date": "2026-03-15",
+    "source_type": "press_release",
+    "source_url": "https://investor.lilly.com/",
+    "relevance_score": 0.93,
+    "entities_mentioned": [
+      "orforglipron"
+    ],
+    "summary": "Company update emphasized continued phase 3 execution for orforglipron in obesity and type 2 diabetes.",
+    "evidence_tier": "Tier 4",
+    "scraped_at": "2026-03-31T23:51:19+00:00",
+    "extraction_method": "seed_press_release_ingestion"
+  },
+  {
+    "headline": "Analyst note flags intensifying oral GLP-1 competition in cardiometabolic disease",
+    "publish_date": "2026-02-10",
+    "source_type": "analyst_summary",
+    "source_url": "https://example.com/oral-glp1-competition",
+    "relevance_score": 0.71,
+    "entities_mentioned": [
+      "orforglipron",
+      "danuglipron"
+    ],
+    "summary": "Secondary analysis inferred that oral GLP-1 differentiation will depend on tolerability, manufacturing scale, and cardiovascular evidence maturity.",
+    "evidence_tier": "Tier 4",
+    "scraped_at": "2026-03-31T23:51:19+00:00",
+    "extraction_method": "seed_analyst_note_ingestion"
+  }
+]

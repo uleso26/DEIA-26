@@ -1,0 +1,22 @@
+[
+  {
+    "country": "United Kingdom",
+    "indicator": "Diabetes prevalence, age-standardized estimate among adults aged 18 years and older",
+    "year": 2021,
+    "value": 5.6,
+    "unit": "percent",
+    "source_url": "https://www.who.int/data/gho/data/indicators/indicator-details/GHO/prevalence-of-diabetes-and-obesity-among-adults-aged-18-years-and-older-(age-standardized-estimate)",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "country": "United States",
+    "indicator": "Diabetes prevalence, age-standardized estimate among adults aged 18 years and older",
+    "year": 2021,
+    "value": 10.8,
+    "unit": "percent",
+    "source_url": "https://www.who.int/data/gho/data/indicators/indicator-details/GHO/prevalence-of-diabetes-and-obesity-among-adults-aged-18-years-and-older-(age-standardized-estimate)",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  }
+]

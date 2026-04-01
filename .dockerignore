@@ -1,0 +1,6 @@
+__pycache__/
+.pytest_cache/
+.venv/
+logs/query_traces/
+data/processed/
+brief/

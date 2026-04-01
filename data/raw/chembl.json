@@ -1,0 +1,65 @@
+[
+  {
+    "canonical_drug": "tirzepatide",
+    "chembl_id": "CHEMBL4297523",
+    "mechanism": "Dual GIP and GLP-1 receptor agonist",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "semaglutide",
+    "chembl_id": "CHEMBL2107348",
+    "mechanism": "GLP-1 receptor agonist",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "orforglipron",
+    "chembl_id": "CHEMBL5095030",
+    "mechanism": "Oral non-peptide GLP-1 receptor agonist",
+    "max_phase": 3,
+    "development_status": "late-stage development",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "chembl_id": "CHEMBL3545413",
+    "mechanism": "GLP-1 receptor agonist",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "chembl_id": "CHEMBL2107346",
+    "mechanism": "GLP-1 receptor agonist",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "chembl_id": "CHEMBL429910",
+    "mechanism": "SGLT2 inhibitor",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "chembl_id": "CHEMBL2040827",
+    "mechanism": "SGLT2 inhibitor",
+    "max_phase": 4,
+    "development_status": "marketed",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  }
+]

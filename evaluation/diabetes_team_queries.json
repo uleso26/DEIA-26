@@ -1,0 +1,74 @@
+[
+  {
+    "id": "expert-q1-safety",
+    "persona": "Diabetologist",
+    "supported_now": true,
+    "focus": "Safety surveillance",
+    "query": "In tirzepatide-treated patients with established cardiovascular disease, which post-marketing FAERS safety signals merit closer review beyond the expected gastrointestinal profile?"
+  },
+  {
+    "id": "expert-q2-head-to-head",
+    "persona": "Diabetes product lead",
+    "supported_now": true,
+    "focus": "Trial efficacy comparison",
+    "query": "For weekly incretin selection, summarize the direct phase 3 HbA1c and weight efficacy gap between tirzepatide and semaglutide in SURPASS-2."
+  },
+  {
+    "id": "expert-q2-trial-detail",
+    "persona": "Diabetologist",
+    "supported_now": true,
+    "focus": "Trial detail",
+    "query": "In SURPASS-3, how did tirzepatide perform on HbA1c and weight versus insulin degludec at week 52?"
+  },
+  {
+    "id": "expert-q3-guideline",
+    "persona": "Guideline-focused diabetologist",
+    "supported_now": true,
+    "focus": "Guideline pathway",
+    "query": "For a patient with T2D, obesity, and persistent hyperglycaemia on metformin, how does the ADA 2025 guideline sequence the next step, and how does that differ from NICE?"
+  },
+  {
+    "id": "expert-q4-mechanism",
+    "persona": "Translational diabetes scientist",
+    "supported_now": true,
+    "focus": "Mechanism landscape",
+    "query": "Map the mechanism landscape for GLP1R-directed therapies: which agents share GLP1R activity, and where does tirzepatide differ because of GIPR co-agonism?"
+  },
+  {
+    "id": "expert-q5-pipeline",
+    "persona": "Cardiometabolic competitive intelligence lead",
+    "supported_now": true,
+    "focus": "Pipeline monitoring",
+    "query": "What is the latest external intelligence on oral GLP-1 programs, especially orforglipron, and which updates look confirmed versus inferred?"
+  },
+  {
+    "id": "expert-q6-literature",
+    "persona": "Academic diabetologist",
+    "supported_now": true,
+    "focus": "Recent evidence",
+    "query": "Give me a last 6 months evidence update on SGLT2 inhibitors in heart failure, prioritizing meta-analyses and large real-world studies."
+  },
+  {
+    "id": "expert-q6-population",
+    "persona": "Diabetes service planner",
+    "supported_now": true,
+    "focus": "Population burden",
+    "query": "For service planning, what is the adult diabetes prevalence in the United Kingdom?"
+  },
+  {
+    "id": "future-price-1",
+    "persona": "Market access lead",
+    "supported_now": false,
+    "focus": "Pricing",
+    "query": "What are the latest list-price differences between semaglutide and tirzepatide, and how might that influence formulary positioning?",
+    "blocked_by": "No pricing or reimbursement data source is currently integrated into the MVP."
+  },
+  {
+    "id": "future-price-2",
+    "persona": "Diabetologist with payer interest",
+    "supported_now": false,
+    "focus": "Reimbursement access",
+    "query": "How do payer access or reimbursement constraints differ between oral and injectable GLP-1 therapies in routine diabetes practice?",
+    "blocked_by": "No payer or reimbursement dataset is currently integrated into the MVP."
+  }
+]

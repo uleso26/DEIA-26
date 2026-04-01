@@ -1,0 +1,80 @@
+[
+  {
+    "canonical_drug": "semaglutide",
+    "drugbank_id": "DB13928",
+    "drug_class": "GLP-1 receptor agonist",
+    "pharmacology": "Incretin mimetic used for glycemic control and chronic weight management.",
+    "interactions": [
+      "insulin",
+      "sulfonylureas"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "drugbank_id": "DB15171",
+    "drug_class": "Dual GIP/GLP-1 receptor agonist",
+    "pharmacology": "Incretin-based therapy with dual GIP and GLP-1 receptor activity.",
+    "interactions": [
+      "insulin",
+      "sulfonylureas"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "drugbank_id": "DB06655",
+    "drug_class": "GLP-1 receptor agonist",
+    "pharmacology": "Injectable incretin mimetic used for glycemic control and weight management.",
+    "interactions": [
+      "insulin",
+      "sulfonylureas"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "drugbank_id": "DB09045",
+    "drug_class": "GLP-1 receptor agonist",
+    "pharmacology": "Long-acting GLP-1 receptor agonist for once-weekly glycemic control.",
+    "interactions": [
+      "insulin",
+      "sulfonylureas"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "drugbank_id": "DB06292",
+    "drug_class": "SGLT2 inhibitor",
+    "pharmacology": "Renal sodium-glucose cotransporter 2 inhibitor with glycemic and cardiorenal benefits.",
+    "interactions": [
+      "diuretics",
+      "insulin"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "drugbank_id": "DB08907",
+    "drug_class": "SGLT2 inhibitor",
+    "pharmacology": "Renal sodium-glucose cotransporter 2 inhibitor used for glycemic control and cardiorenal risk reduction.",
+    "interactions": [
+      "diuretics",
+      "insulin"
+    ],
+    "source_url": "https://go.drugbank.com/",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  }
+]

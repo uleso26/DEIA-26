@@ -1,0 +1,92 @@
+[
+  {
+    "canonical_drug": "tirzepatide",
+    "event": "nausea",
+    "count": 128,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "moderate",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "event": "vomiting",
+    "count": 82,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "moderate",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "event": "tachycardia",
+    "count": 12,
+    "subgroup": "cardiac_comorbidity_reports",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "early_signal",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "event": "palpitations",
+    "count": 9,
+    "subgroup": "cardiac_comorbidity_reports",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "early_signal",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "semaglutide",
+    "event": "nausea",
+    "count": 101,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "moderate",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "empagliflozin",
+    "event": "urinary tract infection",
+    "count": 41,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "known_risk",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "event": "genital infection",
+    "count": 38,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "known_risk",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "event": "volume depletion",
+    "count": 27,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "known_risk",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "event": "nausea",
+    "count": 74,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "moderate",
+    "source": "OpenFDA FAERS"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "event": "nausea",
+    "count": 62,
+    "subgroup": "general_t2d_population",
+    "time_period": "2024-01 to 2025-12",
+    "signal_strength": "moderate",
+    "source": "OpenFDA FAERS"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "canonical_drug": "tirzepatide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "genetic and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "canonical_target": "GIPR",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "genetic and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "semaglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "orforglipron",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "canonical_target": "SLC5A2",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "canonical_target": "SLC5A2",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology",
+    "ingested_at": "2026-03-31T23:51:19+00:00",
+    "data_mode": "seed_fixture"
+  }
+]

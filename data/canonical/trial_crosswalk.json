@@ -1,0 +1,32 @@
+{
+  "NCT03987919": {
+    "trial_name": "SURPASS-2",
+    "aliases": ["surpass-2", "surpass 2"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT03882970": {
+    "trial_name": "SURPASS-3",
+    "aliases": ["surpass-3", "surpass 3"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT03989232": {
+    "trial_name": "SUSTAIN FORTE",
+    "aliases": ["sustain forte"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT01131676": {
+    "trial_name": "EMPA-REG OUTCOME",
+    "aliases": ["empa-reg outcome", "empareg", "empa reg"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT01179048": {
+    "trial_name": "LEADER",
+    "aliases": ["leader trial", "liraglutide leader"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT03036124": {
+    "trial_name": "DAPA-HF",
+    "aliases": ["dapa-hf", "dapa hf"],
+    "evidence_tier": "Tier 2"
+  }
+}

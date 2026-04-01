@@ -1,0 +1,30 @@
+[
+  {
+    "id": "GUIDE_NICE_NG28_2024",
+    "title": "NICE NG28 2024 update: therapy sequencing after metformin",
+    "journal": "NICE Guideline",
+    "publication_date": "2024-12-10",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "NICE",
+      "Type 2 Diabetes",
+      "CKD"
+    ],
+    "text": "For adults with type 2 diabetes and chronic kidney disease, NICE NG28 prioritizes SGLT2 inhibitors after metformin when renal function and clinical context allow.",
+    "source_url": "https://www.nice.org.uk/guidance/ng28"
+  },
+  {
+    "id": "GUIDE_ADA_2025",
+    "title": "ADA Standards of Care 2025: obesity-aware escalation after metformin",
+    "journal": "ADA Standards of Care",
+    "publication_date": "2025-01-01",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "ADA",
+      "Type 2 Diabetes",
+      "obesity"
+    ],
+    "text": "ADA Standards of Care 2025 support GLP-1 receptor agonists when additional weight loss and cardiometabolic benefit are priorities after metformin.",
+    "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+  }
+]

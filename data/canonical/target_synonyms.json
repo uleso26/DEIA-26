@@ -1,0 +1,14 @@
+{
+  "GLP1R": {
+    "aliases": ["glp1r", "glp-1 receptor", "glucagon-like peptide-1 receptor"],
+    "evidence_tier": "Tier 1"
+  },
+  "GIPR": {
+    "aliases": ["gipr", "gip receptor", "gastric inhibitory polypeptide receptor"],
+    "evidence_tier": "Tier 1"
+  },
+  "SLC5A2": {
+    "aliases": ["slc5a2", "sglt2", "sodium glucose cotransporter 2"],
+    "evidence_tier": "Tier 1"
+  }
+}

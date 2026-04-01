@@ -1,0 +1,122 @@
+[
+  {
+    "pmid": "41597355",
+    "title": "Heart Failure Outcomes with SGLT2 Inhibitors in Adults with Type 2 Diabetes: A Systematic Review and Meta-Analysis",
+    "journal": "Medicina (Kaunas)",
+    "publication_date": "2025-12-29",
+    "evidence_type": "meta-analysis",
+    "mesh_terms": [
+      "SGLT2 inhibitors",
+      "heart failure",
+      "type 2 diabetes"
+    ],
+    "text": "A systematic review and meta-analysis reported that SGLT2 inhibitors were associated with lower heart-failure events in adults with type 2 diabetes and cardiorenal risk, supporting the class effect across contemporary studies.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/41597355/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "41517628",
+    "title": "Effects of SGLT2 Inhibitors on Clinical Outcomes, Symptoms, Functional Capacity, and Cardiac Remodeling in Heart Failure: A Comprehensive Systematic Review and Multidomain Meta-Analysis of Randomized Trials",
+    "journal": "Journal of Clinical Medicine",
+    "publication_date": "2026-01-04",
+    "evidence_type": "meta-analysis",
+    "mesh_terms": [
+      "SGLT2 inhibitors",
+      "heart failure",
+      "clinical outcomes"
+    ],
+    "text": "A multidomain meta-analysis of randomized heart-failure trials found lower cardiovascular death or hospitalization risk with SGLT2 inhibitors and concurrent improvement in symptoms and functional capacity.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/41517628/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "40037695",
+    "title": "Post-marketing safety monitoring of tirzepatide: a pharmacovigilance study based on the FAERS database",
+    "journal": "Expert Opinion on Drug Safety",
+    "publication_date": "2025-03-08",
+    "evidence_type": "pharmacovigilance review",
+    "mesh_terms": [
+      "tirzepatide",
+      "safety",
+      "FAERS"
+    ],
+    "text": "A FAERS-based pharmacovigilance analysis of tirzepatide highlighted gastrointestinal reporting patterns and reinforced the need to interpret spontaneous reports as signal-detection evidence rather than incidence estimates.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/40037695/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "41398455",
+    "title": "Orforglipron: A Novel Oral GLP-1 Agonist for the Treatment of Obesity and Diabetes",
+    "journal": "Cardiology in Review",
+    "publication_date": "2025-12-16",
+    "evidence_type": "review",
+    "mesh_terms": [
+      "orforglipron",
+      "oral GLP-1",
+      "type 2 diabetes"
+    ],
+    "text": "A clinical review summarized the emerging efficacy, tolerability, and strategic positioning of orforglipron as an oral GLP-1 program spanning obesity and type 2 diabetes.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/41398455/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "40960239",
+    "title": "Orforglipron, an Oral Small-Molecule GLP-1 Receptor Agonist for Obesity Treatment",
+    "journal": "New England Journal of Medicine",
+    "publication_date": "2025-11-06",
+    "evidence_type": "review",
+    "mesh_terms": [
+      "orforglipron",
+      "oral GLP-1",
+      "obesity"
+    ],
+    "text": "A phase 3 report described clinically meaningful weight-loss efficacy for oral orforglipron and intensified interest in differentiating late-stage oral GLP-1 programs.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/40960239/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "34170647",
+    "title": "Tirzepatide versus Semaglutide Once Weekly in Patients with Type 2 Diabetes",
+    "journal": "New England Journal of Medicine",
+    "publication_date": "2021-08-05",
+    "evidence_type": "randomized controlled trial",
+    "mesh_terms": [
+      "tirzepatide",
+      "semaglutide",
+      "HbA1c"
+    ],
+    "text": "The SURPASS-2 trial showed greater HbA1c and weight reduction with tirzepatide than semaglutide 1 mg when added to metformin in adults with type 2 diabetes.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/34170647/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "34370970",
+    "title": "Once-weekly tirzepatide versus once-daily insulin degludec as add-on to metformin with or without SGLT2 inhibitors in patients with type 2 diabetes (SURPASS-3): a randomised, open-label, parallel-group, phase 3 trial",
+    "journal": "Lancet",
+    "publication_date": "2021-08-14",
+    "evidence_type": "randomized controlled trial",
+    "mesh_terms": [
+      "tirzepatide",
+      "insulin degludec",
+      "HbA1c"
+    ],
+    "text": "The SURPASS-3 trial found that once-weekly tirzepatide achieved larger HbA1c and weight reductions than insulin degludec over 52 weeks in insulin-naive adults on metformin with or without SGLT2 inhibitors.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/34370970/",
+    "data_mode": "seed_curated_literature"
+  },
+  {
+    "pmid": "34293304",
+    "title": "Efficacy and safety of once-weekly semaglutide 2.0 mg versus 1.0 mg in patients with type 2 diabetes (SUSTAIN FORTE): a double-blind, randomised, phase 3B trial",
+    "journal": "Lancet Diabetes & Endocrinology",
+    "publication_date": "2021-07-21",
+    "evidence_type": "randomized controlled trial",
+    "mesh_terms": [
+      "semaglutide",
+      "dose escalation",
+      "HbA1c"
+    ],
+    "text": "SUSTAIN FORTE showed that semaglutide 2.0 mg delivered greater HbA1c reduction than semaglutide 1.0 mg, with a similar safety profile in adults with inadequately controlled type 2 diabetes.",
+    "source_url": "https://pubmed.ncbi.nlm.nih.gov/34293304/",
+    "data_mode": "seed_curated_literature"
+  }
+]

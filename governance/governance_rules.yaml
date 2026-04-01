@@ -1,0 +1,43 @@
+Q1:
+  required_caveats:
+    - "Based on FAERS voluntary reporting data."
+    - "Reporting patterns do not establish incidence or causality."
+  answer_prefix: "Based on FAERS voluntary reporting data, "
+
+Q2:
+  required_caveats:
+    - "Comparisons should distinguish direct head-to-head evidence from indirect cross-trial inference."
+  comparison_template: "This is a {comparison_type} comparison."
+
+Q3:
+  required_caveats:
+    - "This represents published clinical guideline logic, not medical advice."
+  answer_suffix: " This represents published clinical guideline logic, not medical advice."
+
+Q4:
+  required_caveats:
+    - "Mechanism statements should distinguish validated evidence from inferred associations."
+
+Q5:
+  required_caveats:
+    - "Confirmed facts are separated from inferred positioning or analyst interpretation."
+
+Q6:
+  required_caveats:
+    - "Evidence summaries should state recency, publication venue, and evidence type."
+
+Q7:
+  required_caveats:
+    - "This is general medical information, not a personal risk assessment."
+
+Q8:
+  required_caveats:
+    - "Pricing, reimbursement, and formulary status vary by market, date, and contract."
+
+Q9:
+  required_caveats:
+    - "This platform does not provide emergency triage or personal medical advice."
+
+Q0:
+  required_caveats:
+    - "The platform is optimized for T2D enterprise intelligence rather than arbitrary free-form tasks."

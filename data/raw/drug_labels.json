@@ -1,0 +1,119 @@
+[
+  {
+    "canonical_drug": "tirzepatide",
+    "brand_names": [
+      "Mounjaro",
+      "Zepbound"
+    ],
+    "label_version": "2025-09",
+    "indications": [
+      "Type 2 Diabetes",
+      "Chronic weight management"
+    ],
+    "warnings": [
+      "Pancreatitis",
+      "Gastrointestinal adverse reactions"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "semaglutide",
+    "brand_names": [
+      "Ozempic",
+      "Wegovy",
+      "Rybelsus"
+    ],
+    "label_version": "2025-07",
+    "indications": [
+      "Type 2 Diabetes",
+      "Chronic weight management"
+    ],
+    "warnings": [
+      "Diabetic retinopathy complications",
+      "Gastrointestinal adverse reactions"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "empagliflozin",
+    "brand_names": [
+      "Jardiance"
+    ],
+    "label_version": "2025-04",
+    "indications": [
+      "Type 2 Diabetes",
+      "Heart failure",
+      "CKD"
+    ],
+    "warnings": [
+      "Ketoacidosis",
+      "Volume depletion"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "brand_names": [
+      "Farxiga"
+    ],
+    "label_version": "2025-05",
+    "indications": [
+      "Type 2 Diabetes",
+      "Heart failure",
+      "CKD"
+    ],
+    "warnings": [
+      "Ketoacidosis",
+      "Volume depletion"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "brand_names": [
+      "Invokana"
+    ],
+    "label_version": "2025-03",
+    "indications": [
+      "Type 2 Diabetes",
+      "CKD"
+    ],
+    "warnings": [
+      "Ketoacidosis",
+      "Lower limb amputation risk"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "brand_names": [
+      "Victoza",
+      "Saxenda"
+    ],
+    "label_version": "2025-02",
+    "indications": [
+      "Type 2 Diabetes",
+      "Chronic weight management"
+    ],
+    "warnings": [
+      "Pancreatitis",
+      "Gastrointestinal adverse reactions"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "brand_names": [
+      "Trulicity"
+    ],
+    "label_version": "2025-01",
+    "indications": [
+      "Type 2 Diabetes"
+    ],
+    "warnings": [
+      "Pancreatitis",
+      "Gastrointestinal adverse reactions"
+    ],
+    "source_url": "https://open.fda.gov/apis/drug/label/"
+  }
+]
