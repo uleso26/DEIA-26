@@ -4,12 +4,7 @@ import os
 from functools import lru_cache
 from typing import Any
 
-
-def env_flag(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
+from core.runtime_utils import env_flag
 
 
 class OllamaClient:
@@ -38,7 +33,7 @@ class OllamaClient:
         normalized = raw_value.strip().lower()
         if normalized == "auto":
             return self.available()
-        return normalized in {"1", "true", "yes", "on"}
+        return env_flag(f"USE_OLLAMA_{mode.upper()}", False)
 
     def generate(
         self,

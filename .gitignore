@@ -11,3 +11,4 @@ data/processed/
 runtime/
 .Rhistory
 report/~$*.docx
+report/

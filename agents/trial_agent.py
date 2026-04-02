@@ -2,17 +2,20 @@ from __future__ import annotations
 
 from core.models import AgentSection
 from data.canonical.resolver import CanonicalResolver
+from tools.langchain_native_tools import invoke_native_tool
 from tools.mcp_client import MCPClientManager
-from tools.native_tools import fetch_trial_results
 from agents.base_agent import citation, unique_strings
 
 
 class TrialAgent:
+    """Handle trial-detail and efficacy-comparison questions."""
+
     def __init__(self, resolver: CanonicalResolver, mcp_client: MCPClientManager) -> None:
         self.resolver = resolver
         self.mcp_client = mcp_client
 
     def run(self, query: str) -> AgentSection:
+        """Return a grounded trial section for a trial name or drug comparison query."""
         trial_match = self.resolver.resolve_trial(query)
         drugs = self.resolver.find_drugs(query)
         tool_outputs = []
@@ -35,7 +38,8 @@ class TrialAgent:
             compare_payload = self.mcp_client.call_tool("trials", "search_trials", {"drug": canonical, "phase": "Phase 3"})
             tool_outputs.append(compare_payload)
 
-        native_results = fetch_trial_results(query)
+        native_results_payload = invoke_native_tool("fetch_trial_results_native", {"query": query})
+        native_results = native_results_payload["records"]
         records = compare_payload["records"] or native_results
         comparison_type = None
         if records and len(records) == 1:
@@ -111,6 +115,6 @@ class TrialAgent:
             citations=citations,
             caveats=["Comparisons should distinguish direct head-to-head evidence from indirect cross-trial inference."],
             evidence_tiers=unique_strings(["Tier 2"]),
-            tool_outputs=tool_outputs,
+            tool_outputs=[*tool_outputs, native_results_payload],
             metadata={"comparison_type": comparison_type, "trial_id": (trial_match or {}).get("canonical_id")},
         )

@@ -8,6 +8,8 @@ from core.paths import ROOT
 
 
 class GovernanceChecker:
+    """Apply answer-shaping rules and required caveats per question class."""
+
     def __init__(self, rule_file: str = "governance/governance_rules.yaml") -> None:
         with (ROOT / rule_file).open("r", encoding="utf-8") as handle:
             self.rules = yaml.safe_load(handle)
@@ -19,6 +21,7 @@ class GovernanceChecker:
         caveats: list[str],
         metadata: dict[str, Any] | None = None,
     ) -> tuple[str, list[str]]:
+        """Return a governed answer and a normalized caveat list."""
         metadata = metadata or {}
         normalized_caveats = list(caveats)
         rules = self.rules.get(question_class, {})
@@ -44,6 +47,7 @@ class GovernanceChecker:
         return answer.strip(), normalized_caveats
 
     def validate(self, question_class: str, answer: str, caveats: list[str]) -> list[str]:
+        """Report missing caveats or rule violations for a synthesized answer."""
         issues = []
         rules = self.rules.get(question_class, {})
         for caveat in rules.get("required_caveats", []):

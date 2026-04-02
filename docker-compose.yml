@@ -3,7 +3,7 @@ name: t2d-intelligence-platform
 services:
   app:
     build: .
-    command: ["python3", "main.py", "backend-status"]
+    command: ["python3", "main.py", "serve", "--host", "0.0.0.0", "--port", "8000"]
     env_file:
       - .env
     environment:
@@ -12,18 +12,26 @@ services:
       USE_MONGODB_BACKEND: "true"
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
-      NEO4J_PASSWORD: password
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-localdevpassword}
       NEO4J_DATABASE: neo4j
       USE_NEO4J_BACKEND: "true"
       SYNC_TO_MONGODB: "true"
       SYNC_TO_NEO4J: "true"
     volumes:
       - .:/app
+    ports:
+      - "8000:8000"
     depends_on:
       mongodb:
         condition: service_healthy
       neo4j:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   mongodb:
     image: mongo:7
@@ -39,12 +47,13 @@ services:
   neo4j:
     image: neo4j:5
     environment:
-      NEO4J_AUTH: neo4j/password
+      # Local development default only. Override NEO4J_PASSWORD in .env or shell for shared use.
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-localdevpassword}
     ports:
       - "7474:7474"
       - "7687:7687"
     healthcheck:
-      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "password", "RETURN 1;"]
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p ${NEO4J_PASSWORD:-localdevpassword} 'RETURN 1;'"]
       interval: 10s
       timeout: 10s
       retries: 12
@@ -60,7 +69,7 @@ services:
       MONGODB_DATABASE: t2d_intelligence
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
-      NEO4J_PASSWORD: password
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-localdevpassword}
       NEO4J_DATABASE: neo4j
     volumes:
       - .:/app
@@ -75,7 +84,7 @@ services:
       MONGODB_DATABASE: t2d_intelligence
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
-      NEO4J_PASSWORD: password
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-localdevpassword}
       NEO4J_DATABASE: neo4j
       USE_MONGODB_BACKEND: "true"
     volumes:
@@ -94,7 +103,7 @@ services:
       MONGODB_DATABASE: t2d_intelligence
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
-      NEO4J_PASSWORD: password
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-localdevpassword}
       NEO4J_DATABASE: neo4j
       USE_NEO4J_BACKEND: "true"
     volumes:

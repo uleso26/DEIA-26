@@ -20,6 +20,7 @@ from data.processing.build_sqlite import run as build_sqlite
 from agents.knowledge_graph_agent import KnowledgeGraphAgent
 from agents.literature_agent import LiteratureAgent
 from agents.molecule_agent import MoleculeAgent
+from agents.evidence_planner_agent import EvidencePlannerAgent
 from agents.policy_agent import PolicyAgent
 from agents.router_agent import RouterAgent
 from agents.safety_agent import SafetyAgent
@@ -27,8 +28,8 @@ from agents.scope_agent import ScopeAgent
 from agents.synthesis_agent import SynthesisAgent
 from agents.trial_agent import TrialAgent
 from agents.langgraph_workflow import T2DLangGraphWorkflow
+from core.runtime_utils import env_flag
 from tools.mcp_client import MCPClientManager
-from core.storage import env_flag
 
 
 def bootstrap_runtime(sync_to_mongodb: bool | None = None, sync_to_neo4j: bool | None = None) -> None:
@@ -69,6 +70,7 @@ class T2DOrchestrator:
         self.resolver = get_resolver()
         self.mcp_client = MCPClientManager()
         self.router = RouterAgent()
+        self.evidence_planner = EvidencePlannerAgent()
         self.safety_agent = SafetyAgent(self.resolver, self.mcp_client)
         self.trial_agent = TrialAgent(self.resolver, self.mcp_client)
         self.knowledge_agent = KnowledgeGraphAgent(self.resolver, self.mcp_client)
@@ -80,6 +82,7 @@ class T2DOrchestrator:
         self.workflow = T2DLangGraphWorkflow(
             router=self.router,
             policy_agent=self.policy_agent,
+            evidence_planner=self.evidence_planner,
             safety_agent=self.safety_agent,
             trial_agent=self.trial_agent,
             knowledge_agent=self.knowledge_agent,

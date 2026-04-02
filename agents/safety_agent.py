@@ -2,24 +2,31 @@ from __future__ import annotations
 
 from core.models import AgentSection
 from data.canonical.resolver import CanonicalResolver
+from tools.langchain_native_tools import invoke_native_tool
 from tools.mcp_client import MCPClientManager
-from tools.native_tools import search_pubmed_safety
 from agents.base_agent import citation, unique_strings
 
 
 class SafetyAgent:
+    """Assemble structured safety, label, and literature context for a drug."""
+
     def __init__(self, resolver: CanonicalResolver, mcp_client: MCPClientManager) -> None:
         self.resolver = resolver
         self.mcp_client = mcp_client
 
     def run(self, query: str) -> AgentSection:
+        """Return a safety-focused evidence section for the requested therapy."""
         resolved = self.resolver.resolve_drug(query)
         drug_name = (resolved or {}).get("canonical_id", "tirzepatide")
         subgroup = "cardiac_comorbidity_reports" if "cardiac" in query.lower() or "heart" in query.lower() else None
         event_payload = self.mcp_client.call_tool("safety", "search_adverse_events", {"drug": drug_name, "subgroup": subgroup})
         label_payload = self.mcp_client.call_tool("safety", "get_drug_label", {"drug": drug_name})
         summary_payload = self.mcp_client.call_tool("safety", "get_safety_summary", {"drug": drug_name, "subgroup": subgroup})
-        literature = search_pubmed_safety(drug_name)
+        literature_payload = invoke_native_tool(
+            "search_pubmed_safety_native",
+            {"drug": drug_name, "top_k": 2},
+        )
+        literature = literature_payload["records"]
 
         top_events = summary_payload["records"][0]["top_events"] if summary_payload["records"] else []
         event_bits = [f"{item['count']} {item['event']} reports" for item in top_events[:2]]
@@ -73,6 +80,6 @@ class SafetyAgent:
                 "Reporting patterns do not establish incidence or causality.",
             ],
             evidence_tiers=unique_strings(["Tier 1", "Tier 2"]),
-            tool_outputs=[event_payload, label_payload, summary_payload],
+            tool_outputs=[event_payload, label_payload, summary_payload, literature_payload],
             metadata={"drug": drug_name},
         )

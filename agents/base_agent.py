@@ -1,3 +1,5 @@
+"""Shared helper functions used by multiple domain agents."""
+
 from __future__ import annotations
 
 from typing import Any

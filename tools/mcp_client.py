@@ -2,11 +2,15 @@ from __future__ import annotations
 
 import atexit
 import json
-import subprocess
 import sys
 from typing import Any
 
+import anyio
+from mcp import ClientSession
+from mcp.client.stdio import StdioServerParameters, stdio_client
+
 from core.paths import ROOT
+from core.runtime_utils import utc_now_iso
 
 
 SERVER_MODULES = {
@@ -17,66 +21,66 @@ SERVER_MODULES = {
 
 
 class StdioMCPConnection:
-    """Tiny stdio RPC wrapper around a local MCP-style subprocess."""
+    """Request-scoped MCP client over stdio using the official Python SDK."""
 
     def __init__(self, module_name: str) -> None:
-        self.process = subprocess.Popen(
-            [sys.executable, "-m", module_name],
-            cwd=ROOT,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            bufsize=1,
+        self.module_name = module_name
+
+    def _server_parameters(self) -> StdioServerParameters:
+        return StdioServerParameters(
+            command=sys.executable,
+            args=["-m", self.module_name],
+            cwd=str(ROOT),
         )
 
-    def request(self, payload: dict[str, Any]) -> dict[str, Any]:
-        if self.process.stdin is None or self.process.stdout is None:
-            raise RuntimeError("MCP connection was not initialized correctly.")
-        self.process.stdin.write(json.dumps(payload) + "\n")
-        self.process.stdin.flush()
-        line = self.process.stdout.readline()
-        if not line:
-            stderr = self.process.stderr.read() if self.process.stderr else ""
-            raise RuntimeError(f"MCP server did not respond. stderr={stderr.strip()}")
-        response = json.loads(line)
-        if not response.get("ok"):
-            raise RuntimeError(response.get("error", "Unknown MCP error"))
-        return response
+    @staticmethod
+    def _deserialize_tool_result(result: Any) -> dict[str, Any]:
+        if getattr(result, "isError", False):
+            fragments = []
+            for content in getattr(result, "content", []) or []:
+                text = getattr(content, "text", None)
+                if text:
+                    fragments.append(text)
+            raise RuntimeError(" ".join(fragments).strip() or "Unknown MCP tool error")
+        structured = getattr(result, "structuredContent", None)
+        if isinstance(structured, dict):
+            return structured
+        for content in getattr(result, "content", []) or []:
+            text = getattr(content, "text", None)
+            if not text:
+                continue
+            try:
+                parsed = json.loads(text)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                return parsed
+        raise RuntimeError("MCP tool call returned no structured payload.")
+
+    async def _list_tools_async(self) -> list[dict[str, Any]]:
+        async with stdio_client(self._server_parameters()) as (read_stream, write_stream):
+            async with ClientSession(read_stream, write_stream) as session:
+                await session.initialize()
+                result = await session.list_tools()
+                return [tool.model_dump(by_alias=True, exclude_none=True) for tool in result.tools]
+
+    async def _call_tool_async(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
+        async with stdio_client(self._server_parameters()) as (read_stream, write_stream):
+            async with ClientSession(read_stream, write_stream) as session:
+                await session.initialize()
+                result = await session.call_tool(tool_name, arguments)
+                return self._deserialize_tool_result(result)
 
     def list_tools(self) -> list[dict[str, Any]]:
-        return self.request({"action": "list_tools"})["tools"]
+        return anyio.run(self._list_tools_async)
 
     def call_tool(self, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-        return self.request({"action": "call_tool", "tool": tool_name, "arguments": arguments})["result"]
+        return anyio.run(self._call_tool_async, tool_name, arguments)
 
     def close(self) -> None:
-        if self.process.poll() is not None:
-            if self.process.stdin:
-                self.process.stdin.close()
-            if self.process.stdout:
-                self.process.stdout.close()
-            if self.process.stderr:
-                self.process.stderr.close()
-            return
-        try:
-            self.request({"action": "shutdown"})
-        except Exception:
-            self.process.terminate()
-        finally:
-            try:
-                self.process.wait(timeout=5)
-            finally:
-                if self.process.stdin:
-                    self.process.stdin.close()
-                if self.process.stdout:
-                    self.process.stdout.close()
-                if self.process.stderr:
-                    self.process.stderr.close()
-
-
+        return
 class MCPClientManager:
-    """Lazily manage one stdio connection per MCP-style server."""
+    """Lazily manage MCP stdio clients for the local tool servers."""
 
     def __init__(self) -> None:
         self._connections: dict[str, StdioMCPConnection] = {}
@@ -89,11 +93,20 @@ class MCPClientManager:
             self._connections[server_name] = StdioMCPConnection(SERVER_MODULES[server_name])
         return self._connections[server_name]
 
+    @staticmethod
+    def _enrich_result(server_name: str, payload: dict[str, Any]) -> dict[str, Any]:
+        enriched = dict(payload)
+        enriched.setdefault("requested_at", utc_now_iso())
+        enriched.setdefault("server_name", server_name)
+        enriched.setdefault("source_metadata", {})
+        return enriched
+
     def list_tools(self, server_name: str) -> list[dict[str, Any]]:
         return self._get_connection(server_name).list_tools()
 
     def call_tool(self, server_name: str, tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-        return self._get_connection(server_name).call_tool(tool_name, arguments)
+        payload = self._get_connection(server_name).call_tool(tool_name, arguments)
+        return self._enrich_result(server_name, payload)
 
     def close_all(self) -> None:
         for connection in list(self._connections.values()):

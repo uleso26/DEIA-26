@@ -10,7 +10,10 @@ NHS_TYPE2_URL = "https://www.nhs.uk/conditions/type-2-diabetes/"
 
 
 class ScopeAgent:
+    """Handle scope, background, access, and urgent guardrail responses."""
+
     def run(self, query: str, question_class: str) -> AgentSection:
+        """Return a direct scoped response without invoking the enterprise evidence stack."""
         query_lower = query.lower()
 
         if question_class == "Q7":

@@ -17,6 +17,7 @@ class CanonicalMatch:
     evidence_tier: str
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize the canonical match for downstream agent/tool payloads."""
         return {
             "canonical_id": self.canonical_id,
             "matched_aliases": self.matched_aliases,
@@ -26,6 +27,8 @@ class CanonicalMatch:
 
 
 class CanonicalResolver:
+    """Resolve drugs, targets, and trials to the platform's canonical identifiers."""
+
     def __init__(self) -> None:
         self.drug_synonyms, self.target_synonyms, self.trial_crosswalk = _load_canonical_tables()
 
@@ -52,6 +55,7 @@ class CanonicalResolver:
         return best
 
     def resolve_drug(self, text: str) -> dict[str, Any] | None:
+        """Resolve the strongest drug mention in a free-form query."""
         match = self._resolve_from_mapping(text, self.drug_synonyms)
         if not match:
             return None
@@ -63,10 +67,12 @@ class CanonicalResolver:
         }
 
     def resolve_target(self, text: str) -> dict[str, Any] | None:
+        """Resolve the strongest target mention in a free-form query."""
         match = self._resolve_from_mapping(text, self.target_synonyms)
         return match.to_dict() if match else None
 
     def resolve_trial(self, text: str) -> dict[str, Any] | None:
+        """Resolve a trial acronym, NCT ID, or trial name from the query."""
         lowered = text.lower()
         best: CanonicalMatch | None = None
         for nct_id, payload in self.trial_crosswalk.items():
@@ -84,6 +90,7 @@ class CanonicalResolver:
         return best.to_dict() if best else None
 
     def resolve_all(self, text: str) -> dict[str, Any]:
+        """Resolve all supported canonical entity types from one query."""
         return {
             "drug": self.resolve_drug(text),
             "target": self.resolve_target(text),
@@ -91,6 +98,7 @@ class CanonicalResolver:
         }
 
     def find_drugs(self, text: str) -> list[dict[str, Any]]:
+        """Return every drug mention matched in the query, not just the strongest one."""
         lowered = text.lower()
         matches: list[dict[str, Any]] = []
         for canonical_id, payload in self.drug_synonyms.items():

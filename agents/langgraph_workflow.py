@@ -17,6 +17,8 @@ class OrchestratorState(TypedDict, total=False):
     evidence_plan: dict[str, Any]
     evidence_review: dict[str, Any]
     synthesis_metadata: dict[str, Any]
+    react_steps: int
+    executed_nodes: list[str]
     sections: Annotated[list[AgentSection], operator.add]
     response: dict[str, Any]
 
@@ -28,6 +30,7 @@ class T2DLangGraphWorkflow:
         self,
         router: Any,
         policy_agent: Any,
+        evidence_planner: Any,
         safety_agent: Any,
         trial_agent: Any,
         knowledge_agent: Any,
@@ -38,6 +41,7 @@ class T2DLangGraphWorkflow:
     ) -> None:
         self.router = router
         self.policy_agent = policy_agent
+        self.evidence_planner = evidence_planner
         self.safety_agent = safety_agent
         self.trial_agent = trial_agent
         self.knowledge_agent = knowledge_agent
@@ -52,15 +56,10 @@ class T2DLangGraphWorkflow:
         workflow.add_node("understand", self._understand_node)
         workflow.add_node("policy_gate", self._policy_gate_node)
         workflow.add_node("plan", self._plan_node)
+        workflow.add_node("refine_plan", self._refine_plan_node)
         workflow.add_node("clarify", self._clarify_node)
-        workflow.add_node("safety", self._safety_node)
-        workflow.add_node("trial", self._trial_node)
-        workflow.add_node("pathway", self._pathway_node)
-        workflow.add_node("knowledge", self._knowledge_node)
-        workflow.add_node("molecule", self._molecule_node)
-        workflow.add_node("literature_q5", self._literature_q5_node)
-        workflow.add_node("literature_q6", self._literature_q6_node)
         workflow.add_node("scope", self._scope_node)
+        workflow.add_node("execute_plan", self._execute_plan_node)
         workflow.add_node("evidence_review", self._evidence_review_node)
         workflow.add_node("synthesize", self._synthesize_node)
 
@@ -75,36 +74,19 @@ class T2DLangGraphWorkflow:
                 "scope": "scope",
             },
         )
-        workflow.add_conditional_edges(
-            "plan",
-            self._branch_for_plan,
-            {
-                "safety": "safety",
-                "trial": "trial",
-                "pathway": "pathway",
-                "knowledge": "knowledge",
-                "literature_q5": "literature_q5",
-                "literature_q6": "literature_q6",
-                "scope": "scope",
-            },
-        )
+        workflow.add_edge("plan", "execute_plan")
         workflow.add_edge("clarify", "synthesize")
-        workflow.add_edge("safety", "evidence_review")
-        workflow.add_edge("trial", "evidence_review")
-        workflow.add_edge("pathway", "evidence_review")
+        workflow.add_edge("execute_plan", "evidence_review")
+        workflow.add_edge("scope", "synthesize")
         workflow.add_conditional_edges(
-            "knowledge",
-            self._branch_after_knowledge,
+            "evidence_review",
+            self._branch_after_evidence_review,
             {
-                "molecule": "molecule",
-                "evidence_review": "evidence_review",
+                "refine_plan": "refine_plan",
+                "synthesize": "synthesize",
             },
         )
-        workflow.add_edge("molecule", "evidence_review")
-        workflow.add_edge("literature_q5", "evidence_review")
-        workflow.add_edge("literature_q6", "evidence_review")
-        workflow.add_edge("scope", "synthesize")
-        workflow.add_edge("evidence_review", "synthesize")
+        workflow.add_edge("refine_plan", "execute_plan")
         workflow.add_edge("synthesize", END)
         return workflow.compile()
 
@@ -114,7 +96,13 @@ class T2DLangGraphWorkflow:
     def invoke(self, query: str) -> dict[str, Any]:
         trace = TraceLogger()
         trace.add_event("query_received", {"query": query})
-        state: OrchestratorState = {"query": query, "trace": trace, "sections": []}
+        state: OrchestratorState = {
+            "query": query,
+            "trace": trace,
+            "sections": [],
+            "react_steps": 0,
+            "executed_nodes": [],
+        }
         result = self.graph.invoke(state)
         return result["response"]
 
@@ -142,61 +130,68 @@ class T2DLangGraphWorkflow:
         return "plan"
 
     def _plan_node(self, state: OrchestratorState) -> OrchestratorState:
-        evidence_plan = build_evidence_plan(state["understanding"])
+        base_plan = build_evidence_plan(state["understanding"])
+        evidence_plan = self.evidence_planner.plan(state["understanding"], base_plan)
         state["trace"].add_event("evidence_plan", evidence_plan)
         return {"evidence_plan": evidence_plan}
 
-    def _branch_for_plan(self, state: OrchestratorState) -> str:
-        return state["evidence_plan"]["primary_node"]
-
-    def _branch_after_knowledge(self, state: OrchestratorState) -> str:
-        secondary_nodes = set(state["evidence_plan"].get("secondary_nodes", []))
-        return "molecule" if "molecule" in secondary_nodes else "evidence_review"
+    def _refine_plan_node(self, state: OrchestratorState) -> OrchestratorState:
+        refined_plan = self.evidence_planner.refine_after_observation(
+            state["understanding"],
+            state["evidence_plan"],
+            state.get("sections", []),
+            state.get("evidence_review", {}),
+            react_steps=state.get("react_steps", 0),
+            executed_nodes=state.get("executed_nodes", []),
+        )
+        updated_steps = state.get("react_steps", 0) + 1
+        state["trace"].add_event(
+            "evidence_plan_refined",
+            {
+                "react_steps": updated_steps,
+                "execution_nodes": refined_plan.get("execution_nodes", []),
+                "supplemental_nodes": refined_plan.get("supplemental_nodes", []),
+                "planning_mode": refined_plan.get("planning_mode"),
+            },
+        )
+        return {"evidence_plan": refined_plan, "react_steps": updated_steps}
 
     def _clarify_node(self, state: OrchestratorState) -> OrchestratorState:
         section = self.policy_agent.clarification(state["understanding"])
         state["trace"].add_event("clarification_requested", section.to_dict())
         return {"sections": [section]}
 
-    def _safety_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.safety_agent.run(state["query"])
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _trial_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.trial_agent.run(state["query"])
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _pathway_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.knowledge_agent.run(state["query"], question_class="Q3")
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _knowledge_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.knowledge_agent.run(state["query"], question_class="Q4")
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _molecule_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.molecule_agent.run(state["query"])
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _literature_q5_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.literature_agent.run(state["query"], question_class="Q5")
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
-    def _literature_q6_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.literature_agent.run(state["query"], question_class="Q6")
-        state["trace"].add_event("agent_section", section.to_dict())
-        return {"sections": [section]}
-
     def _scope_node(self, state: OrchestratorState) -> OrchestratorState:
         section = self.scope_agent.run(state["query"], question_class=state["understanding"]["question_class"])
         state["trace"].add_event("agent_section", section.to_dict())
         return {"sections": [section]}
+
+    def _execute_plan_node(self, state: OrchestratorState) -> OrchestratorState:
+        sections: list[AgentSection] = []
+        executed_nodes = list(state.get("executed_nodes", []))
+        for node_name in state["evidence_plan"].get("execution_nodes", []):
+            if node_name in executed_nodes:
+                continue
+            if node_name == "safety":
+                section = self.safety_agent.run(state["query"])
+            elif node_name == "trial":
+                section = self.trial_agent.run(state["query"])
+            elif node_name == "pathway":
+                section = self.knowledge_agent.run(state["query"], question_class="Q3")
+            elif node_name == "knowledge":
+                section = self.knowledge_agent.run(state["query"], question_class="Q4")
+            elif node_name == "molecule":
+                section = self.molecule_agent.run(state["query"])
+            elif node_name == "literature_q5":
+                section = self.literature_agent.run(state["query"], question_class="Q5")
+            elif node_name == "literature_q6":
+                section = self.literature_agent.run(state["query"], question_class="Q6")
+            else:
+                continue
+            state["trace"].add_event("agent_section", {"execution_node": node_name, **section.to_dict()})
+            sections.append(section)
+            executed_nodes.append(node_name)
+        return {"sections": sections, "executed_nodes": executed_nodes}
 
     def _evidence_review_node(self, state: OrchestratorState) -> OrchestratorState:
         evidence_review = assess_evidence_sufficiency(state["understanding"], state.get("sections", []))
@@ -207,6 +202,22 @@ class T2DLangGraphWorkflow:
             )
         state["trace"].add_event("evidence_review", evidence_review)
         return {"evidence_review": evidence_review, "synthesis_metadata": synthesis_metadata}
+
+    def _branch_after_evidence_review(self, state: OrchestratorState) -> str:
+        evidence_review = state.get("evidence_review", {})
+        if evidence_review.get("status") not in {"limited", "insufficient"}:
+            return "synthesize"
+        evidence_plan = state.get("evidence_plan", {})
+        if not evidence_plan.get("react_eligible"):
+            return "synthesize"
+        if state.get("react_steps", 0) >= int(evidence_plan.get("max_react_steps", 0)):
+            return "synthesize"
+        available_nodes = [
+            node
+            for node in evidence_plan.get("supplemental_nodes", [])
+            if node not in state.get("executed_nodes", [])
+        ]
+        return "refine_plan" if available_nodes else "synthesize"
 
     def _synthesize_node(self, state: OrchestratorState) -> OrchestratorState:
         understanding = state["understanding"]

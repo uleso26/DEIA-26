@@ -1,3 +1,5 @@
+"""Query understanding, retrieval helpers, and local evidence-tool utilities."""
+
 from __future__ import annotations
 
 from calendar import monthrange
@@ -7,8 +9,9 @@ from typing import Any
 from core.models import QueryUnderstanding
 from core.paths import raw_input_path
 from core.storage import (
-    build_dense_index,
+    build_chroma_index,
     build_lexical_index,
+    chunk_retrieval_documents,
     connect_sqlite,
     load_collection,
     load_json,
@@ -18,6 +21,22 @@ from core.storage import (
     tokenize,
 )
 from data.canonical.resolver import get_resolver
+
+
+# Hybrid retrieval leans slightly toward dense search because the corpus is
+# small and terminology can vary, but lexical overlap still helps anchor exact
+# trial names and guideline phrasing.
+LEXICAL_FUSION_WEIGHT = 0.4
+DENSE_FUSION_WEIGHT = 0.6
+
+# Domain reranking heuristics keep obvious entity and intent hits at the top
+# after lexical+dense fusion has narrowed the field.
+DRUG_MATCH_BOOST = 6.0
+TARGET_MATCH_BOOST = 4.0
+SAFETY_INTENT_BOOST = 3.0
+POST_MARKETING_BOOST = 2.0
+SURVEILLANCE_BOOST = 1.5
+HEART_FAILURE_BOOST = 3.0
 
 
 QUESTION_CLASS_DETAILS = {
@@ -305,6 +324,7 @@ def extract_query_entities(query: str) -> dict[str, Any]:
 
 
 def build_query_understanding(query: str) -> QueryUnderstanding:
+    """Turn a raw query into the structured routing state used by the workflow."""
     route = classify_query(query)
     lowered = query.lower().strip()
     entities = extract_query_entities(query)
@@ -351,23 +371,25 @@ def build_evidence_plan(understanding: dict[str, Any]) -> dict[str, Any]:
     if understanding["interaction_mode"] != "enterprise_intelligence":
         return {
             "plan_name": "direct_scope_response",
-            "primary_node": "scope",
-            "secondary_nodes": [],
+            "execution_nodes": ["scope"],
             "requires_evidence_review": False,
         }
-    node_map = {
-        "Q1": "safety",
-        "Q2": "trial",
-        "Q3": "pathway",
-        "Q4": "knowledge",
-        "Q5": "literature_q5",
-        "Q6": "literature_q6",
-    }
-    secondary_nodes = ["molecule"] if question_class == "Q4" else []
+    lowered_query = understanding["query"].lower()
+    execution_nodes = {
+        "Q1": ["safety"],
+        "Q2": ["trial"],
+        "Q3": ["pathway"],
+        "Q4": ["knowledge", "molecule"],
+        "Q5": ["literature_q5"],
+        "Q6": ["literature_q6"],
+    }[question_class]
+    if question_class in {"Q2", "Q3"} and any(term in lowered_query for term in ["publication", "recent", "evidence", "literature", "journal"]):
+        execution_nodes = [*execution_nodes, "literature_q6"]
+    if question_class == "Q1" and any(term in lowered_query for term in ["publication", "recent", "evidence"]):
+        execution_nodes = [*execution_nodes, "literature_q6"]
     return {
         "plan_name": PRIMARY_INTENT_BY_QUESTION_CLASS[question_class],
-        "primary_node": node_map[question_class],
-        "secondary_nodes": secondary_nodes,
+        "execution_nodes": execution_nodes,
         "requires_evidence_review": True,
     }
 
@@ -376,6 +398,7 @@ def assess_evidence_sufficiency(
     understanding: dict[str, Any],
     sections: list[dict[str, Any] | Any],
 ) -> dict[str, Any]:
+    """Judge whether the gathered sections are grounded enough to synthesize."""
     if understanding["interaction_mode"] != "enterprise_intelligence":
         return {"status": "not_applicable", "reason": "non_enterprise_scope"}
 
@@ -429,6 +452,7 @@ def _has_domain_context(query: str, lowered: str) -> bool:
 
 
 def classify_query(query: str) -> dict[str, Any]:
+    """Classify a query into the platform scope lanes using deterministic heuristics."""
     lowered = query.lower().strip()
     scores = _empty_scores()
     if not lowered:
@@ -537,40 +561,48 @@ def _retrieval_documents() -> list[dict[str, Any]]:
 
 
 def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
+    """Run hybrid retrieval over chunked literature and guideline evidence."""
     manifest = load_retrieval_manifest()
     if not manifest.get("documents"):
-        manifest = build_lexical_index(_retrieval_documents(), text_key="retrieval_text")
-        dense_manifest = build_dense_index(_retrieval_documents(), text_key="retrieval_text")
+        fallback_documents = chunk_retrieval_documents(_retrieval_documents(), text_key="retrieval_text")
+        manifest = build_lexical_index(fallback_documents, text_key="chunk_text")
+        manifest["documents"] = fallback_documents
         manifest["backend"] = "lexical"
-        if dense_manifest:
-            manifest["dense_vectors"] = dense_manifest["dense_vectors"]
-            manifest["embedding_provider"] = dense_manifest["embedding_provider"]
-            manifest["embedding_model"] = dense_manifest["embedding_model"]
-            manifest["vector_dim"] = dense_manifest["vector_dim"]
-            manifest["backend"] = "dense_vector"
+        chroma_manifest = build_chroma_index(fallback_documents, text_key="chunk_text")
+        if chroma_manifest:
+            manifest["chroma_collection"] = chroma_manifest["collection_name"]
+            manifest["embedding_provider"] = chroma_manifest["embedding_provider"]
+            manifest["embedding_model"] = chroma_manifest["embedding_model"]
+            manifest["vector_dim"] = chroma_manifest["vector_dim"]
+            manifest["backend"] = "hybrid_chroma"
         else:
             manifest["dense_vectors"] = {}
     candidate_count = max(top_k * 4, top_k)
     lexical_results = search_lexical_index(query, manifest, top_k=candidate_count)
     dense_results = search_dense_index(query, manifest, top_k=candidate_count)
     normalized_scores: dict[str, float] = {}
-    for weight, results in [(0.4, lexical_results), (0.6, dense_results)]:
+    for weight, results in [
+        (LEXICAL_FUSION_WEIGHT, lexical_results),
+        (DENSE_FUSION_WEIGHT, dense_results),
+    ]:
         if not results:
             continue
         max_score = max(float(item.get("score", 0.0)) for item in results) or 1.0
         for item in results:
-            doc_id = str(item.get("doc_id") or item.get("pmid") or item.get("id"))
+            doc_id = str(item.get("parent_doc_id") or item.get("doc_id") or item.get("pmid") or item.get("id"))
             normalized_scores[doc_id] = normalized_scores.get(doc_id, 0.0) + weight * (float(item.get("score", 0.0)) / max_score)
 
     initial_results = []
     seen_doc_ids: set[str] = set()
     for item in [*dense_results, *lexical_results]:
-        doc_id = str(item.get("doc_id") or item.get("pmid") or item.get("id"))
+        doc_id = str(item.get("parent_doc_id") or item.get("doc_id") or item.get("pmid") or item.get("id"))
         if doc_id in seen_doc_ids:
             continue
         seen_doc_ids.add(doc_id)
         seeded = dict(item)
         seeded["score"] = round(normalized_scores.get(doc_id, float(item.get("score", 0.0))), 4)
+        if seeded.get("chunk_text") and not seeded.get("text"):
+            seeded["text"] = seeded["chunk_text"]
         initial_results.append(seeded)
 
     if not initial_results:
@@ -595,17 +627,17 @@ def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
         rerank_score = float(item.get("score", 0.0))
         for drug in matched_drugs:
             if drug.lower() in haystack:
-                rerank_score += 6.0
+                rerank_score += DRUG_MATCH_BOOST
         if matched_target and matched_target.lower() in haystack:
-            rerank_score += 4.0
+            rerank_score += TARGET_MATCH_BOOST
         if "safety" in lowered_query and any(term in haystack for term in ["safety", "faers", "pharmacovigilance"]):
-            rerank_score += 3.0
+            rerank_score += SAFETY_INTENT_BOOST
         if "post-marketing" in lowered_query and "post-marketing" in haystack:
-            rerank_score += 2.0
+            rerank_score += POST_MARKETING_BOOST
         if "surveillance" in lowered_query and any(term in haystack for term in ["surveillance", "pharmacovigilance"]):
-            rerank_score += 1.5
+            rerank_score += SURVEILLANCE_BOOST
         if "heart failure" in lowered_query and "heart failure" in haystack:
-            rerank_score += 3.0
+            rerank_score += HEART_FAILURE_BOOST
         item = dict(item)
         item["score"] = round(rerank_score, 4)
         reranked.append(item)
@@ -874,6 +906,7 @@ def get_clinical_context(query: str, top_k: int = 2) -> dict[str, Any]:
 
 
 def filter_recent_documents(documents: list[dict[str, Any]], months: int = 6, reference_date: date | None = None) -> list[dict[str, Any]]:
+    """Keep documents within a recent-months window, skipping malformed dates."""
     today = reference_date or date.today()
     threshold_month = today.month - months
     threshold_year = today.year

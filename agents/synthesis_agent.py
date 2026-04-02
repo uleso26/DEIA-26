@@ -18,6 +18,8 @@ LLM_SYNTHESIS_CLASSES = {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6"}
 
 
 class SynthesisAgent:
+    """Merge agent sections into the final governed answer payload."""
+
     def __init__(self) -> None:
         self.governance = GovernanceChecker()
         self.ollama = OllamaClient()
@@ -48,6 +50,7 @@ class SynthesisAgent:
         trace_id: str,
         workflow_metadata: dict[str, Any] | None = None,
     ) -> FinalResponse:
+        """Synthesize sections, apply governance, and return the final response."""
         fallback_answer = self._deterministic_synthesis(sections)
         citations = dedupe_citations([citation for section in sections for citation in section.citations])
         caveats = unique_strings([caveat for section in sections for caveat in section.caveats])

@@ -5,14 +5,8 @@ from functools import lru_cache
 from math import sqrt
 from typing import Any
 
+from core.runtime_utils import env_flag
 from tools.ollama_client import OllamaClient
-
-
-def _env_flag(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
@@ -83,8 +77,8 @@ def embed_texts(
     requested_provider = (provider or os.getenv("EMBEDDING_PROVIDER", "auto")).strip().lower()
     requested_model = model_name or os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
     fallback_model = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
-    allow_download = _env_flag("EMBEDDING_ALLOW_DOWNLOAD", False)
-    auto_try_sentence_transformers = _env_flag("EMBEDDING_AUTO_TRY_SENTENCE_TRANSFORMERS", False)
+    allow_download = env_flag("EMBEDDING_ALLOW_DOWNLOAD", False)
+    auto_try_sentence_transformers = env_flag("EMBEDDING_AUTO_TRY_SENTENCE_TRANSFORMERS", False)
 
     if requested_provider == "ollama":
         vectors, metadata = _embed_with_ollama(texts, requested_model)

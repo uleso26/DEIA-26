@@ -15,10 +15,13 @@ VALID_ROUTE_LABELS = ENTERPRISE_ROUTE_LABELS
 
 
 class RouterAgent:
+    """Route enterprise-core questions while keeping scope guardrails deterministic."""
+
     def __init__(self) -> None:
         self.ollama = OllamaClient()
 
     def understand(self, query: str) -> dict:
+        """Return structured routing state for the query."""
         fallback = build_query_understanding(query).to_dict()
         if fallback["question_class"] not in VALID_ROUTE_LABELS:
             return {**fallback, "routing_mode": "deterministic_scoped"}
@@ -52,6 +55,7 @@ class RouterAgent:
         return {**fallback, "routing_mode": "deterministic_fallback"}
 
     def route(self, query: str) -> dict:
+        """Expose the final routing payload used by the orchestrator."""
         understanding = self.understand(query)
         return {
             "question_class": understanding["question_class"],

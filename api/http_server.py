@@ -5,7 +5,7 @@ import mimetypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Protocol
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 from agents.orchestrator import T2DOrchestrator
 from core.storage import backend_status
@@ -20,10 +20,24 @@ class QueryRuntime(Protocol):
 
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+MAX_REQUEST_BYTES = 1_000_000
+SSE_WORD_CHUNK_SIZE = 14
+
+
+def stream_answer_chunks(answer: str, chunk_size_words: int = SSE_WORD_CHUNK_SIZE) -> list[str]:
+    """Split an answer into small word chunks for local SSE streaming."""
+    words = answer.split()
+    if not words:
+        return []
+    chunks: list[str] = []
+    for index in range(0, len(words), chunk_size_words):
+        suffix = " " if index + chunk_size_words < len(words) else ""
+        chunks.append(" ".join(words[index : index + chunk_size_words]) + suffix)
+    return chunks
 
 
 class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
-    """Small HTTP surface for local deployment and demonstration."""
+    """Small local HTTP surface for demo use; auth and rate limiting are out of scope."""
 
     runtime: QueryRuntime
 
@@ -41,12 +55,30 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_sse_headers(self) -> None:
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Connection", "keep-alive")
+        self.end_headers()
+
+    def _send_sse_event(self, event_name: str, payload: dict[str, Any]) -> None:
+        body = f"event: {event_name}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n".encode("utf-8")
+        self.wfile.write(body)
+        self.wfile.flush()
+
     def _read_json(self) -> dict[str, Any]:
         content_length = int(self.headers.get("Content-Length", "0"))
+        if content_length > MAX_REQUEST_BYTES:
+            raise ValueError(f"Request body exceeds {MAX_REQUEST_BYTES} bytes.")
         raw_body = self.rfile.read(content_length) if content_length else b"{}"
         return json.loads(raw_body.decode("utf-8") or "{}")
 
     def do_GET(self) -> None:  # noqa: N802
+        normalized_path = urlsplit(self.path).path or self.path
+        if normalized_path == "/query/stream":
+            self._stream_query()
+            return
         asset = resolve_static_asset(self.path)
         if asset:
             asset_path, content_type = asset
@@ -56,6 +88,12 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
         self._send_json(status_code, payload)
 
     def do_HEAD(self) -> None:  # noqa: N802
+        normalized_path = urlsplit(self.path).path or self.path
+        if normalized_path == "/query/stream":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.end_headers()
+            return
         asset = resolve_static_asset(self.path)
         if asset:
             asset_path, content_type = asset
@@ -79,6 +117,30 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
             return
         status_code, response = dispatch_request("POST", self.path, payload, self.runtime)
         self._send_json(status_code, response)
+
+    def _stream_query(self) -> None:
+        params = parse_qs(urlsplit(self.path).query)
+        query = (params.get("query") or [""])[0].strip()
+        if not query:
+            self._send_json(400, {"ok": False, "error": "Query string parameter 'query' is required."})
+            return
+
+        self._send_sse_headers()
+        self._send_sse_event("status", {"message": "Understanding query"})
+        try:
+            payload = self.runtime.run_query(query)
+        except Exception as exc:  # pragma: no cover - defensive HTTP path
+            self._send_sse_event("error", {"error": str(exc)})
+            return
+
+        answer = str(payload.get("answer", ""))
+        chunks = stream_answer_chunks(answer)
+        if not chunks:
+            self._send_sse_event("final", payload)
+            return
+        for chunk in chunks:
+            self._send_sse_event("delta", {"text": chunk})
+        self._send_sse_event("final", payload)
 
 
 def dispatch_request(

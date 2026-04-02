@@ -4,17 +4,20 @@ from core.paths import raw_input_path
 from core.models import AgentSection
 from core.storage import load_json
 from data.canonical.resolver import CanonicalResolver
+from tools.langchain_native_tools import invoke_native_tool
 from tools.mcp_client import MCPClientManager
-from tools.native_tools import get_clinical_context
 from agents.base_agent import citation, dedupe_citations, unique_strings
 
 
 class KnowledgeGraphAgent:
+    """Serve both pathway (Q3) and mechanism/graph (Q4) evidence flows."""
+
     def __init__(self, resolver: CanonicalResolver, mcp_client: MCPClientManager) -> None:
         self.resolver = resolver
         self.mcp_client = mcp_client
 
     def run(self, query: str, question_class: str = "Q3") -> AgentSection:
+        """Dispatch to guideline-pathway or graph-mechanism logic by question class."""
         if question_class == "Q3":
             lowered = query.lower()
             comparison_requested = any(token in lowered for token in ["versus", " vs ", "compare", "differ", "difference"])
@@ -75,7 +78,10 @@ class KnowledgeGraphAgent:
             context_query = query
             if pathway_payload["records"]:
                 context_query = f"{query} {' '.join(record['next_step'] for record in pathway_payload['records'][:2])}"
-            clinical_context = get_clinical_context(context_query)
+            clinical_context = invoke_native_tool(
+                "get_clinical_context_native",
+                {"query": context_query},
+            )
             summary = "No pathway logic was found."
             citations = []
             caveats = ["This represents published clinical guideline logic, not medical advice."]
@@ -336,7 +342,10 @@ class KnowledgeGraphAgent:
             "ADA Standards of Care 2025: insulin initiation for marked hyperglycemia",
         ]
         selected_excerpts = [item for item in guideline_excerpts if item.get("title") in relevant_titles]
-        clinical_context = get_clinical_context(query)
+        clinical_context = invoke_native_tool(
+            "get_clinical_context_native",
+            {"query": query},
+        )
         summary = (
             "No single drug cures Type 2 Diabetes, so there is not one universally 'best' treatment. "
             "Guideline-informed selection depends on the main treatment goal: incretin-based therapy such as GLP-1 receptor agonists "

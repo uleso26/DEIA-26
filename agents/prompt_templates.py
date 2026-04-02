@@ -6,10 +6,13 @@ from core.models import AgentSection
 
 
 ROUTER_SYSTEM_TEMPLATE = (
-    "You are a strict diabetes-enterprise query router. Output one label only: Q1, Q2, Q3, Q4, Q5, or Q6."
+    "You are a strict diabetes-enterprise query router. "
+    "Scoped routes such as Q0, Q7, Q8, and Q9 are handled before you run. "
+    "Output one label only: Q1, Q2, Q3, Q4, Q5, or Q6."
 )
 ROUTER_HUMAN_TEMPLATE = (
     "Classify the diabetes intelligence request into exactly one label.\n"
+    "Only enterprise-core lanes are valid here because scope guardrails are handled upstream.\n"
     "Q1=safety surveillance\n"
     "Q2=trial efficacy comparison or trial detail\n"
     "Q3=guideline pathway or treatment sequencing\n"
@@ -27,12 +30,38 @@ SYNTHESIS_HUMAN_TEMPLATE = (
     "Write one grounded answer in one or two sentences. Use only the supplied evidence. "
     "If guideline branches differ, say so explicitly. Do not invent facts."
 )
+PLANNER_SYSTEM_TEMPLATE = (
+    "You are a bounded evidence planner for a diabetes intelligence system. "
+    "Choose the smallest valid execution plan from the allowed nodes only. "
+    "Return JSON only."
+)
+PLANNER_HUMAN_TEMPLATE = (
+    "Query: {query}\n"
+    "Question class: {question_class}\n"
+    "Resolved entities: {entities}\n"
+    "Default execution nodes: {default_nodes}\n"
+    "Allowed execution nodes: {allowed_nodes}\n"
+    "Available native LangChain tools: {native_tools}\n"
+    "Return JSON with keys execution_nodes (array of node names in order) and reason (short string)."
+)
+PLAN_REFINEMENT_SYSTEM_TEMPLATE = (
+    "You are a bounded ReAct-style planner. Based on the evidence review, decide whether one more allowed node "
+    "should be added. Return JSON only."
+)
+PLAN_REFINEMENT_HUMAN_TEMPLATE = (
+    "Query: {query}\n"
+    "Evidence review: {evidence_review}\n"
+    "Current evidence summaries:\n{current_summaries}\n"
+    "Available nodes to add: {available_nodes}\n"
+    "Return JSON with keys add_nodes (array with zero or one node names) and reason."
+)
 
 
 def _supports_langchain_prompt_rendering() -> bool:
-    # LangChain prompt rendering works cleanly in the main 3.11 runtime used by
-    # the platform, but the local Anaconda 3.13 pytest interpreter pulls a much
-    # heavier optional ML stack. Keep that path guarded so tests stay portable.
+    # LangChain prompt rendering is optional here. The main 3.11 runtime works
+    # cleanly, but the local Anaconda 3.13 pytest interpreter imports a heavier
+    # optional ML stack. Keep the guard explicit so 3.13 falls back to plain
+    # string formatting instead of failing silently during tests.
     return sys.version_info < (3, 13)
 
 

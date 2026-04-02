@@ -2,22 +2,27 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from datetime import datetime, timezone
 from typing import Any, Callable
 
-
-def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+from mcp.server.fastmcp import FastMCP
+from core.runtime_utils import utc_now_iso
 
 
 class BaseMCPStyleServer:
-    def __init__(self, server_name: str) -> None:
+    """Thin wrapper around the MCP SDK while preserving local server ergonomics."""
+
+    def __init__(self, server_name: str, instructions: str | None = None) -> None:
         self.server_name = server_name
         self._tools: dict[str, tuple[Callable[..., dict[str, Any]], str]] = {}
+        self.app = FastMCP(
+            name=server_name,
+            instructions=instructions or f"{server_name} tool server",
+            log_level="ERROR",
+        )
 
     def register_tool(self, name: str, description: str, handler: Callable[..., dict[str, Any]]) -> None:
         self._tools[name] = (handler, description)
+        self.app.add_tool(handler, name=name, description=description, structured_output=True)
 
     def list_tools(self) -> list[dict[str, str]]:
         return [
@@ -35,35 +40,22 @@ class BaseMCPStyleServer:
         result["server_name"] = self.server_name
         return result
 
-    def serve(self) -> None:
-        for line in sys.stdin:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                request = json.loads(line)
-                action = request.get("action")
-                if action == "list_tools":
-                    response = {"ok": True, "tools": self.list_tools()}
-                elif action == "call_tool":
-                    response = {"ok": True, "result": self.call_tool(request["tool"], request.get("arguments", {}))}
-                elif action == "shutdown":
-                    response = {"ok": True}
-                    print(json.dumps(response), flush=True)
-                    break
-                else:
-                    response = {"ok": False, "error": f"Unknown action: {action}"}
-            except Exception as exc:  # pragma: no cover - defensive I/O path
-                response = {"ok": False, "error": str(exc)}
-            print(json.dumps(response), flush=True)
+    def serve(self, transport: str = "stdio") -> None:
+        self.app.run(transport=transport)
 
     def run_cli(self) -> None:
-        parser = argparse.ArgumentParser(description=f"{self.server_name} MCP-style server")
+        parser = argparse.ArgumentParser(description=f"{self.server_name} MCP server")
         parser.add_argument("--tool", help="Execute a single tool call and exit.")
         parser.add_argument("--arguments", default="{}", help="JSON arguments for one-shot execution.")
+        parser.add_argument(
+            "--transport",
+            default="stdio",
+            choices=["stdio", "sse", "streamable-http"],
+            help="MCP transport to use when serving.",
+        )
         args = parser.parse_args()
         if args.tool:
             payload = self.call_tool(args.tool, json.loads(args.arguments))
             print(json.dumps(payload, indent=2))
             return
-        self.serve()
+        self.serve(transport=args.transport)

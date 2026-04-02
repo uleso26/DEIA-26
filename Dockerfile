@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python3", "main.py", "query", "For weekly incretin selection, summarize the direct phase 3 HbA1c and weight efficacy gap between tirzepatide and semaglutide in SURPASS-2."]
+EXPOSE 8000
+
+CMD ["python3", "main.py", "serve", "--host", "0.0.0.0", "--port", "8000"]

@@ -192,6 +192,15 @@ function renderResponse(payload) {
   appendMessage("Platform", body, tags, "assistant-card");
 }
 
+function renderStreamingCard(card, text) {
+  const body = card.querySelector(".message-body");
+  if (!body) {
+    return;
+  }
+  body.innerHTML = `<p class="answer-copy">${escapeHtml(text || "Retrieving evidence and assembling answer")}</p>`;
+  feed.scrollTop = feed.scrollHeight;
+}
+
 async function runQuery(query) {
   appendMessage("You", `<p>${escapeHtml(query)}</p>`, ["Query"], "user-card");
   appendMessage("Platform", `<p class="loading-dots">Retrieving evidence and assembling answer</p>`, ["Working"], "assistant-card");
@@ -200,6 +209,47 @@ async function runQuery(query) {
   setLoadingState(true);
 
   try {
+    if (typeof EventSource !== "undefined") {
+      await new Promise((resolve) => {
+        const eventSource = new EventSource(`/query/stream?query=${encodeURIComponent(query)}`);
+        let streamedAnswer = "";
+
+        eventSource.addEventListener("status", () => {
+          renderStreamingCard(loadingCard, streamedAnswer || "Retrieving evidence and assembling answer");
+        });
+
+        eventSource.addEventListener("delta", (event) => {
+          const payload = JSON.parse(event.data);
+          streamedAnswer += payload.text || "";
+          renderStreamingCard(loadingCard, streamedAnswer);
+        });
+
+        eventSource.addEventListener("final", (event) => {
+          const payload = JSON.parse(event.data);
+          loadingCard.remove();
+          renderResponse(payload);
+          eventSource.close();
+          resolve();
+        });
+
+        eventSource.addEventListener("error", (event) => {
+          let message = "The query failed.";
+          if (event?.data) {
+            try {
+              message = JSON.parse(event.data).error || message;
+            } catch (parseError) {
+              message = message;
+            }
+          }
+          loadingCard.remove();
+          appendMessage("Platform", `<p>${escapeHtml(message)}</p>`, ["Error"], "assistant-card error-card");
+          eventSource.close();
+          resolve();
+        });
+      });
+      return;
+    }
+
     const response = await fetch("/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -8,7 +8,13 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from core.paths import GRAPH_FILE, MONGO_DIR, RETRIEVAL_MANIFEST, SQLITE_DB, ensure_runtime_directories, relative_runtime_path
+from core.paths import CHROMA_DIR, GRAPH_FILE, MONGO_DIR, RETRIEVAL_MANIFEST, SQLITE_DB, ensure_runtime_directories, relative_runtime_path
+from core.runtime_utils import env_flag
+
+
+# Keep chunks short enough to stay semantically tight while still carrying a
+# full trial result sentence or guideline recommendation.
+DEFAULT_CHUNK_MAX_CHARS = 550
 
 
 def load_json(path: Path) -> Any:
@@ -25,13 +31,6 @@ def dump_json(path: Path, payload: Any) -> None:
 def connect_sqlite() -> sqlite3.Connection:
     ensure_runtime_directories()
     return sqlite3.connect(SQLITE_DB)
-
-
-def env_flag(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def use_live_mongodb(prefer_service: bool = False) -> bool:
@@ -154,11 +153,13 @@ def backend_status() -> dict[str, Any]:
             "mongo_dir": relative_runtime_path(MONGO_DIR),
             "graph_file": relative_runtime_path(GRAPH_FILE),
             "retrieval_manifest": relative_runtime_path(RETRIEVAL_MANIFEST),
+            "chroma_dir": relative_runtime_path(CHROMA_DIR),
             "graph_available": GRAPH_FILE.exists(),
             "retrieval_available": RETRIEVAL_MANIFEST.exists(),
             "retrieval_backend": retrieval_manifest.get("backend", "lexical"),
             "embedding_provider": retrieval_manifest.get("embedding_provider"),
             "embedding_model": retrieval_manifest.get("embedding_model"),
+            "chroma_collection": retrieval_manifest.get("chroma_collection"),
         },
     }
 
@@ -198,7 +199,7 @@ def build_lexical_index(documents: list[dict[str, Any]], text_key: str = "text")
     stored_documents: list[dict[str, Any]] = []
 
     for index, document in enumerate(documents):
-        doc_id = str(document.get("id") or document.get("pmid") or index)
+        doc_id = str(document.get("doc_id") or document.get("chunk_id") or document.get("id") or document.get("pmid") or index)
         text = document.get(text_key, "")
         terms = Counter(tokenize(text))
         for term in terms:
@@ -220,11 +221,65 @@ def build_lexical_index(documents: list[dict[str, Any]], text_key: str = "text")
     return {"documents": stored_documents, "idf": idf, "doc_vectors": doc_vectors}
 
 
+def chunk_retrieval_documents(
+    documents: list[dict[str, Any]],
+    *,
+    text_key: str = "text",
+    max_chars: int = DEFAULT_CHUNK_MAX_CHARS,
+) -> list[dict[str, Any]]:
+    """Split long retrieval documents into sentence-aware chunks for indexing."""
+    chunked_documents: list[dict[str, Any]] = []
+    for index, document in enumerate(documents):
+        base_id = str(document.get("id") or document.get("pmid") or document.get("doc_id") or index)
+        text = str(document.get(text_key, "")).strip()
+        if not text:
+            continue
+        sentences = [sentence.strip() for sentence in text.replace("\n", " ").split(". ") if sentence.strip()]
+        if not sentences:
+            sentences = [text]
+
+        chunk_buffer: list[str] = []
+        chunk_index = 0
+        for sentence in sentences:
+            candidate = ". ".join([*chunk_buffer, sentence]).strip()
+            if chunk_buffer and len(candidate) > max_chars:
+                chunk_text = ". ".join(chunk_buffer).strip()
+                chunked_documents.append(
+                    {
+                        **document,
+                        "parent_doc_id": base_id,
+                        "chunk_id": f"{base_id}::chunk::{chunk_index}",
+                        "doc_id": f"{base_id}::chunk::{chunk_index}",
+                        "chunk_index": chunk_index,
+                        "chunk_text": chunk_text if chunk_text.endswith(".") else f"{chunk_text}.",
+                    }
+                )
+                chunk_index += 1
+                chunk_buffer = [sentence]
+            else:
+                chunk_buffer.append(sentence)
+
+        if chunk_buffer:
+            chunk_text = ". ".join(chunk_buffer).strip()
+            chunked_documents.append(
+                {
+                    **document,
+                    "parent_doc_id": base_id,
+                    "chunk_id": f"{base_id}::chunk::{chunk_index}",
+                    "doc_id": f"{base_id}::chunk::{chunk_index}",
+                    "chunk_index": chunk_index,
+                    "chunk_text": chunk_text if chunk_text.endswith(".") else f"{chunk_text}.",
+                }
+            )
+    return chunked_documents
+
+
 def build_dense_index(documents: list[dict[str, Any]], text_key: str = "text") -> dict[str, Any] | None:
+    """Build an in-memory dense vector index payload for small local runs."""
     stored_documents: list[dict[str, Any]] = []
     texts: list[str] = []
     for index, document in enumerate(documents):
-        doc_id = str(document.get("id") or document.get("pmid") or index)
+        doc_id = str(document.get("doc_id") or document.get("chunk_id") or document.get("id") or document.get("pmid") or index)
         stored = dict(document)
         stored["doc_id"] = doc_id
         stored_documents.append(stored)
@@ -242,6 +297,72 @@ def build_dense_index(documents: list[dict[str, Any]], text_key: str = "text") -
     return {
         "documents": stored_documents,
         "dense_vectors": dense_vectors,
+        "vector_dim": vector_dim,
+        **metadata,
+    }
+
+
+def build_chroma_index(
+    documents: list[dict[str, Any]],
+    text_key: str = "text",
+    collection_name: str = "t2d_retrieval_chunks",
+) -> dict[str, Any] | None:
+    """Persist chunk embeddings into a local Chroma collection when available."""
+    stored_documents: list[dict[str, Any]] = []
+    texts: list[str] = []
+    for index, document in enumerate(documents):
+        doc_id = str(document.get("doc_id") or document.get("chunk_id") or document.get("id") or document.get("pmid") or index)
+        stored = dict(document)
+        stored["doc_id"] = doc_id
+        stored_documents.append(stored)
+        texts.append(str(document.get(text_key, "")))
+
+    vectors, metadata = _embed_texts(texts)
+    if not vectors or len(vectors) != len(stored_documents):
+        return None
+
+    try:
+        import chromadb
+    except Exception:
+        return None
+
+    ensure_runtime_directories()
+    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    try:
+        client.delete_collection(collection_name)
+    except Exception:
+        pass
+    collection = client.get_or_create_collection(
+        name=collection_name,
+        metadata={
+            "domain": "t2d_retrieval",
+            "hnsw:space": "cosine",
+        },
+    )
+    metadatas = []
+    ids = []
+    documents_payload = []
+    for document in stored_documents:
+        ids.append(document["doc_id"])
+        documents_payload.append(str(document.get(text_key, "")))
+        metadatas.append(
+            {
+                "doc_id": document["doc_id"],
+                "parent_doc_id": str(document.get("parent_doc_id", document["doc_id"])),
+                "title": str(document.get("title", "")),
+                "journal": str(document.get("journal", "")),
+                "publication_date": str(document.get("publication_date", "")),
+                "pmid": str(document.get("pmid", document.get("doc_id", ""))),
+                "source_url": str(document.get("source_url", "")),
+                "evidence_type": str(document.get("evidence_type", "")),
+                "mesh_terms": json.dumps(document.get("mesh_terms", [])),
+                "chunk_text": str(document.get(text_key, "")),
+            }
+        )
+    collection.add(ids=ids, embeddings=vectors, metadatas=metadatas, documents=documents_payload)
+    vector_dim = len(vectors[0]) if vectors else 0
+    return {
+        "collection_name": collection_name,
         "vector_dim": vector_dim,
         **metadata,
     }
@@ -272,6 +393,51 @@ def search_lexical_index(query: str, manifest: dict[str, Any], top_k: int = 3) -
 
 
 def search_dense_index(query: str, manifest: dict[str, Any], top_k: int = 3) -> list[dict[str, Any]]:
+    """Search the dense retrieval backend, preferring Chroma when configured."""
+    collection_name = manifest.get("chroma_collection")
+    if collection_name:
+        try:
+            import chromadb
+
+            client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+            collection = client.get_collection(collection_name)
+            query_vectors, _ = _embed_texts(
+                [query],
+                provider=manifest.get("embedding_provider"),
+                model_name=manifest.get("embedding_model"),
+            )
+            if not query_vectors:
+                return []
+            payload = collection.query(
+                query_embeddings=query_vectors,
+                n_results=top_k,
+                include=["documents", "metadatas", "distances"],
+            )
+            ids = payload.get("ids", [[]])[0]
+            metadatas = payload.get("metadatas", [[]])[0]
+            documents_payload = payload.get("documents", [[]])[0]
+            distances = payload.get("distances", [[]])[0]
+            results: list[dict[str, Any]] = []
+            for doc_id, metadata, chunk_text, distance in zip(ids, metadatas, documents_payload, distances):
+                metadata = metadata or {}
+                item = {
+                    "doc_id": doc_id,
+                    "parent_doc_id": metadata.get("parent_doc_id"),
+                    "pmid": metadata.get("pmid"),
+                    "title": metadata.get("title"),
+                    "journal": metadata.get("journal"),
+                    "publication_date": metadata.get("publication_date"),
+                    "source_url": metadata.get("source_url"),
+                    "evidence_type": metadata.get("evidence_type"),
+                    "mesh_terms": json.loads(metadata.get("mesh_terms", "[]")),
+                    "text": chunk_text,
+                    "score": round(max(0.0, 1.0 - float(distance or 0.0)), 4),
+                }
+                results.append(item)
+            return results
+        except Exception:
+            return []
+
     dense_vectors = manifest.get("dense_vectors", {})
     documents = manifest.get("documents", [])
     if not dense_vectors or not documents:

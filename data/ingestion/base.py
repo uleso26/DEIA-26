@@ -1,24 +1,12 @@
 from __future__ import annotations
 
 import json
-import os
-from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from core.paths import LINEAGE_DIR, RAW_DIR, ROOT, ensure_runtime_directories, relative_runtime_path
-
-
-def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-
-
-def env_flag(name: str, default: bool = False) -> bool:
-    value = os.getenv(name)
-    if value is None:
-        return default
-    return value.strip().lower() in {"1", "true", "yes", "on"}
+from core.paths import LINEAGE_DIR, PROV_LINEAGE_DIR, RAW_DIR, ROOT, ensure_runtime_directories, relative_runtime_path
+from core.runtime_utils import env_flag, utc_now_iso
 
 
 def live_ingestion_enabled(source_name: str) -> bool:
@@ -146,4 +134,68 @@ def append_lineage_manifest(source_name: str, payload: dict[str, object]) -> Pat
     enriched = {"source_name": source_name, "recorded_at": utc_now_iso(), **normalized_payload}
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(enriched, ensure_ascii=True) + "\n")
+    append_prov_manifest(source_name, enriched)
+    return path
+
+
+def _prov_payload(source_name: str, payload: dict[str, object]) -> dict[str, object]:
+    recorded_at = str(payload.get("recorded_at") or utc_now_iso())
+    raw_files = payload.get("raw_files") or {}
+    generated_entities = []
+    if isinstance(raw_files, dict):
+        for dataset_name, raw_file in raw_files.items():
+            generated_entities.append(
+                {
+                    "id": f"entity:{source_name}:{dataset_name}",
+                    "prov:type": "prov:Entity",
+                    "name": dataset_name,
+                    "location": raw_file,
+                }
+            )
+
+    upstream_requests = payload.get("upstream_requests") or []
+    used_entities = []
+    if isinstance(upstream_requests, list):
+        for index, request in enumerate(upstream_requests):
+            if not isinstance(request, dict):
+                continue
+            used_entities.append(
+                {
+                    "id": f"source:{source_name}:{index}",
+                    "prov:type": "prov:Entity",
+                    "url": request.get("url"),
+                    "status_code": request.get("status_code"),
+                    "ok": request.get("ok"),
+                }
+            )
+
+    activity = {
+        "id": f"activity:{source_name}:{recorded_at}",
+        "prov:type": "prov:Activity",
+        "startedAtTime": recorded_at,
+        "endedAtTime": recorded_at,
+        "mode": payload.get("mode"),
+        "record_counts": payload.get("record_counts"),
+    }
+    return {
+        "prefix": {
+            "prov": "http://www.w3.org/ns/prov#",
+        },
+        "activity": activity,
+        "used": used_entities,
+        "generated": generated_entities,
+        "wasAssociatedWith": {
+            "id": f"agent:ingestion:{source_name}",
+            "prov:type": "prov:SoftwareAgent",
+            "label": f"{source_name} ingestion pipeline",
+        },
+    }
+
+
+def append_prov_manifest(source_name: str, payload: dict[str, object]) -> Path:
+    ensure_runtime_directories()
+    path = PROV_LINEAGE_DIR / f"{source_name}.jsonl"
+    prov_record = _prov_payload(source_name, payload)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(prov_record, ensure_ascii=True) + "\n")
     return path

@@ -17,11 +17,14 @@ def _load_opentargets() -> list[dict]:
 
 
 class MoleculeAgent:
+    """Summarize mechanism, target, and pharmacology context for Q4 queries."""
+
     def __init__(self, resolver: CanonicalResolver, mcp_client: MCPClientManager) -> None:
         self.resolver = resolver
         self.mcp_client = mcp_client
 
     def run(self, query: str) -> AgentSection:
+        """Return molecule and target evidence grounded in graph and annotation sources."""
         resolved_drug = self.resolver.resolve_drug(query)
         resolved_target = self.resolver.resolve_target(query)
         drug_name = (resolved_drug or {}).get("canonical_id")
