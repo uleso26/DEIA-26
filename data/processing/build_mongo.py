@@ -4,7 +4,7 @@ import argparse
 import os
 import time
 
-from core.paths import MONGO_DIR, RAW_DIR
+from core.paths import MONGO_DIR, raw_input_path
 from core.storage import dump_json, load_json
 from data.ingestion.seed_data import EXTERNAL_INTELLIGENCE
 
@@ -48,9 +48,9 @@ def _sync_to_mongodb(collections: dict[str, list[dict]]) -> None:
 def run(sync: bool = False) -> dict[str, str]:
     MONGO_DIR.mkdir(parents=True, exist_ok=True)
     collections = {
-        "clinical_trials": load_json(RAW_DIR / "clinical_trials.json"),
-        "external_intelligence": load_json(RAW_DIR / "external_intelligence.json")
-        if (RAW_DIR / "external_intelligence.json").exists()
+        "clinical_trials": load_json(raw_input_path("clinical_trials.json")),
+        "external_intelligence": load_json(raw_input_path("external_intelligence.json"))
+        if raw_input_path("external_intelligence.json").exists()
         else EXTERNAL_INTELLIGENCE,
     }
     for name, payload in collections.items():

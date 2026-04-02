@@ -35,6 +35,31 @@ class AgentSection:
 
 
 @dataclass
+class QueryUnderstanding:
+    query: str
+    question_class: str
+    question_class_name: str
+    scope_family: str
+    route_reason: str
+    interaction_mode: str
+    primary_intent: str
+    scores: dict[str, int] = field(default_factory=dict)
+    entities: dict[str, Any] = field(default_factory=dict)
+    asks_for_comparison: bool = False
+    asks_for_best: bool = False
+    objective_terms: list[str] = field(default_factory=list)
+    needs_clarification: bool = False
+    clarification_reason: str | None = None
+    clarification_prompt: str | None = None
+    confidence: str = "medium"
+    routing_mode: str = "deterministic"
+    ollama_suggested_label: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass
 class FinalResponse:
     question_class: str
     answer: str

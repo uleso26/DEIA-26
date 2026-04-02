@@ -28,5 +28,30 @@
     "trial_name": "DAPA-HF",
     "aliases": ["dapa-hf", "dapa hf"],
     "evidence_tier": "Tier 2"
+  },
+  "NCT01730534": {
+    "trial_name": "DECLARE-TIMI 58",
+    "aliases": ["declare-timi 58", "declare timi 58", "declare"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT01394952": {
+    "trial_name": "REWIND",
+    "aliases": ["rewind trial", "rewind"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT00790205": {
+    "trial_name": "TECOS",
+    "aliases": ["tecos trial", "tecos"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT01243424": {
+    "trial_name": "CAROLINA",
+    "aliases": ["carolina trial", "carolina"],
+    "evidence_tier": "Tier 2"
+  },
+  "NCT00174993": {
+    "trial_name": "PROactive",
+    "aliases": ["proactive trial", "proactive", "pioglitazone proactive"],
+    "evidence_tier": "Tier 2"
   }
 }

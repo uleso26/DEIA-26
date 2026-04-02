@@ -4,6 +4,7 @@ import argparse
 import json
 
 from agents.orchestrator import T2DOrchestrator, bootstrap_runtime
+from api.http_server import serve_http_api
 from core.storage import backend_status
 from evaluation.groundedness_eval import run as groundedness_eval
 from evaluation.latency_eval import run as latency_eval
@@ -43,6 +44,10 @@ def main() -> None:
 
     subparsers.add_parser("backend-status", help="Report whether live MongoDB and Neo4j backends are reachable.")
 
+    serve_parser = subparsers.add_parser("serve", help="Run a lightweight HTTP API for queries and health checks.")
+    serve_parser.add_argument("--host", default="127.0.0.1", help="Host interface to bind.")
+    serve_parser.add_argument("--port", type=int, default=8000, help="Port to bind.")
+
     eval_parser = subparsers.add_parser("eval", help="Run an evaluation suite.")
     eval_parser.add_argument("suite", choices=["routing", "groundedness", "latency", "retrieval"])
 
@@ -67,6 +72,10 @@ def main() -> None:
 
     if args.command == "backend-status":
         print(json.dumps(backend_status(), indent=2))
+        return
+
+    if args.command == "serve":
+        serve_http_api(host=args.host, port=args.port)
         return
 
     if args.command == "eval":

@@ -3,6 +3,7 @@ from __future__ import annotations
 import atexit
 import json
 import subprocess
+import sys
 from typing import Any
 
 from core.paths import ROOT
@@ -16,9 +17,11 @@ SERVER_MODULES = {
 
 
 class StdioMCPConnection:
+    """Tiny stdio RPC wrapper around a local MCP-style subprocess."""
+
     def __init__(self, module_name: str) -> None:
         self.process = subprocess.Popen(
-            ["python3", "-m", module_name],
+            [sys.executable, "-m", module_name],
             cwd=ROOT,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -73,6 +76,8 @@ class StdioMCPConnection:
 
 
 class MCPClientManager:
+    """Lazily manage one stdio connection per MCP-style server."""
+
     def __init__(self) -> None:
         self._connections: dict[str, StdioMCPConnection] = {}
         atexit.register(self.close_all)

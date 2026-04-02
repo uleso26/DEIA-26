@@ -28,6 +28,8 @@ def live_ingestion_enabled(source_name: str) -> bool:
 
 def write_raw_payload(filename: str, payload: object) -> Path:
     ensure_runtime_directories()
+    # Live and seed refreshes land in runtime/raw so normal project use does not
+    # rewrite tracked fixture files under data/raw.
     path = RAW_DIR / filename
     with path.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, ensure_ascii=True)

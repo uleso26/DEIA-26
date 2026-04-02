@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>T2D Intelligence Console</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <aside class="sidebar-panel">
+        <div class="brand-block">
+          <div class="brand-mark">T2D</div>
+          <div>
+            <p class="eyebrow">Enterprise intelligence</p>
+            <h1>T2D Intelligence Console</h1>
+            <p class="brand-copy">
+              A local query interface for trials, safety, pathway logic, mechanism mapping, competitor surveillance, and literature review.
+            </p>
+          </div>
+        </div>
+
+        <section class="panel developer-toggle-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Developer mode</h2>
+              <p class="brand-copy">
+                Show runtime status, route metadata, and raw debug payloads.
+              </p>
+            </div>
+            <label class="toggle-switch" for="developer-mode-toggle">
+              <input id="developer-mode-toggle" type="checkbox" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </section>
+
+        <section id="developer-panel" class="panel" hidden>
+          <div class="panel-head">
+            <h2>Runtime status</h2>
+            <button id="refresh-status" class="ghost-button" type="button">Refresh</button>
+          </div>
+          <p class="brand-copy">
+            This panel is for operator checks only. Fallback status is normal when live MongoDB or Neo4j services are not enabled for the current server process.
+          </p>
+          <div id="status-grid" class="status-grid">
+            <div class="status-card skeleton"></div>
+            <div class="status-card skeleton"></div>
+            <div class="status-card skeleton"></div>
+            <div class="status-card skeleton"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Suggested prompts</h2>
+          </div>
+          <div id="prompt-list" class="prompt-list">
+            <button class="prompt-chip" type="button" data-prompt="For weekly incretin selection, summarize the direct phase 3 HbA1c and weight efficacy gap between tirzepatide and semaglutide in SURPASS-2.">
+              Direct incretin efficacy comparison
+            </button>
+            <button class="prompt-chip" type="button" data-prompt="In SURPASS-3, how did tirzepatide perform on HbA1c and weight versus insulin degludec at week 52?">
+              SURPASS-3 head-to-head performance
+            </button>
+            <button class="prompt-chip" type="button" data-prompt="For a patient with T2D, obesity, and persistent hyperglycaemia on metformin, how does the ADA 2025 guideline sequence the next step, and how does that differ from NICE?">
+              ADA and NICE pathway comparison
+            </button>
+            <button class="prompt-chip" type="button" data-prompt="Map the mechanism landscape for GLP1R-directed therapies: which agents share GLP1R activity, and where does tirzepatide differ because of GIPR co-agonism?">
+              Mechanism landscape
+            </button>
+            <button class="prompt-chip" type="button" data-prompt="What is the latest external intelligence on oral GLP-1 programs, especially orforglipron, and which updates look confirmed versus inferred?">
+              Pipeline and competitor monitoring
+            </button>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="hero-panel">
+          <div>
+            <p class="eyebrow">Natural-language query surface</p>
+            <h2>Ask a T2D intelligence question</h2>
+            <p class="hero-copy">
+              The console routes each prompt through the specialist evidence stack and returns a grounded answer with citations and caveats in a clean analyst-facing format.
+            </p>
+          </div>
+          <div class="hero-badges">
+            <span class="metric-pill">LangGraph workflow</span>
+            <span class="metric-pill">MCP tool servers</span>
+            <span class="metric-pill">Guided evidence traces</span>
+          </div>
+        </section>
+
+        <section class="chat-panel">
+          <div id="message-feed" class="message-feed">
+            <article class="message-card assistant-card welcome-card">
+              <div class="message-meta">
+                <span class="message-role">System</span>
+                <span class="message-tag">Ready</span>
+              </div>
+              <p>
+                Start with a question about trial efficacy, safety surveillance, pathway sequencing, target biology, competitor monitoring, or literature updates.
+              </p>
+            </article>
+          </div>
+
+          <form id="query-form" class="composer">
+            <label class="composer-label" for="query-input">Query</label>
+            <textarea
+              id="query-input"
+              name="query"
+              rows="4"
+              placeholder="Ask a clinical, safety, guideline, mechanism, or competitor intelligence question..."
+            ></textarea>
+            <div class="composer-footer">
+              <p class="composer-note">Press Enter to run. Use Shift+Enter for a new line.</p>
+              <div class="composer-actions">
+                <button id="clear-chat" class="ghost-button" type="button">Clear</button>
+                <button id="submit-query" class="primary-button" type="submit">Run query</button>
+              </div>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <template id="message-template">
+      <article class="message-card">
+        <div class="message-meta">
+          <span class="message-role"></span>
+          <div class="tag-cluster"></div>
+        </div>
+        <div class="message-body"></div>
+      </article>
+    </template>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

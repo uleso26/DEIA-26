@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from core.paths import RAW_DIR
+from core.paths import raw_input_path
 from core.storage import load_graph, load_json, run_neo4j_query_with_backend
 from data.canonical.resolver import get_resolver
 from mcp_servers.base_server import BaseMCPStyleServer
@@ -33,7 +33,9 @@ class KnowledgeServer(BaseMCPStyleServer):
             if comorbidity:
                 score += 3
             guideline_text = f"{record.get('guideline_name', '')} {record.get('guideline_version', '')}".lower()
-            if guideline_hint and guideline_hint.lower() in guideline_text:
+            if guideline_hint:
+                if guideline_hint.lower() not in guideline_text:
+                    continue
                 score += 4
             haystack = " ".join(
                 [
@@ -194,9 +196,9 @@ class KnowledgeServer(BaseMCPStyleServer):
     def get_mechanism_landscape(self, drug: str | None = None, target: str | None = None) -> dict[str, Any]:
         resolved_drug = self.resolver.resolve_drug(drug) if drug else None
         resolved_target = self.resolver.resolve_target(target) if target else None
-        chembl = load_json(RAW_DIR / "chembl.json")
-        opentargets = load_json(RAW_DIR / "opentargets.json")
-        uniprot = load_json(RAW_DIR / "uniprot.json")
+        chembl = load_json(raw_input_path("chembl.json"))
+        opentargets = load_json(raw_input_path("opentargets.json"))
+        uniprot = load_json(raw_input_path("uniprot.json"))
 
         records = []
         datasets = ["chembl", "opentargets", "uniprot"]

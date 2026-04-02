@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from core.paths import RAW_DIR, RETRIEVAL_MANIFEST
+from core.paths import RETRIEVAL_MANIFEST, raw_input_path
 from core.storage import build_dense_index, build_lexical_index, dump_json, load_json
 
 
@@ -24,9 +24,10 @@ def _with_retrieval_text(documents: list[dict]) -> list[dict]:
 
 
 def run() -> str:
-    documents = load_json(RAW_DIR / "pubmed_documents.json")
-    if (RAW_DIR / "guideline_excerpts.json").exists():
-        documents = [*documents, *load_json(RAW_DIR / "guideline_excerpts.json")]
+    documents = load_json(raw_input_path("pubmed_documents.json"))
+    guideline_path = raw_input_path("guideline_excerpts.json")
+    if guideline_path.exists():
+        documents = [*documents, *load_json(guideline_path)]
     retrieval_documents = _with_retrieval_text(documents)
     manifest = build_lexical_index(retrieval_documents, text_key="retrieval_text")
     dense_manifest = build_dense_index(retrieval_documents, text_key="retrieval_text")

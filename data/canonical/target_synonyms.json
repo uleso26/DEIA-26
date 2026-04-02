@@ -10,5 +10,21 @@
   "SLC5A2": {
     "aliases": ["slc5a2", "sglt2", "sodium glucose cotransporter 2"],
     "evidence_tier": "Tier 1"
+  },
+  "DPP4": {
+    "aliases": ["dpp4", "dpp-4", "dipeptidyl peptidase 4", "cd26"],
+    "evidence_tier": "Tier 1"
+  },
+  "PPARG": {
+    "aliases": ["pparg", "ppar-gamma", "ppar gamma", "peroxisome proliferator-activated receptor gamma"],
+    "evidence_tier": "Tier 1"
+  },
+  "INSR": {
+    "aliases": ["insr", "insulin receptor"],
+    "evidence_tier": "Tier 1"
+  },
+  "ABCC8": {
+    "aliases": ["abcc8", "sur1", "sulfonylurea receptor 1"],
+    "evidence_tier": "Tier 1"
   }
 }

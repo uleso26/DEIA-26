@@ -3,7 +3,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
-RAW_DIR = DATA_DIR / "raw"
+FIXTURE_RAW_DIR = DATA_DIR / "raw"
+RUNTIME_DIR = ROOT / "runtime"
+RAW_DIR = RUNTIME_DIR / "raw"
 PROCESSED_DIR = DATA_DIR / "processed"
 MONGO_DIR = PROCESSED_DIR / "mongo"
 CANONICAL_DIR = DATA_DIR / "canonical"
@@ -19,6 +21,14 @@ FAISS_MANIFEST = RETRIEVAL_MANIFEST
 def ensure_runtime_directories() -> None:
     for path in (RAW_DIR, PROCESSED_DIR, MONGO_DIR, LOG_DIR, LINEAGE_DIR):
         path.mkdir(parents=True, exist_ok=True)
+
+
+def raw_input_path(filename: str) -> Path:
+    """Read from runtime/raw when present, otherwise fall back to tracked fixtures."""
+    runtime_path = RAW_DIR / filename
+    if runtime_path.exists():
+        return runtime_path
+    return FIXTURE_RAW_DIR / filename
 
 
 def relative_runtime_path(path: Path) -> str:

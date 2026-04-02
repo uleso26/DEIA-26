@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import re
 
-from tools.native_tools import ENTERPRISE_ROUTE_LABELS, classify_query
+from agents.prompt_templates import (
+    ROUTER_HUMAN_TEMPLATE,
+    ROUTER_SYSTEM_TEMPLATE,
+    render_ollama_messages,
+)
+from tools.native_tools import ENTERPRISE_ROUTE_LABELS, build_query_understanding
 from tools.ollama_client import OllamaClient
 
 
@@ -13,26 +18,21 @@ class RouterAgent:
     def __init__(self) -> None:
         self.ollama = OllamaClient()
 
-    def route(self, query: str) -> dict:
-        fallback = classify_query(query)
+    def understand(self, query: str) -> dict:
+        fallback = build_query_understanding(query).to_dict()
         if fallback["question_class"] not in VALID_ROUTE_LABELS:
             return {**fallback, "routing_mode": "deterministic_scoped"}
         if not self.ollama.enabled("router"):
             return {**fallback, "routing_mode": "deterministic"}
 
+        system, prompt = render_ollama_messages(
+            ROUTER_SYSTEM_TEMPLATE,
+            ROUTER_HUMAN_TEMPLATE,
+            query=query,
+        )
         response = self.ollama.generate(
-            prompt=(
-                "Classify the diabetes intelligence request into exactly one label.\n"
-                "Q1=safety surveillance\n"
-                "Q2=trial efficacy comparison or trial detail\n"
-                "Q3=guideline pathway or treatment sequencing\n"
-                "Q4=target or mechanism landscape\n"
-                "Q5=pipeline or competitor monitoring\n"
-                "Q6=literature or population evidence update\n"
-                f"Query: {query}\n"
-                "Return only the label."
-            ),
-            system="You are a strict query router. Output one label only: Q1, Q2, Q3, Q4, Q5, or Q6.",
+            prompt=prompt,
+            system=system,
             model_env="OLLAMA_ROUTER_MODEL",
             default_model="llama3.1:8b",
             timeout_seconds=20,
@@ -42,7 +42,7 @@ class RouterAgent:
         # Keep the heuristic route as the guardrail. Small local models are useful here,
         # but they still drift on terse trial acronyms.
         if label in VALID_ROUTE_LABELS and label == fallback["question_class"]:
-            return {"question_class": label, "scores": fallback["scores"], "routing_mode": "ollama"}
+            return {**fallback, "question_class": label, "routing_mode": "ollama"}
         if label in VALID_ROUTE_LABELS:
             return {
                 **fallback,
@@ -50,3 +50,15 @@ class RouterAgent:
                 "ollama_suggested_label": label,
             }
         return {**fallback, "routing_mode": "deterministic_fallback"}
+
+    def route(self, query: str) -> dict:
+        understanding = self.understand(query)
+        return {
+            "question_class": understanding["question_class"],
+            "question_class_name": understanding["question_class_name"],
+            "scope_family": understanding["scope_family"],
+            "route_reason": understanding["route_reason"],
+            "scores": understanding["scores"],
+            "routing_mode": understanding.get("routing_mode", "deterministic"),
+            "ollama_suggested_label": understanding.get("ollama_suggested_label"),
+        }

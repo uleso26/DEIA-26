@@ -10,10 +10,11 @@ This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intell
 - SQLite-backed structured storage for labels, safety signals, and canonical tables
 - File-backed fallbacks for MongoDB-style collections, Neo4j-style graph data, and retrieval manifests
 - Three stdio MCP-style tool servers: safety, trials, and knowledge
-- Guarded multi-agent orchestration with automatic local Ollama-assisted routing and synthesis when Ollama is reachable, deterministic fallback, governance, and JSON trace logging
+- LangGraph-based multi-agent orchestration with centralized prompt templates, automatic local Ollama-assisted routing and synthesis when Ollama is reachable, deterministic fallback, governance, and JSON trace logging
 - Evaluation scripts for retrieval, routing, groundedness, and latency
 - Native context tools for WHO population context plus DrugBank and synthetic clinical context
 - Ingestion lineage manifests written under `logs/ingestion_lineage/`
+- A lightweight HTTP API for `/health`, `/backend-status`, and `/query`
 
 ## Question Scope
 
@@ -42,6 +43,8 @@ The platform now uses a broader routed scope instead of forcing every query into
 python3 main.py bootstrap
 ```
 
+Bootstrap writes refreshed runtime raw payloads under `runtime/raw/` so normal project use does not rewrite the tracked fixture files under `data/raw/`.
+
 To enable live-backed ingestion across the public source set:
 
 ```bash
@@ -64,6 +67,22 @@ python3 main.py bootstrap
 ```bash
 python3 main.py query "For weekly incretin selection, summarize the direct phase 3 HbA1c and weight efficacy gap between tirzepatide and semaglutide in SURPASS-2."
 ```
+
+The query path no longer auto-refreshes live sources just because live flags are set. If you want a fresh live-backed build, run `bootstrap` explicitly first.
+
+## HTTP API
+
+For a simple local deployment surface without extra framework dependencies:
+
+```bash
+python3 main.py serve --host 127.0.0.1 --port 8000
+```
+
+Available endpoints:
+- `GET /` serves the local intelligence console UI
+- `GET /health`
+- `GET /backend-status`
+- `POST /query` with JSON body `{"query": "What does SURPASS-3 show?"}`
 
 5. Run evaluations:
 
@@ -139,3 +158,4 @@ A reusable query pack is available in `evaluation/diabetes_team_queries.json`.
 - The retrieval layer now prefers dense vector retrieval when an embedding backend is available, and falls back to lexical retrieval plus domain-aware reranking when it is not. In the current local setup, that dense backend is driven through Ollama embeddings.
 - A notebook demo for the WHO and clinical context tools is available at `notebooks/source_context_demo.ipynb`.
 - Operational and privacy notes are summarized in `SECURITY.md`.
+- The serving flow is now expressed as a LangGraph state graph, while keeping the domain agents, MCP tool contracts, and governance rules explicit in plain Python. Prompt rendering stays lightweight and only uses optional LangChain-core formatting where the local interpreter supports it cleanly.

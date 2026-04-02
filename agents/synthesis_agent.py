@@ -3,9 +3,18 @@ from __future__ import annotations
 from typing import Any
 
 from agents.base_agent import dedupe_citations, unique_strings
+from agents.prompt_templates import (
+    SYNTHESIS_HUMAN_TEMPLATE,
+    SYNTHESIS_SYSTEM_TEMPLATE,
+    render_ollama_messages,
+    section_block_for_prompt,
+)
 from core.models import AgentSection, FinalResponse
 from governance.governance_checker import GovernanceChecker
 from tools.ollama_client import OllamaClient
+
+
+LLM_SYNTHESIS_CLASSES = {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6"}
 
 
 class SynthesisAgent:
@@ -31,7 +40,14 @@ class SynthesisAgent:
                     merged_sentences.append(sentence.rstrip("."))
         return ". ".join(merged_sentences).strip() + "."
 
-    def run(self, question_class: str, query: str, sections: list[AgentSection], trace_id: str) -> FinalResponse:
+    def run(
+        self,
+        question_class: str,
+        query: str,
+        sections: list[AgentSection],
+        trace_id: str,
+        workflow_metadata: dict[str, Any] | None = None,
+    ) -> FinalResponse:
         fallback_answer = self._deterministic_synthesis(sections)
         citations = dedupe_citations([citation for section in sections for citation in section.citations])
         caveats = unique_strings([caveat for section in sections for caveat in section.caveats])
@@ -39,24 +55,29 @@ class SynthesisAgent:
         metadata: dict[str, Any] = {"synthesis_mode": "deterministic"}
         for section in sections:
             metadata.update(section.metadata)
+        if workflow_metadata:
+            metadata.update(workflow_metadata)
+            caveats = unique_strings([*caveats, *(workflow_metadata.get("caveat_hint") or [])])
         answer = fallback_answer
-        if self.ollama.enabled("synthesis"):
-            section_block = "\n\n".join(
-                [
-                    f"Agent: {section.agent}\nSummary: {section.summary}\nCaveats: {'; '.join(section.caveats)}"
-                    for section in sections
-                    if section.summary
-                ]
+        should_try_ollama = (
+            question_class in LLM_SYNTHESIS_CLASSES
+            and self.ollama.enabled("synthesis")
+            and any(section.summary for section in sections)
+            and not any(section.metadata.get("force_deterministic_synthesis") for section in sections)
+            and not metadata.get("force_deterministic_synthesis")
+        )
+        if should_try_ollama:
+            section_block = section_block_for_prompt(sections)
+            system, prompt = render_ollama_messages(
+                SYNTHESIS_SYSTEM_TEMPLATE,
+                SYNTHESIS_HUMAN_TEMPLATE,
+                question_class=question_class,
+                query=query,
+                section_block=section_block,
             )
             llm_answer = self.ollama.generate(
-                prompt=(
-                    f"Question class: {question_class}\n"
-                    f"User query: {query}\n"
-                    f"Evidence summaries:\n{section_block}\n\n"
-                    "Write one grounded answer in one or two sentences. Use only the supplied evidence. "
-                    "If guideline branches differ, say so explicitly. Do not invent facts."
-                ),
-                system="You synthesize grounded diabetes evidence into concise clinical intelligence answers.",
+                prompt=prompt,
+                system=system,
                 model_env="OLLAMA_SYNTHESIS_MODEL",
                 default_model="llama3.1:8b",
                 timeout_seconds=45,

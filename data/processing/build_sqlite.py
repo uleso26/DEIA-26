@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from core.paths import CANONICAL_DIR, RAW_DIR
+from core.paths import CANONICAL_DIR, raw_input_path
 from core.storage import connect_sqlite, load_json
 
 
@@ -94,7 +94,7 @@ DDL = [
 
 
 def _insert_drug_labels(cursor) -> None:
-    labels = load_json(RAW_DIR / "drug_labels.json")
+    labels = load_json(raw_input_path("drug_labels.json"))
     cursor.execute("DELETE FROM drug_labels")
     cursor.executemany(
         """
@@ -117,7 +117,7 @@ def _insert_drug_labels(cursor) -> None:
 
 
 def _insert_adverse_events(cursor) -> None:
-    events = load_json(RAW_DIR / "openfda_adverse_events.json")
+    events = load_json(raw_input_path("openfda_adverse_events.json"))
     cursor.execute("DELETE FROM adverse_events")
     cursor.executemany(
         """
@@ -186,8 +186,9 @@ def _insert_canonical_tables(cursor) -> None:
 
 def _insert_auxiliary_reference_tables(cursor) -> None:
     cursor.execute("DELETE FROM who_gho_diabetes_stats")
-    if (RAW_DIR / "who_gho.json").exists():
-        who_data = load_json(RAW_DIR / "who_gho.json")
+    who_path = raw_input_path("who_gho.json")
+    if who_path.exists():
+        who_data = load_json(who_path)
         cursor.executemany(
             """
             INSERT INTO who_gho_diabetes_stats (country, indicator, year, value, unit, source_url)
@@ -207,8 +208,9 @@ def _insert_auxiliary_reference_tables(cursor) -> None:
         )
 
     cursor.execute("DELETE FROM drugbank_classifications")
-    if (RAW_DIR / "drugbank_open.json").exists():
-        drugbank_data = load_json(RAW_DIR / "drugbank_open.json")
+    drugbank_path = raw_input_path("drugbank_open.json")
+    if drugbank_path.exists():
+        drugbank_data = load_json(drugbank_path)
         cursor.executemany(
             """
             INSERT INTO drugbank_classifications (
@@ -229,8 +231,9 @@ def _insert_auxiliary_reference_tables(cursor) -> None:
         )
 
     cursor.execute("DELETE FROM synthetic_patient_profiles")
-    if (RAW_DIR / "synthetic_patient_profiles.json").exists():
-        synthetic_profiles = load_json(RAW_DIR / "synthetic_patient_profiles.json")
+    synthetic_path = raw_input_path("synthetic_patient_profiles.json")
+    if synthetic_path.exists():
+        synthetic_profiles = load_json(synthetic_path)
         cursor.executemany(
             """
             INSERT INTO synthetic_patient_profiles (

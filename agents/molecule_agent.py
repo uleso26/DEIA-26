@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from core.models import AgentSection
-from core.paths import RAW_DIR
+from core.paths import raw_input_path
 from core.storage import load_json
 from data.canonical.resolver import CanonicalResolver
 from tools.mcp_client import MCPClientManager
@@ -13,7 +13,7 @@ from agents.base_agent import citation, unique_strings
 
 @lru_cache(maxsize=1)
 def _load_opentargets() -> list[dict]:
-    return load_json(RAW_DIR / "opentargets.json")
+    return load_json(raw_input_path("opentargets.json"))
 
 
 class MoleculeAgent:
@@ -36,7 +36,11 @@ class MoleculeAgent:
         uniprot_records = query_uniprot(target_name) if target_name else []
         targets = sorted({item.get("canonical_target") for item in landscape_payload["records"] if item.get("canonical_target")})
         opentargets = _load_opentargets()
-        mechanism = chembl_records[0]["mechanism"] if chembl_records else "No mechanism metadata found"
+        mechanism = (
+            chembl_records[0]["mechanism"]
+            if chembl_records
+            else (resolved_drug or {}).get("drug_class") or "No mechanism metadata found"
+        )
         linked_drugs = sorted({item.get("canonical_drug") for item in landscape_payload["records"] if item.get("canonical_drug")})
         shared_drugs = []
         if drug_name and targets:
@@ -49,7 +53,7 @@ class MoleculeAgent:
             )
 
         if drug_name:
-            summary = f"{drug_name.capitalize()} is described as {mechanism}."
+            summary = f"{drug_name.title()} is described as {mechanism}."
             if targets:
                 summary += f" Shared or linked targets include {', '.join(targets)}."
             if shared_drugs:

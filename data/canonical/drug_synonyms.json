@@ -1,42 +1,146 @@
 {
+  "metformin": {
+    "aliases": ["metformin", "glucophage", "glumetza", "fortamet", "riomet"],
+    "drug_class": "Biguanide",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
   "semaglutide": {
     "aliases": ["semaglutide", "ozempic", "wegovy", "rybelsus", "nn9535"],
     "drug_class": "GLP-1 receptor agonist",
+    "route": "injectable_oral",
     "evidence_tier": "Tier 1"
   },
   "tirzepatide": {
     "aliases": ["tirzepatide", "mounjaro", "zepbound", "ly3298176"],
     "drug_class": "GLP-1/GIP dual agonist",
+    "route": "injectable",
     "evidence_tier": "Tier 1"
   },
   "empagliflozin": {
     "aliases": ["empagliflozin", "jardiance", "bi10773"],
     "drug_class": "SGLT2 inhibitor",
+    "route": "oral",
     "evidence_tier": "Tier 1"
   },
   "dapagliflozin": {
-    "aliases": ["dapagliflozin", "farxiga", "bms-512148"],
+    "aliases": ["dapagliflozin", "farxiga", "forxiga", "bms-512148"],
     "drug_class": "SGLT2 inhibitor",
+    "route": "oral",
     "evidence_tier": "Tier 1"
   },
   "canagliflozin": {
     "aliases": ["canagliflozin", "invokana", "jnj-28431754"],
     "drug_class": "SGLT2 inhibitor",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "ertugliflozin": {
+    "aliases": ["ertugliflozin", "steglatro", "pf-04971729"],
+    "drug_class": "SGLT2 inhibitor",
+    "route": "oral",
     "evidence_tier": "Tier 1"
   },
   "liraglutide": {
     "aliases": ["liraglutide", "victoza", "saxenda", "nn2211"],
     "drug_class": "GLP-1 receptor agonist",
+    "route": "injectable",
     "evidence_tier": "Tier 1"
   },
   "dulaglutide": {
     "aliases": ["dulaglutide", "trulicity", "ly2189265"],
     "drug_class": "GLP-1 receptor agonist",
+    "route": "injectable",
+    "evidence_tier": "Tier 1"
+  },
+  "exenatide": {
+    "aliases": ["exenatide", "byetta", "bydureon", "ac2993"],
+    "drug_class": "GLP-1 receptor agonist",
+    "route": "injectable",
+    "evidence_tier": "Tier 1"
+  },
+  "lixisenatide": {
+    "aliases": ["lixisenatide", "adlyxin", "lyxumia"],
+    "drug_class": "GLP-1 receptor agonist",
+    "route": "injectable",
+    "evidence_tier": "Tier 1"
+  },
+  "sitagliptin": {
+    "aliases": ["sitagliptin", "januvia", "mk0431", "mk-0431"],
+    "drug_class": "DPP-4 inhibitor",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "linagliptin": {
+    "aliases": ["linagliptin", "tradjenta", "bi1356", "bi-1356"],
+    "drug_class": "DPP-4 inhibitor",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "saxagliptin": {
+    "aliases": ["saxagliptin", "onglyza", "bgs477118"],
+    "drug_class": "DPP-4 inhibitor",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "alogliptin": {
+    "aliases": ["alogliptin", "nesina", "vipidia", "syr322"],
+    "drug_class": "DPP-4 inhibitor",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "pioglitazone": {
+    "aliases": ["pioglitazone", "actos"],
+    "drug_class": "Thiazolidinedione",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "gliclazide": {
+    "aliases": ["gliclazide", "diamicron"],
+    "drug_class": "Sulfonylurea",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "glimepiride": {
+    "aliases": ["glimepiride", "amaryl"],
+    "drug_class": "Sulfonylurea",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "glipizide": {
+    "aliases": ["glipizide", "glucotrol"],
+    "drug_class": "Sulfonylurea",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "insulin glargine": {
+    "aliases": ["insulin glargine", "glargine", "lantus", "toujeo", "basaglar"],
+    "drug_class": "Basal insulin",
+    "route": "injectable",
+    "evidence_tier": "Tier 1"
+  },
+  "insulin degludec": {
+    "aliases": ["insulin degludec", "degludec", "tresiba"],
+    "drug_class": "Basal insulin",
+    "route": "injectable",
+    "evidence_tier": "Tier 1"
+  },
+  "repaglinide": {
+    "aliases": ["repaglinide", "prandin", "novo norm", "novonorm"],
+    "drug_class": "Meglitinide",
+    "route": "oral",
+    "evidence_tier": "Tier 1"
+  },
+  "acarbose": {
+    "aliases": ["acarbose", "precose", "glucobay"],
+    "drug_class": "Alpha-glucosidase inhibitor",
+    "route": "oral",
     "evidence_tier": "Tier 1"
   },
   "orforglipron": {
     "aliases": ["orforglipron", "ly3502970"],
     "drug_class": "Oral GLP-1 receptor agonist",
+    "route": "oral",
     "evidence_tier": "Tier 2"
   }
 }

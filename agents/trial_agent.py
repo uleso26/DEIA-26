@@ -92,15 +92,17 @@ class TrialAgent:
                         record["completion_date"],
                     )
                 )
-                citations.append(
-                    citation(
-                        "PubMed",
-                        f"{record['trial_name']} publication",
-                        record["publication_reference"],
-                        f"https://pubmed.ncbi.nlm.nih.gov/{record['publication_reference'].replace('PMID', '')}/",
-                        "Tier 2",
+                publication_reference = record.get("publication_reference")
+                if publication_reference:
+                    citations.append(
+                        citation(
+                            "PubMed",
+                            f"{record['trial_name']} publication",
+                            publication_reference,
+                            f"https://pubmed.ncbi.nlm.nih.gov/{publication_reference.replace('PMID', '')}/",
+                            "Tier 2",
+                        )
                     )
-                )
 
         return AgentSection(
             agent="Clinical Trial Agent",

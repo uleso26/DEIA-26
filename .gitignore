@@ -8,4 +8,6 @@ __pycache__/
 brief/
 logs/
 data/processed/
+runtime/
 .Rhistory
+report/~$*.docx

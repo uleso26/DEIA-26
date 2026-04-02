@@ -5,7 +5,7 @@ import os
 import time
 from typing import Any
 
-from core.paths import GRAPH_FILE, RAW_DIR
+from core.paths import GRAPH_FILE, raw_input_path
 from core.storage import dump_json, load_json
 from data.ingestion.seed_data import GUIDELINE_GRAPH
 
@@ -103,8 +103,9 @@ def run(sync: bool = False) -> str:
         "nodes": [dict(node) for node in GUIDELINE_GRAPH["nodes"]],
         "edges": [dict(edge) for edge in GUIDELINE_GRAPH["edges"]],
     }
-    if (RAW_DIR / "opentargets.json").exists():
-        opentargets = load_json(RAW_DIR / "opentargets.json")
+    opentargets_path = raw_input_path("opentargets.json")
+    if opentargets_path.exists():
+        opentargets = load_json(opentargets_path)
         node_ids = {node["id"] for node in graph["nodes"]}
         edge_keys = {(edge["source"], edge["target"], edge["type"]) for edge in graph["edges"]}
         for item in opentargets:

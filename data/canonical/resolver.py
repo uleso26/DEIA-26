@@ -53,7 +53,14 @@ class CanonicalResolver:
 
     def resolve_drug(self, text: str) -> dict[str, Any] | None:
         match = self._resolve_from_mapping(text, self.drug_synonyms)
-        return match.to_dict() if match else None
+        if not match:
+            return None
+        payload = dict(self.drug_synonyms.get(match.canonical_id, {}))
+        return {
+            **match.to_dict(),
+            "drug_class": payload.get("drug_class", "unknown"),
+            "route": payload.get("route"),
+        }
 
     def resolve_target(self, text: str) -> dict[str, Any] | None:
         match = self._resolve_from_mapping(text, self.target_synonyms)

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from api.http_server import dispatch_request, resolve_static_asset
 from agents.orchestrator import T2DOrchestrator, bootstrap_runtime
 from agents.router_agent import RouterAgent
+from agents.synthesis_agent import SynthesisAgent
 from core.paths import LINEAGE_DIR, RETRIEVAL_MANIFEST
 from core.storage import backend_status, connect_sqlite
 from data.canonical.resolver import get_resolver
@@ -183,6 +186,13 @@ class PlatformTestCase(unittest.TestCase):
         self.assertEqual(response["question_class"], "Q7")
         self.assertIn("can contribute to death", response["answer"].lower())
 
+    def test_broad_best_drug_query_routes_to_treatment_selection(self) -> None:
+        response = self.orchestrator.run_query("which drug is the best effective one for curing the T2D")
+        self.assertEqual(response["question_class"], "Q3")
+        self.assertIn("no single drug that cures type 2 diabetes", response["answer"].lower())
+        self.assertIn("what outcome matters most", response["answer"].lower())
+        self.assertTrue(response["metadata"].get("needs_clarification"))
+
     def test_pricing_query_routes_to_q8(self) -> None:
         response = self.orchestrator.run_query("What is the latest list price difference between semaglutide and tirzepatide?")
         self.assertEqual(response["question_class"], "Q8")
@@ -198,11 +208,109 @@ class PlatformTestCase(unittest.TestCase):
         self.assertEqual(response["question_class"], "Q0")
         self.assertIn("outside the current t2d enterprise intelligence scope", response["answer"].lower())
 
+    def test_scope_routes_skip_ollama_synthesis(self) -> None:
+        agent = SynthesisAgent()
+        with patch.object(agent.ollama, "enabled", return_value=True), patch.object(agent.ollama, "generate") as mocked_generate:
+            response = agent.run(
+                "Q0",
+                "hi",
+                [],
+                "trace-test",
+            )
+        self.assertEqual(response.metadata["synthesis_mode"], "deterministic")
+        mocked_generate.assert_not_called()
+
+    def test_http_api_query_endpoint_returns_json(self) -> None:
+        class StubRuntime:
+            def run_query(self, query: str) -> dict:
+                return {
+                    "question_class": "Q2",
+                    "answer": f"stub:{query}",
+                    "citations": [],
+                    "caveats": [],
+                    "evidence_tiers": [],
+                    "trace_id": "trace-test",
+                    "sections": [],
+                    "metadata": {},
+                }
+
+            def close(self) -> None:
+                return
+
+        status_code, payload = dispatch_request(
+            "POST",
+            "/query",
+            {"query": "What does SURPASS-3 show?"},
+            StubRuntime(),
+        )
+        self.assertEqual(status_code, 200)
+        self.assertEqual(payload["question_class"], "Q2")
+        self.assertEqual(payload["answer"], "stub:What does SURPASS-3 show?")
+
+    def test_http_api_health_endpoint_returns_ok(self) -> None:
+        class StubRuntime:
+            def run_query(self, query: str) -> dict:
+                return {}
+
+            def close(self) -> None:
+                return
+
+        status_code, payload = dispatch_request("GET", "/health", None, StubRuntime())
+        self.assertEqual(status_code, 200)
+        self.assertEqual(payload, {"ok": True})
+
+    def test_http_api_ignores_query_string_on_known_path(self) -> None:
+        class StubRuntime:
+            def run_query(self, query: str) -> dict:
+                return {"answer": query}
+
+            def close(self) -> None:
+                return
+
+        status_code, payload = dispatch_request("GET", "/health?full=true", None, StubRuntime())
+        self.assertEqual(status_code, 200)
+        self.assertEqual(payload, {"ok": True})
+
+    def test_static_homepage_asset_resolves(self) -> None:
+        resolved = resolve_static_asset("/")
+        self.assertIsNotNone(resolved)
+        asset_path, content_type = resolved
+        self.assertEqual(asset_path.name, "index.html")
+        self.assertEqual(content_type, "text/html")
+
+    def test_langgraph_workflow_exposes_expected_nodes(self) -> None:
+        mermaid = self.orchestrator.workflow.mermaid_diagram()
+        self.assertIn("understand", mermaid)
+        self.assertIn("policy_gate", mermaid)
+        self.assertIn("evidence_review", mermaid)
+        self.assertIn("synthesize", mermaid)
+        self.assertIn("knowledge", mermaid)
+        self.assertIn("molecule", mermaid)
+
+    def test_expanded_catalog_supports_cost_sensitive_pathway_query(self) -> None:
+        response = self.orchestrator.run_query("For a cost-sensitive patient after metformin, what does NICE suggest next?")
+        self.assertEqual(response["question_class"], "Q3")
+        self.assertTrue(
+            "sulfonylurea" in response["answer"].lower()
+            or "pioglitazone" in response["answer"].lower()
+        )
+
+    def test_guideline_difference_query_stays_in_pathway_scope(self) -> None:
+        response = self.orchestrator.run_query(
+            "For a patient with obesity after metformin, how does ADA differ from NICE on the next step?"
+        )
+        self.assertEqual(response["question_class"], "Q3")
+        self.assertTrue(
+            "guideline comparison" in response["answer"].lower()
+            or "cross-guideline comparison was requested" in response["answer"].lower()
+        )
+        self.assertIn(response["metadata"]["evidence_review"]["status"], {"limited", "sufficient"})
+
     def test_repo_does_not_ship_real_secrets_or_absolute_local_paths(self) -> None:
         sensitive_files = [
             Path("README.md"),
             Path(".env.example"),
-            Path("brief/langchain copy.ipynb"),
+            Path("SECURITY.md"),
         ]
         secret_pattern = re.compile(r"sk-[A-Za-z0-9]{20,}")
         for path in sensitive_files:
