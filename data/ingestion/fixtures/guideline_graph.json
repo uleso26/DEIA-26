@@ -1,0 +1,537 @@
+{
+  "nodes": [
+    {
+      "id": "drug:metformin",
+      "type": "Drug",
+      "name": "metformin"
+    },
+    {
+      "id": "drug:empagliflozin",
+      "type": "Drug",
+      "name": "empagliflozin"
+    },
+    {
+      "id": "drug:dapagliflozin",
+      "type": "Drug",
+      "name": "dapagliflozin"
+    },
+    {
+      "id": "drug:canagliflozin",
+      "type": "Drug",
+      "name": "canagliflozin"
+    },
+    {
+      "id": "drug:ertugliflozin",
+      "type": "Drug",
+      "name": "ertugliflozin"
+    },
+    {
+      "id": "drug:tirzepatide",
+      "type": "Drug",
+      "name": "tirzepatide"
+    },
+    {
+      "id": "drug:semaglutide",
+      "type": "Drug",
+      "name": "semaglutide"
+    },
+    {
+      "id": "drug:liraglutide",
+      "type": "Drug",
+      "name": "liraglutide"
+    },
+    {
+      "id": "drug:dulaglutide",
+      "type": "Drug",
+      "name": "dulaglutide"
+    },
+    {
+      "id": "drug:exenatide",
+      "type": "Drug",
+      "name": "exenatide"
+    },
+    {
+      "id": "drug:lixisenatide",
+      "type": "Drug",
+      "name": "lixisenatide"
+    },
+    {
+      "id": "drug:sitagliptin",
+      "type": "Drug",
+      "name": "sitagliptin"
+    },
+    {
+      "id": "drug:linagliptin",
+      "type": "Drug",
+      "name": "linagliptin"
+    },
+    {
+      "id": "drug:saxagliptin",
+      "type": "Drug",
+      "name": "saxagliptin"
+    },
+    {
+      "id": "drug:alogliptin",
+      "type": "Drug",
+      "name": "alogliptin"
+    },
+    {
+      "id": "drug:pioglitazone",
+      "type": "Drug",
+      "name": "pioglitazone"
+    },
+    {
+      "id": "drug:gliclazide",
+      "type": "Drug",
+      "name": "gliclazide"
+    },
+    {
+      "id": "drug:glimepiride",
+      "type": "Drug",
+      "name": "glimepiride"
+    },
+    {
+      "id": "drug:glipizide",
+      "type": "Drug",
+      "name": "glipizide"
+    },
+    {
+      "id": "drug:insulin glargine",
+      "type": "Drug",
+      "name": "insulin glargine"
+    },
+    {
+      "id": "drug:insulin degludec",
+      "type": "Drug",
+      "name": "insulin degludec"
+    },
+    {
+      "id": "drug:repaglinide",
+      "type": "Drug",
+      "name": "repaglinide"
+    },
+    {
+      "id": "drug:orforglipron",
+      "type": "Drug",
+      "name": "orforglipron"
+    },
+    {
+      "id": "class:sglt2_inhibitor",
+      "type": "DrugClass",
+      "name": "SGLT2 inhibitor"
+    },
+    {
+      "id": "class:glp1_agonist",
+      "type": "DrugClass",
+      "name": "GLP-1 receptor agonist"
+    },
+    {
+      "id": "class:dual_incretin",
+      "type": "DrugClass",
+      "name": "Dual GIP/GLP-1 incretin therapy"
+    },
+    {
+      "id": "class:dpp4_inhibitor",
+      "type": "DrugClass",
+      "name": "DPP-4 inhibitor"
+    },
+    {
+      "id": "class:thiazolidinedione",
+      "type": "DrugClass",
+      "name": "Thiazolidinedione"
+    },
+    {
+      "id": "class:sulfonylurea",
+      "type": "DrugClass",
+      "name": "Sulfonylurea"
+    },
+    {
+      "id": "class:basal_insulin",
+      "type": "DrugClass",
+      "name": "Basal insulin"
+    },
+    {
+      "id": "target:GLP1R",
+      "type": "Target",
+      "name": "GLP1R"
+    },
+    {
+      "id": "target:GIPR",
+      "type": "Target",
+      "name": "GIPR"
+    },
+    {
+      "id": "target:SLC5A2",
+      "type": "Target",
+      "name": "SLC5A2"
+    },
+    {
+      "id": "target:DPP4",
+      "type": "Target",
+      "name": "DPP4"
+    },
+    {
+      "id": "target:PPARG",
+      "type": "Target",
+      "name": "PPARG"
+    },
+    {
+      "id": "target:INSR",
+      "type": "Target",
+      "name": "INSR"
+    },
+    {
+      "id": "target:ABCC8",
+      "type": "Target",
+      "name": "ABCC8"
+    },
+    {
+      "id": "disease:t2d",
+      "type": "Disease",
+      "name": "Type 2 Diabetes"
+    },
+    {
+      "id": "comorbidity:ckd_stage_3",
+      "type": "Comorbidity",
+      "name": "CKD stage 3"
+    },
+    {
+      "id": "guideline:nice_ng28_2026",
+      "type": "Guideline",
+      "name": "NICE NG28",
+      "version": "2026 update",
+      "url": "https://www.nice.org.uk/guidance/ng28"
+    },
+    {
+      "id": "guideline:ada_2025",
+      "type": "Guideline",
+      "name": "ADA Standards of Care",
+      "version": "2025",
+      "url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "drug:metformin",
+      "target": "class:sglt2_inhibitor",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "CKD stage 3"
+      ],
+      "guideline_id": "guideline:nice_ng28_2026",
+      "rationale": "Prioritize renal and cardiovascular protection when renal function permits."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:glp1_agonist",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "obesity",
+        "need_weight_loss"
+      ],
+      "guideline_id": "guideline:ada_2025",
+      "rationale": "Consider GLP-1 receptor agonists when additional weight loss or cardiorenal benefit is desired."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:dual_incretin",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "obesity",
+        "need_weight_loss"
+      ],
+      "guideline_id": "guideline:ada_2025",
+      "rationale": "Dual GIP/GLP-1 incretin therapy is relevant when obesity and weight-loss priority dominate treatment selection."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:sglt2_inhibitor",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "heart failure"
+      ],
+      "guideline_id": "guideline:ada_2025",
+      "rationale": "Prioritize SGLT2 inhibitors when heart-failure risk reduction is a dominant treatment objective."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:glp1_agonist",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "ASCVD",
+        "need_weight_loss"
+      ],
+      "guideline_id": "guideline:ada_2025",
+      "rationale": "Consider GLP-1 receptor agonists when atherosclerotic cardiovascular risk and weight-loss goals are both relevant."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:dpp4_inhibitor",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "avoid_hypoglycemia"
+      ],
+      "guideline_id": "guideline:nice_ng28_2026",
+      "rationale": "DPP-4 inhibitors remain useful low-hypoglycemia oral add-on options when cardiorenal priorities are not dominant."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:sulfonylurea",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "cost_sensitive"
+      ],
+      "guideline_id": "guideline:nice_ng28_2026",
+      "rationale": "Sulfonylureas remain lower-cost options, while carrying greater hypoglycemia and weight-gain trade-offs."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:thiazolidinedione",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "cost_sensitive"
+      ],
+      "guideline_id": "guideline:nice_ng28_2026",
+      "rationale": "Pioglitazone remains a lower-cost oral option when edema, heart failure, and weight trade-offs are acceptable."
+    },
+    {
+      "source": "drug:metformin",
+      "target": "class:basal_insulin",
+      "type": "NEXT_LINE_IF",
+      "conditions": [
+        "Type 2 Diabetes",
+        "severe_hyperglycemia"
+      ],
+      "guideline_id": "guideline:ada_2025",
+      "rationale": "Basal insulin is appropriate when hyperglycemia is marked, catabolic symptoms are present, or rapid glycemic control is needed."
+    },
+    {
+      "source": "drug:empagliflozin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:dapagliflozin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:canagliflozin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:ertugliflozin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:tirzepatide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:semaglutide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:liraglutide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:dulaglutide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:exenatide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:lixisenatide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:sitagliptin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:linagliptin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:saxagliptin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:alogliptin",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:pioglitazone",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:gliclazide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:glimepiride",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:glipizide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:insulin glargine",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:insulin degludec",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:repaglinide",
+      "target": "disease:t2d",
+      "type": "TREATS"
+    },
+    {
+      "source": "drug:tirzepatide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:tirzepatide",
+      "target": "target:GIPR",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:semaglutide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:liraglutide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:dulaglutide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:exenatide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:lixisenatide",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:orforglipron",
+      "target": "target:GLP1R",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:empagliflozin",
+      "target": "target:SLC5A2",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:dapagliflozin",
+      "target": "target:SLC5A2",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:canagliflozin",
+      "target": "target:SLC5A2",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:ertugliflozin",
+      "target": "target:SLC5A2",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:sitagliptin",
+      "target": "target:DPP4",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:linagliptin",
+      "target": "target:DPP4",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:saxagliptin",
+      "target": "target:DPP4",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:alogliptin",
+      "target": "target:DPP4",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:pioglitazone",
+      "target": "target:PPARG",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:gliclazide",
+      "target": "target:ABCC8",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:glimepiride",
+      "target": "target:ABCC8",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:glipizide",
+      "target": "target:ABCC8",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:repaglinide",
+      "target": "target:ABCC8",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:insulin glargine",
+      "target": "target:INSR",
+      "type": "TARGETS"
+    },
+    {
+      "source": "drug:insulin degludec",
+      "target": "target:INSR",
+      "type": "TARGETS"
+    }
+  ]
+}

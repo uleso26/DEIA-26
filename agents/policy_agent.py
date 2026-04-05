@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from core.models import AgentSection
 from agents.base_agent import unique_strings
 
@@ -7,7 +9,7 @@ from agents.base_agent import unique_strings
 class PolicyAgent:
     """Handle clarification and answer-policy responses before domain execution."""
 
-    def clarification(self, understanding: dict) -> AgentSection:
+    def clarification(self, understanding: dict[str, Any]) -> AgentSection:
         question_class = understanding["question_class"]
         query = understanding["query"]
         clarification_prompt = understanding.get("clarification_prompt") or (
@@ -43,7 +45,11 @@ class PolicyAgent:
             },
         )
 
-    def insufficient_evidence_metadata(self, understanding: dict, evidence_review: dict) -> dict:
+    def insufficient_evidence_metadata(
+        self,
+        understanding: dict[str, Any],
+        evidence_review: dict[str, Any],
+    ) -> dict[str, Any]:
         reason = evidence_review.get("reason", "limited_grounding")
         if reason == "partial_guideline_coverage":
             message = (

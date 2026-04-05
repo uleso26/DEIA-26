@@ -1,0 +1,239 @@
+{
+  "num_queries": 42,
+  "accuracy": 0.9286,
+  "correct": 39,
+  "confusion_matrix": {
+    "Q1": {
+      "Q1": 7
+    },
+    "Q2": {
+      "Q2": 7
+    },
+    "Q3": {
+      "Q3": 5,
+      "Q9": 2
+    },
+    "Q4": {
+      "Q4": 7
+    },
+    "Q5": {
+      "Q5": 7
+    },
+    "Q6": {
+      "Q6": 6,
+      "Q4": 1
+    }
+  },
+  "results": [
+    {
+      "id": "Q1-01",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-02",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-03",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-04",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-05",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-06",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q1-07",
+      "expected": "Q1",
+      "predicted": "Q1"
+    },
+    {
+      "id": "Q2-01",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-02",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-03",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-04",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-05",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-06",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q2-07",
+      "expected": "Q2",
+      "predicted": "Q2"
+    },
+    {
+      "id": "Q3-01",
+      "expected": "Q3",
+      "predicted": "Q3"
+    },
+    {
+      "id": "Q3-02",
+      "expected": "Q3",
+      "predicted": "Q3"
+    },
+    {
+      "id": "Q3-03",
+      "expected": "Q3",
+      "predicted": "Q3"
+    },
+    {
+      "id": "Q3-04",
+      "expected": "Q3",
+      "predicted": "Q3"
+    },
+    {
+      "id": "Q3-05",
+      "expected": "Q3",
+      "predicted": "Q3"
+    },
+    {
+      "id": "Q3-06",
+      "expected": "Q3",
+      "predicted": "Q9"
+    },
+    {
+      "id": "Q3-07",
+      "expected": "Q3",
+      "predicted": "Q9"
+    },
+    {
+      "id": "Q4-01",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-02",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-03",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-04",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-05",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-06",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q4-07",
+      "expected": "Q4",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q5-01",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-02",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-03",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-04",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-05",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-06",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q5-07",
+      "expected": "Q5",
+      "predicted": "Q5"
+    },
+    {
+      "id": "Q6-01",
+      "expected": "Q6",
+      "predicted": "Q6"
+    },
+    {
+      "id": "Q6-02",
+      "expected": "Q6",
+      "predicted": "Q6"
+    },
+    {
+      "id": "Q6-03",
+      "expected": "Q6",
+      "predicted": "Q4"
+    },
+    {
+      "id": "Q6-04",
+      "expected": "Q6",
+      "predicted": "Q6"
+    },
+    {
+      "id": "Q6-05",
+      "expected": "Q6",
+      "predicted": "Q6"
+    },
+    {
+      "id": "Q6-06",
+      "expected": "Q6",
+      "predicted": "Q6"
+    },
+    {
+      "id": "Q6-07",
+      "expected": "Q6",
+      "predicted": "Q6"
+    }
+  ]
+}

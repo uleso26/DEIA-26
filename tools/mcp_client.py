@@ -9,6 +9,7 @@ import anyio
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 
+from core.logging_utils import get_logger
 from core.paths import ROOT
 from core.runtime_utils import utc_now_iso
 
@@ -18,6 +19,7 @@ SERVER_MODULES = {
     "trials": "mcp_servers.trials_server",
     "knowledge": "mcp_servers.knowledge_server",
 }
+logger = get_logger(__name__)
 
 
 class StdioMCPConnection:
@@ -79,6 +81,8 @@ class StdioMCPConnection:
 
     def close(self) -> None:
         return
+
+
 class MCPClientManager:
     """Lazily manage MCP stdio clients for the local tool servers."""
 
@@ -112,6 +116,6 @@ class MCPClientManager:
         for connection in list(self._connections.values()):
             try:
                 connection.close()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Failed to close MCP connection cleanly for %s: %s", connection.module_name, exc)
         self._connections.clear()

@@ -1,0 +1,343 @@
+[
+  {
+    "nct_id": "NCT03987919",
+    "trial_name": "SURPASS-2",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes"
+    ],
+    "interventions": [
+      "tirzepatide",
+      "semaglutide"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "HbA1c reduction at week 40",
+    "results": {
+      "tirzepatide_5mg": {
+        "hba1c_change": -2.01,
+        "weight_change_kg": -7.6
+      },
+      "tirzepatide_10mg": {
+        "hba1c_change": -2.24,
+        "weight_change_kg": -9.3
+      },
+      "tirzepatide_15mg": {
+        "hba1c_change": -2.3,
+        "weight_change_kg": -11.2
+      },
+      "semaglutide_1mg": {
+        "hba1c_change": -1.86,
+        "weight_change_kg": -5.7
+      }
+    },
+    "publication_reference": "PMID34170647",
+    "source_url": "https://clinicaltrials.gov/study/NCT03987919",
+    "completion_date": "2024-06-14",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT03882970",
+    "trial_name": "SURPASS-3",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes"
+    ],
+    "interventions": [
+      "tirzepatide",
+      "insulin degludec"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "HbA1c reduction at week 52",
+    "results": {
+      "tirzepatide_10mg": {
+        "hba1c_change": -2.37,
+        "weight_change_kg": -9.8
+      },
+      "insulin_degludec": {
+        "hba1c_change": -1.34,
+        "weight_change_kg": 2.3
+      }
+    },
+    "publication_reference": "PMID34370970",
+    "source_url": "https://clinicaltrials.gov/study/NCT03882970",
+    "completion_date": "2024-04-30",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT03989232",
+    "trial_name": "SUSTAIN FORTE",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes"
+    ],
+    "interventions": [
+      "semaglutide"
+    ],
+    "comparison_type": "indirect",
+    "primary_endpoint": "HbA1c reduction at week 40",
+    "results": {
+      "semaglutide_2mg": {
+        "hba1c_change": -2.1,
+        "weight_change_kg": -6.9
+      },
+      "semaglutide_1mg": {
+        "hba1c_change": -1.86,
+        "weight_change_kg": -6.0
+      }
+    },
+    "publication_reference": "PMID34293304",
+    "source_url": "https://clinicaltrials.gov/study/NCT03989232",
+    "completion_date": "2024-02-01",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT01131676",
+    "trial_name": "EMPA-REG OUTCOME",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Established cardiovascular disease"
+    ],
+    "interventions": [
+      "empagliflozin",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "3-point major adverse cardiovascular events",
+    "results": {
+      "empagliflozin": {
+        "mace_hazard_ratio": 0.86,
+        "cv_death_hazard_ratio": 0.62
+      },
+      "placebo": {
+        "mace_hazard_ratio": 1.0,
+        "cv_death_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID26378978",
+    "source_url": "https://clinicaltrials.gov/study/NCT01131676",
+    "completion_date": "2015-09-17",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT01179048",
+    "trial_name": "LEADER",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "High cardiovascular risk"
+    ],
+    "interventions": [
+      "liraglutide",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "3-point major adverse cardiovascular events",
+    "results": {
+      "liraglutide": {
+        "mace_hazard_ratio": 0.87,
+        "cv_death_hazard_ratio": 0.78
+      },
+      "placebo": {
+        "mace_hazard_ratio": 1.0,
+        "cv_death_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID27295427",
+    "source_url": "https://clinicaltrials.gov/study/NCT01179048",
+    "completion_date": "2016-06-13",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT03036124",
+    "trial_name": "DAPA-HF",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Heart failure with reduced ejection fraction"
+    ],
+    "interventions": [
+      "dapagliflozin",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "Composite of worsening heart failure or cardiovascular death",
+    "results": {
+      "dapagliflozin": {
+        "primary_endpoint_hazard_ratio": 0.74,
+        "cv_death_hazard_ratio": 0.82
+      },
+      "placebo": {
+        "primary_endpoint_hazard_ratio": 1.0,
+        "cv_death_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID31535829",
+    "source_url": "https://clinicaltrials.gov/study/NCT03036124",
+    "completion_date": "2019-09-19",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT01730534",
+    "trial_name": "DECLARE-TIMI 58",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Established ASCVD or multiple cardiovascular risk factors"
+    ],
+    "interventions": [
+      "dapagliflozin",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "MACE and composite of cardiovascular death or heart failure hospitalization",
+    "results": {
+      "dapagliflozin": {
+        "mace_hazard_ratio": 0.93,
+        "cv_death_or_hf_hazard_ratio": 0.83
+      },
+      "placebo": {
+        "mace_hazard_ratio": 1.0,
+        "cv_death_or_hf_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID30415602",
+    "source_url": "https://clinicaltrials.gov/study/NCT01730534",
+    "completion_date": "2018-09-17",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT01394952",
+    "trial_name": "REWIND",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Cardiovascular risk"
+    ],
+    "interventions": [
+      "dulaglutide",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "3-point major adverse cardiovascular events",
+    "results": {
+      "dulaglutide": {
+        "mace_hazard_ratio": 0.88
+      },
+      "placebo": {
+        "mace_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID31189511",
+    "source_url": "https://clinicaltrials.gov/study/NCT01394952",
+    "completion_date": "2018-08-14",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT00790205",
+    "trial_name": "TECOS",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Established cardiovascular disease"
+    ],
+    "interventions": [
+      "sitagliptin",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "4-point major adverse cardiovascular events",
+    "results": {
+      "sitagliptin": {
+        "mace_hazard_ratio": 0.98,
+        "hf_hospitalization_hazard_ratio": 1.0
+      },
+      "placebo": {
+        "mace_hazard_ratio": 1.0,
+        "hf_hospitalization_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID26052984",
+    "source_url": "https://clinicaltrials.gov/study/NCT00790205",
+    "completion_date": "2015-03-19",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT01243424",
+    "trial_name": "CAROLINA",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Elevated cardiovascular risk"
+    ],
+    "interventions": [
+      "linagliptin",
+      "glimepiride"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "3-point major adverse cardiovascular events",
+    "results": {
+      "linagliptin": {
+        "mace_hazard_ratio": 0.98,
+        "hypoglycemia_rate_comment": "substantially lower than glimepiride"
+      },
+      "glimepiride": {
+        "mace_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID31536101",
+    "source_url": "https://clinicaltrials.gov/study/NCT01243424",
+    "completion_date": "2019-07-16",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  },
+  {
+    "nct_id": "NCT00174993",
+    "trial_name": "PROactive",
+    "phase": "Phase 3",
+    "status": "Completed",
+    "conditions": [
+      "Type 2 Diabetes",
+      "Established macrovascular disease"
+    ],
+    "interventions": [
+      "pioglitazone",
+      "placebo"
+    ],
+    "comparison_type": "direct",
+    "primary_endpoint": "Composite macrovascular outcome",
+    "results": {
+      "pioglitazone": {
+        "primary_endpoint_hazard_ratio": 0.9,
+        "main_secondary_hazard_ratio": 0.84
+      },
+      "placebo": {
+        "primary_endpoint_hazard_ratio": 1.0,
+        "main_secondary_hazard_ratio": 1.0
+      }
+    },
+    "publication_reference": "PMID16214598",
+    "source_url": "https://clinicaltrials.gov/study/NCT00174993",
+    "completion_date": "2005-10-08",
+    "api_version": "ClinicalTrials.gov v2",
+    "ingested_at": "2026-03-31T00:00:00Z"
+  }
+]

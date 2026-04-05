@@ -4,7 +4,7 @@ import argparse
 import os
 
 from core.paths import relative_runtime_path
-from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, write_raw_payload
+from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, validate_records, write_raw_payload
 from data.ingestion.seed_data import CLINICAL_TRIALS
 
 
@@ -164,6 +164,22 @@ def run() -> str:
     mode = "live_api" if use_live and any(entry.get("ok") and entry.get("record_count") for entry in request_log) else "seed_fallback"
     if mode == "seed_fallback":
         normalized_trials = [_seed_trial(item) for item in CLINICAL_TRIALS]
+
+    normalized_trials = validate_records(
+        normalized_trials,
+        [
+            "nct_id",
+            "trial_name",
+            "phase",
+            "status",
+            "conditions",
+            "interventions",
+            "primary_endpoint",
+            "results",
+            "source_url",
+        ],
+        "clinicaltrials",
+    )
 
     path = write_raw_payload("clinical_trials.json", normalized_trials)
     append_lineage_manifest(

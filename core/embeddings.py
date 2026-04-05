@@ -5,8 +5,12 @@ from functools import lru_cache
 from math import sqrt
 from typing import Any
 
+from core.logging_utils import get_logger
 from core.runtime_utils import env_flag
 from tools.ollama_client import OllamaClient
+
+
+logger = get_logger(__name__)
 
 
 def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
@@ -41,6 +45,7 @@ def _embed_with_sentence_transformers(
             "embedding_model": model_name,
         }
     except Exception as exc:
+        logger.warning("Sentence-transformers embeddings failed for %s: %s", model_name, exc)
         return None, {
             "embedding_provider": "sentence-transformers",
             "embedding_model": model_name,
@@ -101,4 +106,10 @@ def embed_texts(
         return vectors, metadata
     if auto_try_sentence_transformers:
         return _embed_with_sentence_transformers(texts, requested_model, local_only=True)
+    logger.warning(
+        "Embedding request returned no vectors for provider=%s model=%s fallback_model=%s",
+        requested_provider,
+        requested_model,
+        fallback_model,
+    )
     return None, metadata

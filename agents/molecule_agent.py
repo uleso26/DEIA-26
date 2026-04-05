@@ -7,12 +7,12 @@ from core.paths import raw_input_path
 from core.storage import load_json
 from data.canonical.resolver import CanonicalResolver
 from tools.mcp_client import MCPClientManager
-from tools.native_tools import query_chembl, query_uniprot
+from tools.context_tools import query_chembl, query_uniprot
 from agents.base_agent import citation, unique_strings
 
 
 @lru_cache(maxsize=1)
-def _load_opentargets() -> list[dict]:
+def _load_opentargets() -> list[dict[str, object]]:
     return load_json(raw_input_path("opentargets.json"))
 
 
@@ -44,7 +44,6 @@ class MoleculeAgent:
             if chembl_records
             else (resolved_drug or {}).get("drug_class") or "No mechanism metadata found"
         )
-        linked_drugs = sorted({item.get("canonical_drug") for item in landscape_payload["records"] if item.get("canonical_drug")})
         shared_drugs = []
         if drug_name and targets:
             shared_drugs = sorted(

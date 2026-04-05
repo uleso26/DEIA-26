@@ -5,16 +5,19 @@ import math
 import os
 import sqlite3
 from collections import Counter
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from core.paths import CHROMA_DIR, GRAPH_FILE, MONGO_DIR, RETRIEVAL_MANIFEST, SQLITE_DB, ensure_runtime_directories, relative_runtime_path
+from core.logging_utils import get_logger
 from core.runtime_utils import env_flag
 
 
 # Keep chunks short enough to stay semantically tight while still carrying a
 # full trial result sentence or guideline recommendation.
 DEFAULT_CHUNK_MAX_CHARS = 550
+logger = get_logger(__name__)
 
 
 def load_json(path: Path) -> Any:
@@ -41,24 +44,30 @@ def use_live_neo4j(prefer_service: bool = False) -> bool:
     return prefer_service or env_flag("USE_NEO4J_BACKEND", False)
 
 
+@lru_cache(maxsize=4)
+def _get_mongo_client(mongodb_uri: str) -> Any | None:
+    try:
+        from pymongo import MongoClient  # type: ignore
+    except ImportError:
+        return None
+    return MongoClient(mongodb_uri, serverSelectionTimeoutMS=2000)
+
+
 def load_collection_from_mongodb(name: str) -> tuple[list[dict[str, Any]], bool]:
     mongodb_uri = os.getenv("MONGODB_URI")
     database_name = os.getenv("MONGODB_DATABASE", "t2d_intelligence")
     if not mongodb_uri:
         return [], False
-    try:
-        from pymongo import MongoClient  # type: ignore
-    except ImportError:
+    client = _get_mongo_client(mongodb_uri)
+    if client is None:
         return [], False
-    client = MongoClient(mongodb_uri, serverSelectionTimeoutMS=2000)
     try:
         collection = client[database_name][name]
         documents = list(collection.find({}, {"_id": 0}))
         return documents, True
-    except Exception:
+    except Exception as exc:
+        logger.warning("MongoDB fallback for collection '%s': %s", name, exc)
         return [], False
-    finally:
-        client.close()
 
 
 def load_collection_with_backend(name: str, prefer_service: bool = False) -> tuple[list[dict[str, Any]], str]:
@@ -93,7 +102,8 @@ def _run_neo4j_query(query: str, parameters: dict[str, Any] | None = None) -> tu
         with driver.session(database=database) as session:
             result = session.run(query, parameters or {})
             return [dict(record) for record in result], True
-    except Exception:
+    except Exception as exc:
+        logger.warning("Neo4j fallback for query execution: %s", exc)
         return [], False
     finally:
         driver.close()
@@ -287,6 +297,7 @@ def build_dense_index(documents: list[dict[str, Any]], text_key: str = "text") -
 
     vectors, metadata = _embed_texts(texts)
     if not vectors or len(vectors) != len(stored_documents):
+        logger.warning("Dense index build skipped because embeddings were unavailable or incomplete.")
         return None
 
     dense_vectors = {
@@ -319,18 +330,21 @@ def build_chroma_index(
 
     vectors, metadata = _embed_texts(texts)
     if not vectors or len(vectors) != len(stored_documents):
+        logger.warning("Chroma index build skipped because embeddings were unavailable or incomplete.")
         return None
 
     try:
         import chromadb
-    except Exception:
+    except Exception as exc:
+        logger.warning("Chroma backend unavailable; falling back to manifest-only retrieval: %s", exc)
         return None
 
     ensure_runtime_directories()
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
     try:
         client.delete_collection(collection_name)
-    except Exception:
+    except Exception as exc:
+        logger.warning("Chroma collection reset skipped for '%s': %s", collection_name, exc)
         pass
     collection = client.get_or_create_collection(
         name=collection_name,
@@ -435,7 +449,8 @@ def search_dense_index(query: str, manifest: dict[str, Any], top_k: int = 3) -> 
                 }
                 results.append(item)
             return results
-        except Exception:
+        except Exception as exc:
+            logger.warning("Chroma dense search fallback for collection '%s': %s", collection_name, exc)
             return []
 
     dense_vectors = manifest.get("dense_vectors", {})
@@ -449,6 +464,7 @@ def search_dense_index(query: str, manifest: dict[str, Any], top_k: int = 3) -> 
         model_name=manifest.get("embedding_model"),
     )
     if not query_vectors:
+        logger.warning("Dense search fallback because query embedding was unavailable.")
         return []
     query_vector = query_vectors[0]
     scored: list[tuple[float, dict[str, Any]]] = []

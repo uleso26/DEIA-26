@@ -1,0 +1,178 @@
+[
+  {
+    "canonical_drug": "tirzepatide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "genetic and pharmacology"
+  },
+  {
+    "canonical_drug": "tirzepatide",
+    "canonical_target": "GIPR",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "genetic and pharmacology"
+  },
+  {
+    "canonical_drug": "semaglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "orforglipron",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "liraglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "dulaglutide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "dapagliflozin",
+    "canonical_target": "SLC5A2",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "canagliflozin",
+    "canonical_target": "SLC5A2",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "ertugliflozin",
+    "canonical_target": "SLC5A2",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "exenatide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "lixisenatide",
+    "canonical_target": "GLP1R",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "sitagliptin",
+    "canonical_target": "DPP4",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "linagliptin",
+    "canonical_target": "DPP4",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "saxagliptin",
+    "canonical_target": "DPP4",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "alogliptin",
+    "canonical_target": "DPP4",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "pioglitazone",
+    "canonical_target": "PPARG",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "literature and pharmacology"
+  },
+  {
+    "canonical_drug": "gliclazide",
+    "canonical_target": "ABCC8",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "glimepiride",
+    "canonical_target": "ABCC8",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "glipizide",
+    "canonical_target": "ABCC8",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "repaglinide",
+    "canonical_target": "ABCC8",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "inhibitor",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "insulin glargine",
+    "canonical_target": "INSR",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  },
+  {
+    "canonical_drug": "insulin degludec",
+    "canonical_target": "INSR",
+    "canonical_disease": "Type 2 Diabetes",
+    "association_type": "agonist",
+    "validated": true,
+    "evidence_source": "pharmacology"
+  }
+]

@@ -10,6 +10,7 @@ from data.ingestion.base import (
     live_ingestion_enabled,
     post_json_response,
     utc_now_iso,
+    validate_records,
     write_raw_payload,
 )
 from data.ingestion.seed_data import OPENTARGETS_DATA
@@ -122,6 +123,11 @@ def run() -> str:
         records.append(normalized)
 
     mode = "live_api" if use_live and accepted_live_records else "seed_fixture"
+    records = validate_records(
+        records,
+        ["canonical_drug", "canonical_target", "association_type", "evidence_source"],
+        "opentargets",
+    )
     path = write_raw_payload("opentargets.json", records)
     append_lineage_manifest(
         "opentargets",

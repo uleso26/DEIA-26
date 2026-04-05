@@ -6,7 +6,7 @@ import re
 from urllib.parse import quote
 
 from core.paths import relative_runtime_path
-from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, write_raw_payload
+from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, validate_records, write_raw_payload
 from data.ingestion.seed_data import PUBMED_DOCUMENTS
 
 
@@ -110,6 +110,12 @@ def run() -> str:
         mode = "seed_fallback"
     if mode == "seed_fallback":
         normalized_documents = [_seed_document(item) for item in PUBMED_DOCUMENTS]
+
+    normalized_documents = validate_records(
+        normalized_documents,
+        ["pmid", "title", "journal", "publication_date", "evidence_type", "mesh_terms", "text", "source_url"],
+        "pubmed",
+    )
 
     path = write_raw_payload("pubmed_documents.json", normalized_documents)
     append_lineage_manifest(

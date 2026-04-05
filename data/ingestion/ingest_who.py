@@ -5,7 +5,7 @@ import os
 from urllib.parse import quote
 
 from core.paths import relative_runtime_path
-from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, write_raw_payload
+from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, validate_records, write_raw_payload
 from data.ingestion.seed_data import WHO_GHO_DATA
 
 
@@ -152,6 +152,11 @@ def run() -> str:
         records.append(fallback)
 
     mode = "live_api" if use_live and accepted_live_records else "seed_fixture"
+    records = validate_records(
+        records,
+        ["country", "indicator", "year", "value", "unit"],
+        "who",
+    )
     path = write_raw_payload("who_gho.json", records)
     append_lineage_manifest(
         "who",

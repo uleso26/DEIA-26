@@ -1,0 +1,54 @@
+{
+  "num_queries": 8,
+  "pass_rate": 1.0,
+  "results": [
+    {
+      "query": "What adverse event signals are emerging for tirzepatide in cardiac patients?",
+      "question_class": "Q1",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "Compare HbA1c reduction across Phase 3 trials for semaglutide vs tirzepatide",
+      "question_class": "Q2",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "What does SURPASS-3 show?",
+      "question_class": "Q2",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "For a T2D patient with CKD stage 3, what does NICE guidance suggest after metformin failure?",
+      "question_class": "Q3",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "ADA pathway after metformin for obesity",
+      "question_class": "Q3",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "Which drugs share the GLP1R mechanism?",
+      "question_class": "Q4",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "Give me an evidence update on SGLT2 inhibitors in heart failure",
+      "question_class": "Q4",
+      "issues": [],
+      "passed": true
+    },
+    {
+      "query": "What is the diabetes prevalence in the United Kingdom?",
+      "question_class": "Q6",
+      "issues": [],
+      "passed": true
+    }
+  ]
+}

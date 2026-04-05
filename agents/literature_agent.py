@@ -4,10 +4,12 @@ from data.canonical.resolver import get_resolver
 from core.models import AgentSection
 from core.storage import tokenize
 from tools.langchain_native_tools import invoke_native_tool
-from tools.native_tools import (
-    filter_recent_documents,
+from tools.context_tools import (
     infer_country_from_query,
     search_external_intelligence,
+)
+from tools.retrieval import (
+    filter_recent_documents,
     search_pubmed,
 )
 from agents.base_agent import citation, latest_record, unique_strings

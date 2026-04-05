@@ -1,0 +1,44 @@
+[
+  {
+    "canonical_target": "GLP1R",
+    "uniprot_id": "P43220",
+    "protein_name": "Glucagon-like peptide-1 receptor",
+    "function": "Class B G protein-coupled receptor involved in glucose-dependent insulin secretion."
+  },
+  {
+    "canonical_target": "GIPR",
+    "uniprot_id": "P48546",
+    "protein_name": "Gastric inhibitory polypeptide receptor",
+    "function": "Receptor mediating insulinotropic effects of glucose-dependent insulinotropic polypeptide."
+  },
+  {
+    "canonical_target": "SLC5A2",
+    "uniprot_id": "P31639",
+    "protein_name": "Sodium/glucose cotransporter 2",
+    "function": "Renal glucose reabsorption transporter targeted by SGLT2 inhibitors."
+  },
+  {
+    "canonical_target": "DPP4",
+    "uniprot_id": "P27487",
+    "protein_name": "Dipeptidyl peptidase 4",
+    "function": "Cell-surface serine protease that degrades incretin hormones and is inhibited by DPP-4 inhibitors."
+  },
+  {
+    "canonical_target": "PPARG",
+    "uniprot_id": "P37231",
+    "protein_name": "Peroxisome proliferator-activated receptor gamma",
+    "function": "Nuclear receptor regulating adipocyte differentiation and insulin sensitivity, targeted by thiazolidinediones."
+  },
+  {
+    "canonical_target": "INSR",
+    "uniprot_id": "P06213",
+    "protein_name": "Insulin receptor",
+    "function": "Receptor tyrosine kinase mediating the metabolic and mitogenic effects of insulin analogues."
+  },
+  {
+    "canonical_target": "ABCC8",
+    "uniprot_id": "Q09428",
+    "protein_name": "ATP-binding cassette sub-family C member 8",
+    "function": "Sulfonylurea receptor component of the pancreatic beta-cell KATP channel targeted by sulfonylureas and meglitinides."
+  }
+]

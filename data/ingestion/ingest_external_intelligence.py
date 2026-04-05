@@ -12,6 +12,7 @@ def run() -> str:
         "external_intelligence.json",
         EXTERNAL_INTELLIGENCE,
         timestamp_fields=["scraped_at"],
+        required_fields=["headline", "summary", "publish_date", "source_url"],
     )
 
 

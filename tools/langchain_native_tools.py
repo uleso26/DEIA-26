@@ -5,10 +5,12 @@ from typing import Any
 from langchain_core.tools import BaseTool, tool
 
 from core.storage import load_retrieval_manifest
-from tools.native_tools import (
+from tools.context_tools import (
     fetch_trial_results,
     get_clinical_context,
     get_population_context,
+)
+from tools.retrieval import (
     search_pubmed_safety,
     search_retrieval_index,
 )

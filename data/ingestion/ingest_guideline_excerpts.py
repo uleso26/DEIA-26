@@ -7,7 +7,12 @@ from data.ingestion.seed_data import GUIDELINE_EXCERPTS
 
 
 def run() -> str:
-    return write_seed_payload("guideline_excerpts", "guideline_excerpts.json", GUIDELINE_EXCERPTS)
+    return write_seed_payload(
+        "guideline_excerpts",
+        "guideline_excerpts.json",
+        GUIDELINE_EXCERPTS,
+        required_fields=["id", "title", "publication_date", "text", "source_url"],
+    )
 
 
 def main() -> None:

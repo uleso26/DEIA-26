@@ -16,6 +16,57 @@ This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intell
 - Ingestion lineage manifests written under `logs/ingestion_lineage/`
 - A lightweight HTTP API for `/health`, `/backend-status`, and `/query`
 
+## Architecture
+
+```mermaid
+graph TD
+    subgraph Ingestion
+        S1[OpenFDA] --> RAW[runtime/raw/]
+        S2[ClinicalTrials.gov] --> RAW
+        S3[PubMed] --> RAW
+        S4[OpenTargets] --> RAW
+        S5[ChEMBL] --> RAW
+        S6[UniProt] --> RAW
+        S7[WHO GHO] --> RAW
+        S8[DrugBank Open] --> RAW
+        S9[Guideline Excerpts / External Intelligence / Synthetic Profiles] --> RAW
+    end
+
+    RAW --> BUILD[Bootstrap + Build Pipeline]
+    BUILD --> SQLITE[(SQLite)]
+    BUILD --> MONGOFILE[(Mongo-style Fallback Files)]
+    BUILD --> NEO4JFILE[(Neo4j-style Graph JSON)]
+    BUILD --> RETRIEVAL[Retrieval Manifest]
+    BUILD --> CHROMA[(ChromaDB)]
+
+    subgraph Orchestration
+        QUERY[User Query] --> ROUTER[Router Agent]
+        ROUTER --> POLICY[Policy Gate]
+        POLICY --> PLANNER[Evidence Planner]
+        POLICY --> SCOPE[Scope Agent]
+        PLANNER --> AGENTS[Domain Agents]
+        AGENTS --> REVIEW[Evidence Review]
+        REVIEW -->|limited evidence| PLANNER
+        REVIEW -->|sufficient| SYNTH[Synthesis Agent]
+        SCOPE --> SYNTH
+        SYNTH --> GOV[Governance Checker]
+    end
+
+    AGENTS --> MCP_S[Safety MCP Server]
+    AGENTS --> MCP_T[Trials MCP Server]
+    AGENTS --> MCP_K[Knowledge MCP Server]
+
+    MCP_S --> SQLITE
+    MCP_T --> MONGOFILE
+    MCP_K --> NEO4JFILE
+    AGENTS --> RETRIEVAL
+    RETRIEVAL --> CHROMA
+
+    GOV --> RESPONSE[Governed Response]
+    RESPONSE --> HTTP[HTTP API / UI]
+    RESPONSE --> CLI[CLI]
+```
+
 ## Question Scope
 
 The platform now uses a broader routed scope instead of forcing every query into the original six enterprise lanes.
@@ -44,6 +95,8 @@ python3 main.py bootstrap
 ```
 
 Bootstrap writes refreshed runtime raw payloads under `runtime/raw/` so normal project use does not rewrite the tracked fixture files under `data/raw/`.
+
+Runtime configuration is environment-driven through `.env` or shell variables. There is no separate YAML runtime config layer to keep in sync with the code.
 
 To enable live-backed ingestion across the public source set:
 
@@ -96,15 +149,36 @@ python3 main.py eval latency
 python3 main.py eval retrieval
 ```
 
+Committed evaluation outputs are stored under `evaluation/results/`.
+
+## Evaluation Results
+
+| Suite | Metric | Score |
+|-------|--------|-------|
+| Routing | Accuracy (42 queries) | 0.9286 |
+| Retrieval | Hit@3 / MRR@3 | 1.0 / 1.0 |
+| Groundedness | Pass rate (8 queries) | 1.0 |
+| Latency | Mean response time (4 queries) | 3668.35 ms |
+
+Detailed result bundles:
+- `evaluation/results/routing_results.json`
+- `evaluation/results/retrieval_results.json`
+- `evaluation/results/groundedness_results.json`
+- `evaluation/results/latency_results.json`
+
+## Continuous Integration
+
+The repository now includes a minimal GitHub Actions workflow at `.github/workflows/ci.yml` that installs `requirements-dev.txt` on Python 3.11 and runs `pytest -q --tb=short`.
+
 ## Docker-backed runtime
 
-Recommended setup: run `python3 main.py ...` on your Mac host and use Docker only for MongoDB and Neo4j. The default `.env.example` now uses `localhost` for that workflow.
+Recommended setup: use Python 3.11+ on your host, run `python3 main.py ...` locally, and use Docker for MongoDB and Neo4j. The default `.env.example` now uses `localhost` for that workflow.
 
 If you want the orchestrator and MCP servers to execute against live Docker services instead of the file-backed fallbacks:
 
 ```bash
 cp .env.example .env
-docker compose up --build -d mongodb neo4j
+docker compose up --build -d app mongodb neo4j
 set -a
 source .env
 set +a
@@ -115,7 +189,19 @@ USE_MONGODB_BACKEND=true USE_NEO4J_BACKEND=true python3 main.py query "ADA pathw
 
 `backend-status` should report `mongodb.available: true` and `neo4j.available: true` before you rely on live service execution.
 
-The bundled `docker-compose.yml` now uses the project name `t2d-intelligence-platform`, waits for healthy MongoDB and Neo4j services before starting dependent containers, and overrides container-internal hostnames so the same `.env` can work for host execution.
+The base `docker-compose.yml` is now deployment-oriented: it avoids bind-mounting the full repo, runs the app container as a non-root user, persists MongoDB and Neo4j with named volumes, and only binds ports to `127.0.0.1` for local use.
+
+If you want hot-reload style local development with live code mounted into the containers, add the dev override file explicitly:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+The optional MCP sidecars are placed behind the `mcp-sidecars` profile because the default app runtime spawns MCP servers via stdio inside the app container. If you want standalone MCP service containers as well:
+
+```bash
+docker compose --profile mcp-sidecars up --build
+```
 
 ## Local LLM Mode
 

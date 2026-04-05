@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 from agents.prompt_templates import (
     ROUTER_HUMAN_TEMPLATE,
     ROUTER_SYSTEM_TEMPLATE,
     render_ollama_messages,
 )
-from tools.native_tools import ENTERPRISE_ROUTE_LABELS, build_query_understanding
+from tools.query_understanding import ENTERPRISE_ROUTE_LABELS, build_query_understanding
 from tools.ollama_client import OllamaClient
 
 
@@ -20,7 +21,7 @@ class RouterAgent:
     def __init__(self) -> None:
         self.ollama = OllamaClient()
 
-    def understand(self, query: str) -> dict:
+    def understand(self, query: str) -> dict[str, Any]:
         """Return structured routing state for the query."""
         fallback = build_query_understanding(query).to_dict()
         if fallback["question_class"] not in VALID_ROUTE_LABELS:
@@ -54,7 +55,7 @@ class RouterAgent:
             }
         return {**fallback, "routing_mode": "deterministic_fallback"}
 
-    def route(self, query: str) -> dict:
+    def route(self, query: str) -> dict[str, Any]:
         """Expose the final routing payload used by the orchestrator."""
         understanding = self.understand(query)
         return {

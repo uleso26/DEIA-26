@@ -174,6 +174,7 @@ def dispatch_request(
 
 def resolve_static_asset(path: str) -> tuple[Path, str] | None:
     normalized_path = urlsplit(path).path or path
+    static_root = STATIC_DIR.resolve()
     if normalized_path == "/":
         asset_path = STATIC_DIR / "index.html"
     elif normalized_path.startswith("/static/"):
@@ -184,10 +185,16 @@ def resolve_static_asset(path: str) -> tuple[Path, str] | None:
     else:
         return None
 
-    if not asset_path.exists() or not asset_path.is_file():
+    try:
+        resolved_asset_path = asset_path.resolve()
+    except FileNotFoundError:
         return None
-    content_type = mimetypes.guess_type(asset_path.name)[0] or "application/octet-stream"
-    return asset_path, content_type
+    if not resolved_asset_path.is_relative_to(static_root):
+        return None
+    if not resolved_asset_path.exists() or not resolved_asset_path.is_file():
+        return None
+    content_type = mimetypes.guess_type(resolved_asset_path.name)[0] or "application/octet-stream"
+    return resolved_asset_path, content_type
 
 
 def create_http_server(host: str, port: int, runtime: QueryRuntime) -> ThreadingHTTPServer:

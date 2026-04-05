@@ -1,0 +1,460 @@
+{
+  "drug_labels": [
+    {
+      "canonical_drug": "tirzepatide",
+      "brand_names": [
+        "Mounjaro",
+        "Zepbound"
+      ],
+      "label_version": "2025-09",
+      "indications": [
+        "Type 2 Diabetes",
+        "Chronic weight management"
+      ],
+      "warnings": [
+        "Pancreatitis",
+        "Gastrointestinal adverse reactions"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "semaglutide",
+      "brand_names": [
+        "Ozempic",
+        "Wegovy",
+        "Rybelsus"
+      ],
+      "label_version": "2025-07",
+      "indications": [
+        "Type 2 Diabetes",
+        "Chronic weight management"
+      ],
+      "warnings": [
+        "Diabetic retinopathy complications",
+        "Gastrointestinal adverse reactions"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "empagliflozin",
+      "brand_names": [
+        "Jardiance"
+      ],
+      "label_version": "2025-04",
+      "indications": [
+        "Type 2 Diabetes",
+        "Heart failure",
+        "CKD"
+      ],
+      "warnings": [
+        "Ketoacidosis",
+        "Volume depletion"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "dapagliflozin",
+      "brand_names": [
+        "Farxiga"
+      ],
+      "label_version": "2025-05",
+      "indications": [
+        "Type 2 Diabetes",
+        "Heart failure",
+        "CKD"
+      ],
+      "warnings": [
+        "Ketoacidosis",
+        "Volume depletion"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "canagliflozin",
+      "brand_names": [
+        "Invokana"
+      ],
+      "label_version": "2025-03",
+      "indications": [
+        "Type 2 Diabetes",
+        "CKD"
+      ],
+      "warnings": [
+        "Ketoacidosis",
+        "Lower limb amputation risk"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "liraglutide",
+      "brand_names": [
+        "Victoza",
+        "Saxenda"
+      ],
+      "label_version": "2025-02",
+      "indications": [
+        "Type 2 Diabetes",
+        "Chronic weight management"
+      ],
+      "warnings": [
+        "Pancreatitis",
+        "Gastrointestinal adverse reactions"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "dulaglutide",
+      "brand_names": [
+        "Trulicity"
+      ],
+      "label_version": "2025-01",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Pancreatitis",
+        "Gastrointestinal adverse reactions"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "metformin",
+      "brand_names": [
+        "Glucophage",
+        "Glumetza",
+        "Fortamet",
+        "Riomet"
+      ],
+      "label_version": "2025-06",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Lactic acidosis",
+        "Vitamin B12 deficiency"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "ertugliflozin",
+      "brand_names": [
+        "Steglatro"
+      ],
+      "label_version": "2025-03",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Ketoacidosis",
+        "Volume depletion"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "sitagliptin",
+      "brand_names": [
+        "Januvia"
+      ],
+      "label_version": "2025-02",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Pancreatitis",
+        "Severe joint pain"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "linagliptin",
+      "brand_names": [
+        "Tradjenta"
+      ],
+      "label_version": "2025-02",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Pancreatitis",
+        "Hypersensitivity reactions"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "saxagliptin",
+      "brand_names": [
+        "Onglyza"
+      ],
+      "label_version": "2025-01",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Heart failure",
+        "Pancreatitis"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "alogliptin",
+      "brand_names": [
+        "Nesina",
+        "Vipidia"
+      ],
+      "label_version": "2025-01",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Heart failure",
+        "Hepatic effects"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "pioglitazone",
+      "brand_names": [
+        "Actos"
+      ],
+      "label_version": "2025-02",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Heart failure",
+        "Weight gain"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "gliclazide",
+      "brand_names": [
+        "Diamicron"
+      ],
+      "label_version": "2025-01",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Hypoglycemia",
+        "Weight gain"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "glimepiride",
+      "brand_names": [
+        "Amaryl"
+      ],
+      "label_version": "2025-01",
+      "indications": [
+        "Type 2 Diabetes"
+      ],
+      "warnings": [
+        "Hypoglycemia",
+        "Weight gain"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    },
+    {
+      "canonical_drug": "insulin glargine",
+      "brand_names": [
+        "Lantus",
+        "Basaglar",
+        "Toujeo"
+      ],
+      "label_version": "2025-04",
+      "indications": [
+        "Type 2 Diabetes",
+        "Type 1 Diabetes"
+      ],
+      "warnings": [
+        "Hypoglycemia",
+        "Medication errors"
+      ],
+      "source_url": "https://open.fda.gov/apis/drug/label/"
+    }
+  ],
+  "adverse_events": [
+    {
+      "canonical_drug": "tirzepatide",
+      "event": "nausea",
+      "count": 128,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "tirzepatide",
+      "event": "vomiting",
+      "count": 82,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "tirzepatide",
+      "event": "tachycardia",
+      "count": 12,
+      "subgroup": "cardiac_comorbidity_reports",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "early_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "tirzepatide",
+      "event": "palpitations",
+      "count": 9,
+      "subgroup": "cardiac_comorbidity_reports",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "early_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "semaglutide",
+      "event": "nausea",
+      "count": 101,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "empagliflozin",
+      "event": "urinary tract infection",
+      "count": 41,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "dapagliflozin",
+      "event": "genital infection",
+      "count": 38,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "canagliflozin",
+      "event": "volume depletion",
+      "count": 27,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "liraglutide",
+      "event": "nausea",
+      "count": 74,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "dulaglutide",
+      "event": "nausea",
+      "count": 62,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "metformin",
+      "event": "diarrhea",
+      "count": 89,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "ertugliflozin",
+      "event": "genital infection",
+      "count": 25,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "early_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "sitagliptin",
+      "event": "pancreatitis",
+      "count": 18,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "low_volume_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "linagliptin",
+      "event": "arthralgia",
+      "count": 13,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "low_volume_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "saxagliptin",
+      "event": "heart failure",
+      "count": 16,
+      "subgroup": "cardiorenal_signal_review",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "low_volume_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "alogliptin",
+      "event": "heart failure",
+      "count": 14,
+      "subgroup": "cardiorenal_signal_review",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "low_volume_signal",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "pioglitazone",
+      "event": "edema",
+      "count": 31,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "gliclazide",
+      "event": "hypoglycemia",
+      "count": 36,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "glimepiride",
+      "event": "hypoglycemia",
+      "count": 44,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "known_risk",
+      "source": "OpenFDA FAERS"
+    },
+    {
+      "canonical_drug": "insulin glargine",
+      "event": "hypoglycemia",
+      "count": 95,
+      "subgroup": "general_t2d_population",
+      "time_period": "2024-01 to 2025-12",
+      "signal_strength": "moderate",
+      "source": "OpenFDA FAERS"
+    }
+  ]
+}

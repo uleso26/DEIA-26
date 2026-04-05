@@ -1,0 +1,45 @@
+{
+  "num_queries": 3,
+  "hit_rate_at_3": 1.0,
+  "mrr_at_3": 1.0,
+  "details": [
+    {
+      "query": "SGLT2 inhibitors heart failure recent literature",
+      "retrieved_ids": [
+        "41517628",
+        "41597355",
+        "GUIDE_ADA_2025_CARDIORENAL"
+      ],
+      "expected_refs": [
+        "41517628",
+        "41597355"
+      ],
+      "hit": true
+    },
+    {
+      "query": "tirzepatide safety post-marketing surveillance",
+      "retrieved_ids": [
+        "40037695",
+        "34370970",
+        "34170647"
+      ],
+      "expected_refs": [
+        "40037695"
+      ],
+      "hit": true
+    },
+    {
+      "query": "oral GLP-1 late-stage development",
+      "retrieved_ids": [
+        "40960239",
+        "41398455",
+        "GUIDE_ADA_2025"
+      ],
+      "expected_refs": [
+        "40960239",
+        "41398455"
+      ],
+      "hit": true
+    }
+  ]
+}

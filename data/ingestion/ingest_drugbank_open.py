@@ -11,6 +11,7 @@ from data.ingestion.base import (
     fetch_text_response,
     live_ingestion_enabled,
     utc_now_iso,
+    validate_records,
     write_raw_payload,
 )
 from data.ingestion.seed_data import DRUGBANK_OPEN_DATA
@@ -184,6 +185,11 @@ def run() -> str:
         mode = "blocked_live_source_fallback"
     else:
         mode = "seed_fixture"
+    records = validate_records(
+        records,
+        ["canonical_drug", "drugbank_id", "drug_class", "pharmacology", "source_url"],
+        "drugbank_open",
+    )
     path = write_raw_payload("drugbank_open.json", records)
     append_lineage_manifest(
         "drugbank_open",

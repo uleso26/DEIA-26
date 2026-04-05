@@ -1,0 +1,101 @@
+[
+  {
+    "patient_id": "SYN001",
+    "age_band": "55-64",
+    "sex": "female",
+    "bmi_category": "obesity_class_2",
+    "ckd_stage": "stage_3",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "cardiorenal_protection",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN002",
+    "age_band": "65-74",
+    "sex": "male",
+    "bmi_category": "overweight",
+    "ckd_stage": "none",
+    "heart_failure": true,
+    "current_therapy": "empagliflozin",
+    "clinical_priority": "heart_failure_outcomes",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN003",
+    "age_band": "45-54",
+    "sex": "female",
+    "bmi_category": "obesity_class_3",
+    "ckd_stage": "none",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "weight_loss",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN004",
+    "age_band": "65-74",
+    "sex": "female",
+    "bmi_category": "obesity_class_1",
+    "ckd_stage": "none",
+    "heart_failure": true,
+    "current_therapy": "metformin",
+    "clinical_priority": "heart_failure_outcomes",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN005",
+    "age_band": "55-64",
+    "sex": "male",
+    "bmi_category": "overweight",
+    "ckd_stage": "stage_2",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "renal_risk_reduction",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN006",
+    "age_band": "35-44",
+    "sex": "female",
+    "bmi_category": "obesity_class_2",
+    "ckd_stage": "none",
+    "heart_failure": false,
+    "current_therapy": "liraglutide",
+    "clinical_priority": "weight_loss",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN007",
+    "age_band": "70-79",
+    "sex": "male",
+    "bmi_category": "overweight",
+    "ckd_stage": "none",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "avoid_hypoglycemia",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN008",
+    "age_band": "60-69",
+    "sex": "female",
+    "bmi_category": "overweight",
+    "ckd_stage": "none",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "cost_sensitive",
+    "data_origin": "synthetic_seed_profile"
+  },
+  {
+    "patient_id": "SYN009",
+    "age_band": "55-64",
+    "sex": "male",
+    "bmi_category": "obesity_class_1",
+    "ckd_stage": "none",
+    "heart_failure": false,
+    "current_therapy": "metformin",
+    "clinical_priority": "ascvd_risk_reduction",
+    "data_origin": "synthetic_seed_profile"
+  }
+]

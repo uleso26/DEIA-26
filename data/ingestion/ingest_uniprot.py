@@ -4,7 +4,7 @@ import argparse
 import os
 
 from core.paths import relative_runtime_path
-from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, write_raw_payload
+from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, validate_records, write_raw_payload
 from data.ingestion.seed_data import UNIPROT_DATA
 
 
@@ -73,6 +73,11 @@ def run() -> str:
         records = [{**record, "ingested_at": utc_now_iso(), "data_mode": "seed_fixture"} for record in UNIPROT_DATA]
 
     mode = "live_api" if use_live and accepted_live_records else "seed_fixture"
+    records = validate_records(
+        records,
+        ["canonical_target", "uniprot_id", "protein_name", "function"],
+        "uniprot",
+    )
     path = write_raw_payload("uniprot.json", records)
     append_lineage_manifest(
         "uniprot",

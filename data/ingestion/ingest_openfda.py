@@ -4,7 +4,7 @@ import argparse
 from urllib.parse import quote
 
 from core.paths import relative_runtime_path
-from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, write_raw_payload
+from data.ingestion.base import append_lineage_manifest, fetch_json_response, live_ingestion_enabled, utc_now_iso, validate_records, write_raw_payload
 from data.ingestion.seed_data import OPENFDA_DATA
 
 
@@ -163,6 +163,17 @@ def run() -> dict[str, str]:
     if mode == "seed_fallback":
         labels = [dict(item) for item in OPENFDA_DATA["drug_labels"]]
         events = [dict(item) for item in OPENFDA_DATA["adverse_events"]]
+
+    labels = validate_records(
+        labels,
+        ["canonical_drug", "brand_names", "label_version", "indications", "warnings", "source_url"],
+        "openfda.drug_labels",
+    )
+    events = validate_records(
+        events,
+        ["canonical_drug", "event", "count", "subgroup", "time_period", "signal_strength", "source"],
+        "openfda.adverse_events",
+    )
 
     events_path = write_raw_payload("openfda_adverse_events.json", events)
     labels_path = write_raw_payload("drug_labels.json", labels)

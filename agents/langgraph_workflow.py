@@ -4,10 +4,11 @@ import operator
 from typing import Annotated, Any, TypedDict
 
 from langgraph.graph import END, START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 
 from core.models import AgentSection
 from core.tracing import TraceLogger
-from tools.native_tools import assess_evidence_sufficiency, build_evidence_plan, question_class_name
+from tools.query_understanding import assess_evidence_sufficiency, build_evidence_plan, question_class_name
 
 
 class OrchestratorState(TypedDict, total=False):
@@ -51,7 +52,7 @@ class T2DLangGraphWorkflow:
         self.synthesis_agent = synthesis_agent
         self.graph = self._build_graph()
 
-    def _build_graph(self):
+    def _build_graph(self) -> CompiledStateGraph:
         workflow = StateGraph(OrchestratorState)
         workflow.add_node("understand", self._understand_node)
         workflow.add_node("policy_gate", self._policy_gate_node)

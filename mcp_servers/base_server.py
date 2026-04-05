@@ -35,10 +35,11 @@ class BaseMCPStyleServer:
             raise KeyError(f"Unknown tool: {name}")
         handler, _ = self._tools[name]
         result = handler(**arguments)
-        result.setdefault("requested_at", utc_now_iso())
-        result.setdefault("source_metadata", {})
-        result["server_name"] = self.server_name
-        return result
+        enriched = dict(result)
+        enriched.setdefault("requested_at", utc_now_iso())
+        enriched.setdefault("source_metadata", {})
+        enriched["server_name"] = self.server_name
+        return enriched
 
     def serve(self, transport: str = "stdio") -> None:
         self.app.run(transport=transport)
