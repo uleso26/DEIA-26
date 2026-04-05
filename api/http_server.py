@@ -59,7 +59,9 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
-        self.send_header("Connection", "keep-alive")
+        # The local demo SSE endpoint emits a finite sequence of events per query.
+        # Closing the connection after the final event avoids hanging clients and CI tests.
+        self.send_header("Connection", "close")
         self.end_headers()
 
     def _send_sse_event(self, event_name: str, payload: dict[str, Any]) -> None:
@@ -131,16 +133,19 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
             payload = self.runtime.run_query(query)
         except Exception as exc:  # pragma: no cover - defensive HTTP path
             self._send_sse_event("error", {"error": str(exc)})
+            self.close_connection = True
             return
 
         answer = str(payload.get("answer", ""))
         chunks = stream_answer_chunks(answer)
         if not chunks:
             self._send_sse_event("final", payload)
+            self.close_connection = True
             return
         for chunk in chunks:
             self._send_sse_event("delta", {"text": chunk})
         self._send_sse_event("final", payload)
+        self.close_connection = True
 
 
 def dispatch_request(
