@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import argparse
@@ -7,12 +7,12 @@ from core.paths import RETRIEVAL_MANIFEST, raw_input_path
 from core.storage import build_chroma_index, build_lexical_index, chunk_retrieval_documents, dump_json, load_json
 
 
-# With retrieval text.
+# Enrich records with retrieval text for downstream use
 def _with_retrieval_text(documents: list[dict]) -> list[dict]:
     enriched_documents = []
     for document in documents:
         enriched = dict(document)
-        # Pull the searchable fields together once so the retrieval layer stays simple.
+        # Pull the searchable fields together once so the retrieval layer stays simple
         enriched["retrieval_text"] = " ".join(
             [
                 str(document.get("title", "")),
@@ -25,7 +25,7 @@ def _with_retrieval_text(documents: list[dict]) -> list[dict]:
     return enriched_documents
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> str:
     documents = load_json(raw_input_path("pubmed_documents.json"))
     guideline_path = raw_input_path("guideline_excerpts.json")
@@ -54,13 +54,13 @@ def run() -> str:
     return str(RETRIEVAL_MANIFEST)
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build retrieval manifest with lexical fallback indexing.")
     parser.parse_args()
     print(run())
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

@@ -1,3 +1,3 @@
 """Stdio MCP-style servers."""
 
-# Package marker for MCP server modules.
+# Mark the mcp servers package for imports and discovery

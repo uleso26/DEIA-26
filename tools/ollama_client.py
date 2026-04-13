@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import os
@@ -12,7 +12,7 @@ from core.runtime_utils import env_flag
 logger = get_logger(__name__)
 
 
-# Ollama Client.
+# Define the Ollama client wrapper used for local model calls
 class OllamaClient:
     def __init__(self, base_url: str | None = None) -> None:
         configured_base_url = base_url or os.getenv("OLLAMA_BASE_URL") or "http://localhost:11434"
@@ -21,7 +21,7 @@ class OllamaClient:
     @staticmethod
     @lru_cache(maxsize=4)
     def _probe(base_url: str) -> bool:
-        # Probe once so normal queries do not keep paying the local health-check cost.
+        # Probe once so normal queries do not keep paying the local health-check cost
         try:
             import requests
         except Exception as exc:

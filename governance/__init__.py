@@ -1,3 +1,3 @@
 """Governance rules and enforcement."""
 
-# Package marker for governance components.
+# Mark the governance package for imports and discovery

@@ -1,4 +1,4 @@
-// DOM bindings for the chat surface and developer panel.
+// Cache the main DOM nodes used by the chat surface and developer panel
 const feed = document.getElementById("message-feed");
 const form = document.getElementById("query-form");
 const input = document.getElementById("query-input");
@@ -9,11 +9,11 @@ const developerPanel = document.getElementById("developer-panel");
 const developerModeToggle = document.getElementById("developer-mode-toggle");
 const template = document.getElementById("message-template");
 
-// Local UI state that survives refreshes where useful.
+// Keep small pieces of UI state across refreshes where that helps the user
 const welcomeMarkup = feed.innerHTML;
 let developerMode = localStorage.getItem("t2d_developer_mode") === "true";
 
-// Small rendering helpers keep DOM updates consistent and escaped.
+// Keep repeated DOM rendering logic consistent and safely escaped
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -30,7 +30,7 @@ function createTag(label) {
   return tag;
 }
 
-// Chat card rendering for user and platform messages.
+// Render user and platform messages with the shared chat card template
 function appendMessage(role, bodyHtml, tags = [], extraClass = "") {
   const fragment = template.content.cloneNode(true);
   const card = fragment.querySelector(".message-card");
@@ -49,14 +49,14 @@ function appendMessage(role, bodyHtml, tags = [], extraClass = "") {
   feed.scrollTop = feed.scrollHeight;
 }
 
-// Composer state is locked while a request is in flight.
+// Lock the composer while a request is in flight so users cannot double submit
 function setLoadingState(active) {
   const submitButton = document.getElementById("submit-query");
   submitButton.disabled = active;
   submitButton.textContent = active ? "Running..." : "Run query";
 }
 
-// Runtime status cards are only rendered in developer mode.
+// Render backend status cards only when developer mode is enabled
 function renderStatusCard(title, state, headline, details = []) {
   const card = document.createElement("div");
   card.className = "status-card";
@@ -76,7 +76,7 @@ function renderStatusCard(title, state, headline, details = []) {
   return card;
 }
 
-// Backend status is fetched lazily so the default user view stays clean.
+// Load backend status only on demand so the default user view stays clean
 async function loadStatus() {
   if (!developerMode) {
     statusGrid.innerHTML = "";
@@ -142,7 +142,7 @@ async function loadStatus() {
   }
 }
 
-// Final answer rendering keeps citations and caveats grouped with the answer.
+// Render the final answer with citations caveats and debug data kept together
 function renderResponse(payload) {
   const citations = (payload.citations || [])
     .map(
@@ -200,7 +200,7 @@ function renderResponse(payload) {
   appendMessage("Platform", body, tags, "assistant-card");
 }
 
-// Streaming updates reuse the same placeholder card until the final payload arrives.
+// Reuse the same placeholder card while streamed updates arrive
 function renderStreamingCard(card, text) {
   const body = card.querySelector(".message-body");
   if (!body) {
@@ -210,7 +210,7 @@ function renderStreamingCard(card, text) {
   feed.scrollTop = feed.scrollHeight;
 }
 
-// Query execution prefers SSE and falls back to plain JSON when needed.
+// Send queries over SSE first and fall back to JSON when streaming is unavailable
 async function runQuery(query) {
   appendMessage("You", `<p>${escapeHtml(query)}</p>`, ["Query"], "user-card");
   appendMessage("Platform", `<p class="loading-dots">Retrieving evidence and assembling answer</p>`, ["Working"], "assistant-card");
@@ -290,7 +290,7 @@ async function runQuery(query) {
   }
 }
 
-// Form submission and keyboard handling.
+// Form submission and keyboard handling
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const query = input.value.trim();
@@ -309,7 +309,7 @@ input.addEventListener("keydown", (event) => {
   }
 });
 
-// Chat reset and developer status refresh controls.
+// Chat reset and developer status refresh controls
 clearButton.addEventListener("click", () => {
   feed.innerHTML = welcomeMarkup;
   input.focus();
@@ -319,7 +319,7 @@ refreshStatusButton.addEventListener("click", () => {
   loadStatus();
 });
 
-// Suggested prompt shortcuts seed the composer with representative questions.
+// Suggested prompt shortcuts seed the composer with representative questions
 document.querySelectorAll(".prompt-chip").forEach((button) => {
   button.addEventListener("click", () => {
     input.value = button.dataset.prompt || "";
@@ -327,7 +327,7 @@ document.querySelectorAll(".prompt-chip").forEach((button) => {
   });
 });
 
-// Developer mode toggles extra runtime metadata without changing the core UI.
+// Developer mode toggles extra runtime metadata without changing the core UI
 function applyDeveloperMode() {
   developerPanel.hidden = !developerMode;
   developerModeToggle.checked = developerMode;
@@ -340,7 +340,7 @@ developerModeToggle.addEventListener("change", () => {
   loadStatus();
 });
 
-// Initial UI state.
+// Initial UI state
 applyDeveloperMode();
 if (developerMode) {
   loadStatus();

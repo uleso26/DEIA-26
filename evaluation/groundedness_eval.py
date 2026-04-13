@@ -1,10 +1,10 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from agents.orchestrator import T2DOrchestrator
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 DEMO_QUERIES = [
     "What adverse event signals are emerging for tirzepatide in cardiac patients?",
     "Compare HbA1c reduction across Phase 3 trials for semaglutide vs tirzepatide",
@@ -17,7 +17,7 @@ DEMO_QUERIES = [
 ]
 
 
-# Check response.
+# Check whether the generated answer stays grounded in the provided evidence
 def _check_response(response: dict) -> list[str]:
     issues = []
     if not response.get("citations"):
@@ -46,7 +46,7 @@ def _check_response(response: dict) -> list[str]:
     return issues
 
 
-# Check query specific expectations.
+# Check query specific expectations for the groundedness suite
 def _check_query_specific_expectations(query: str, response: dict) -> list[str]:
     issues = []
     answer = response["answer"]
@@ -71,7 +71,7 @@ def _check_query_specific_expectations(query: str, response: dict) -> list[str]:
     return issues
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> dict:
     orchestrator = T2DOrchestrator()
     results = []
@@ -99,7 +99,7 @@ def run() -> dict:
     }
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     import json
 

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import atexit
@@ -15,7 +15,7 @@ from core.paths import ROOT
 from core.runtime_utils import utc_now_iso
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 SERVER_MODULES = {
     "safety": "mcp_servers.safety_server",
     "trials": "mcp_servers.trials_server",
@@ -24,7 +24,7 @@ SERVER_MODULES = {
 logger = get_logger(__name__)
 
 
-# Stdio MCP Connection.
+# Define the stdio MCP connection used to talk to local tool servers
 class StdioMCPConnection:
     """Request-scoped MCP client over stdio using the official Python SDK."""
 
@@ -86,7 +86,7 @@ class StdioMCPConnection:
         return
 
 
-# MCP Client Manager.
+# Define the MCP client manager that caches server processes and tool schemas
 class MCPClientManager:
     """Lazily manage MCP stdio clients for the local tool servers."""
 

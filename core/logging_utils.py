@@ -1,11 +1,11 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import logging
 import sys
 
 
-# Get logger.
+# Fetch logger for the downstream workflow
 def get_logger(name: str) -> logging.Logger:
     """Return a module logger with a minimal stderr handler for local runs."""
     logger = logging.getLogger(name)

@@ -1,6 +1,6 @@
 """Query classification, structured understanding, and evidence-plan helpers."""
 
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -10,7 +10,7 @@ from data.canonical.resolver import get_resolver
 from tools.context_tools import infer_country_from_query
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 QUESTION_CLASS_DETAILS = {
     "Q0": {
         "name": "Out-of-Scope Or Clarification",
@@ -283,13 +283,13 @@ DISEASE_BACKGROUND_TERMS = {
 }
 
 
-# Question class name.
+# Return the user facing name for a routed question class
 def question_class_name(question_class: str) -> str:
     """Return the user-facing label for a routed question class."""
     return QUESTION_CLASS_DETAILS.get(question_class, {}).get("name", question_class)
 
 
-# Interaction mode name.
+# Return the interaction mode that matches the routed question
 def interaction_mode_name(question_class: str, route_reason: str | None = None) -> str:
     """Map a routed question to the broader interaction mode."""
     if route_reason == "conversation_opening":
@@ -302,7 +302,7 @@ def interaction_mode_name(question_class: str, route_reason: str | None = None) 
     return INTERACTION_MODE_BY_SCOPE.get(scope_family, "out_of_scope")
 
 
-# Primary intent name.
+# Return the primary intent label that guides downstream synthesis
 def primary_intent_name(question_class: str, route_reason: str | None = None) -> str:
     """Map a routed question to the more specific response intent."""
     if route_reason == "conversation_opening":
@@ -316,12 +316,12 @@ def primary_intent_name(question_class: str, route_reason: str | None = None) ->
     return PRIMARY_INTENT_BY_QUESTION_CLASS[question_class]
 
 
-# Empty scores.
+# Create an empty score map for question class ranking
 def _empty_scores() -> dict[str, int]:
     return {question_class: 0 for question_class in QUESTION_CLASS_DETAILS}
 
 
-# Route payload.
+# Build the shared routing payload returned to the workflow
 def _route_payload(question_class: str, scores: dict[str, int], route_reason: str) -> dict[str, Any]:
     details = QUESTION_CLASS_DETAILS[question_class]
     return {
@@ -333,7 +333,7 @@ def _route_payload(question_class: str, scores: dict[str, int], route_reason: st
     }
 
 
-# Infer objective terms.
+# Infer objective terms from the available query evidence
 def _infer_objective_terms(lowered: str) -> list[str]:
     objectives: list[str] = []
     for objective_name, hints in DECISION_OBJECTIVE_HINTS.items():
@@ -342,12 +342,12 @@ def _infer_objective_terms(lowered: str) -> list[str]:
     return objectives
 
 
-# Is capability probe.
+# Check whether capability probe applies to the current input
 def _is_capability_probe(lowered: str) -> bool:
     return lowered in CAPABILITY_PROBE_TERMS or any(term in lowered for term in CAPABILITY_PROBE_TERMS if len(term) > 4)
 
 
-# Is initial treatment query.
+# Check whether initial treatment query applies to the current input
 def _is_initial_treatment_query(lowered: str) -> bool:
     has_initial_marker = any(term in lowered for term in INITIAL_TREATMENT_TERMS)
     if not has_initial_marker:
@@ -363,12 +363,12 @@ def _is_initial_treatment_query(lowered: str) -> bool:
     )
 
 
-# Is explicit disease background query.
+# Check whether explicit disease background query applies to the current input
 def _is_explicit_disease_background_query(lowered: str) -> bool:
     return any(term in lowered for term in DISEASE_BACKGROUND_TERMS)
 
 
-# Confidence from scores.
+# Convert question class scores into a simple routing confidence value
 def _confidence_from_scores(question_class: str, scores: dict[str, int]) -> str:
     if question_class not in ENTERPRISE_ROUTE_LABELS:
         return "high"
@@ -382,7 +382,7 @@ def _confidence_from_scores(question_class: str, scores: dict[str, int]) -> str:
     return "medium"
 
 
-# Extract query entities.
+# Extract query entities from the upstream payload
 def extract_query_entities(query: str) -> dict[str, Any]:
     """Resolve the main structured entities needed for routing and planning."""
     resolver = get_resolver()
@@ -398,7 +398,7 @@ def extract_query_entities(query: str) -> dict[str, Any]:
     }
 
 
-# Build query understanding.
+# Build query understanding for the downstream execution path
 def build_query_understanding(query: str) -> QueryUnderstanding:
     """Turn a raw query into the structured routing state used by the workflow."""
     route = classify_query(query)
@@ -449,7 +449,7 @@ def build_query_understanding(query: str) -> QueryUnderstanding:
     )
 
 
-# Build evidence plan.
+# Build evidence plan for the downstream execution path
 def build_evidence_plan(understanding: dict[str, Any]) -> dict[str, Any]:
     """Build the first-pass execution plan before bounded refinement."""
     question_class = understanding["question_class"]
@@ -479,7 +479,7 @@ def build_evidence_plan(understanding: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-# Assess evidence sufficiency.
+# Assess whether the collected sections are sufficient for synthesis
 def assess_evidence_sufficiency(
     understanding: dict[str, Any],
     sections: list[dict[str, Any] | Any],
@@ -524,7 +524,7 @@ def assess_evidence_sufficiency(
     return {"status": "sufficient", "reason": "grounded_evidence_present"}
 
 
-# Has domain context.
+# Check whether domain context is present before branching
 def _has_domain_context(query: str, lowered: str) -> bool:
     resolver = get_resolver()
     if any(term in lowered for term in DOMAIN_HINT_TERMS):
@@ -538,7 +538,7 @@ def _has_domain_context(query: str, lowered: str) -> bool:
     return False
 
 
-# Classify query.
+# Classify the raw query into the platform question taxonomy
 def classify_query(query: str) -> dict[str, Any]:
     """Classify a query into the platform scope lanes using deterministic heuristics."""
     lowered = query.lower().strip()

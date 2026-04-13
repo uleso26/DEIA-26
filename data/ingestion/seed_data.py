@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -6,11 +6,11 @@ from pathlib import Path
 from typing import Any
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures"
 
 
-# Load fixture.
+# Load fixture from the active data source
 def _load_fixture(filename: str) -> Any:
     with (FIXTURE_DIR / filename).open("r", encoding="utf-8") as handle:
         return json.load(handle)

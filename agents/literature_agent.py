@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from data.canonical.resolver import get_resolver
@@ -16,7 +16,7 @@ from tools.retrieval import (
 from agents.base_agent import citation, latest_record, unique_strings
 
 
-# Literature Agent.
+# Define the literature agent and its specialist response logic
 class LiteratureAgent:
     """Handle literature, population, and competitor-intelligence evidence pulls."""
 

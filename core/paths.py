@@ -1,8 +1,8 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from pathlib import Path
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 FIXTURE_RAW_DIR = DATA_DIR / "raw"
@@ -20,13 +20,13 @@ GRAPH_FILE = PROCESSED_DIR / "neo4j_graph.json"
 RETRIEVAL_MANIFEST = PROCESSED_DIR / "retrieval_manifest.json"
 
 
-# Ensure runtime directories.
+# Ensure the runtime directory structure exists before files are written
 def ensure_runtime_directories() -> None:
     for path in (RAW_DIR, PROCESSED_DIR, CHROMA_DIR, MONGO_DIR, LOG_DIR, LINEAGE_DIR, PROV_LINEAGE_DIR):
         path.mkdir(parents=True, exist_ok=True)
 
 
-# Raw input path.
+# Return the resolved path for a raw input file
 def raw_input_path(filename: str) -> Path:
     """Read from runtime/raw when present, otherwise fall back to tracked fixtures."""
     runtime_path = RAW_DIR / filename
@@ -35,7 +35,7 @@ def raw_input_path(filename: str) -> Path:
     return FIXTURE_RAW_DIR / filename
 
 
-# Relative runtime path.
+# Return a runtime path relative to the repository root
 def relative_runtime_path(path: Path) -> str:
     try:
         return str(path.resolve().relative_to(ROOT))

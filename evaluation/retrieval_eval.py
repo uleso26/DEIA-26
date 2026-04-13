@@ -1,10 +1,10 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from tools.native_tools import search_retrieval_index
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 RETRIEVAL_CASES = [
     {
         "query": "SGLT2 inhibitors heart failure recent literature",
@@ -21,7 +21,7 @@ RETRIEVAL_CASES = [
 ]
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> dict:
     hits = 0
     reciprocal_rank_total = 0.0
@@ -54,7 +54,7 @@ def run() -> dict:
     }
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     import json
 

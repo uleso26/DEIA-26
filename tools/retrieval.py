@@ -1,6 +1,6 @@
 """Hybrid retrieval and lightweight PubMed search helpers."""
 
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from calendar import monthrange
@@ -23,12 +23,12 @@ from data.canonical.resolver import get_resolver
 
 # Hybrid retrieval leans slightly toward dense search because the corpus is
 # small and terminology can vary, but lexical overlap still helps anchor exact
-# trial names and guideline phrasing.
+# trial names and guideline phrasing
 LEXICAL_FUSION_WEIGHT = 0.4
 DENSE_FUSION_WEIGHT = 0.6
 
 # Domain reranking heuristics keep obvious entity and intent hits at the top
-# after lexical+dense fusion has narrowed the field.
+# after lexical and dense fusion has narrowed the candidate set
 DRUG_MATCH_BOOST = 6.0
 TARGET_MATCH_BOOST = 4.0
 SAFETY_INTENT_BOOST = 3.0
@@ -37,12 +37,12 @@ SURVEILLANCE_BOOST = 1.5
 HEART_FAILURE_BOOST = 3.0
 
 
-# Pubmed documents.
+# Load the seeded PubMed documents used by retrieval and evidence views
 def _pubmed_documents() -> list[dict[str, Any]]:
     return load_json(raw_input_path("pubmed_documents.json"))
 
 
-# Retrieval documents.
+# Build retrieval ready documents from seeded literature and guideline sources
 def _retrieval_documents() -> list[dict[str, Any]]:
     documents = []
     source_documents = [*_pubmed_documents()]
@@ -63,7 +63,7 @@ def _retrieval_documents() -> list[dict[str, Any]]:
     return documents
 
 
-# Search retrieval index.
+# Search retrieval index and return the best matches
 def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     """Run hybrid retrieval over chunked literature and guideline evidence."""
     manifest = load_retrieval_manifest()
@@ -148,7 +148,7 @@ def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     return reranked[:top_k]
 
 
-# Search PubMed.
+# Search PubMed and return the best matches
 def search_pubmed(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     """Run a simple keyword match over the curated PubMed corpus."""
     documents = _pubmed_documents()
@@ -165,19 +165,19 @@ def search_pubmed(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     return [item for _, item in scored[:top_k]]
 
 
-# Search PubMed safety.
+# Search PubMed safety and return the best matches
 def search_pubmed_safety(drug: str, top_k: int = 2) -> list[dict[str, Any]]:
     """Search safety-oriented PubMed records for a therapy."""
     return search_pubmed(f"{drug} safety faers adverse", top_k=top_k)
 
 
-# Get guideline context.
+# Fetch guideline context for the downstream workflow
 def get_guideline_context(query: str) -> list[dict[str, Any]]:
     """Fetch guideline-flavoured literature context for a free-form query."""
     return search_pubmed(f"{query} guideline NICE ADA CKD", top_k=2)
 
 
-# Filter recent documents.
+# Filter recent documents before returning the final set
 def filter_recent_documents(documents: list[dict[str, Any]], months: int = 6, reference_date: date | None = None) -> list[dict[str, Any]]:
     """Keep documents within a recent-months window, skipping malformed dates."""
     today = reference_date or date.today()

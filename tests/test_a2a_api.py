@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -15,7 +15,7 @@ from core.models import AgentSection, FinalResponse
 pytestmark = pytest.mark.unit
 
 
-# Stub Trial Agent.
+# Provide a lightweight trial agent stub for this test module
 class StubTrialAgent:
     def run(self, query: str) -> AgentSection:
         return AgentSection(
@@ -29,7 +29,7 @@ class StubTrialAgent:
         )
 
 
-# Stub Synthesis Agent.
+# Provide a lightweight synthesis agent stub for this test module
 class StubSynthesisAgent:
     def run(
         self,
@@ -51,7 +51,7 @@ class StubSynthesisAgent:
         )
 
 
-# Stub Runtime.
+# Provide a lightweight runtime stub for this test module
 class StubRuntime:
     def __init__(self) -> None:
         self.trial_agent = StubTrialAgent()
@@ -73,13 +73,13 @@ class StubRuntime:
         return
 
 
-# Reset A2A tasks.
+# Reset the in-memory A2A task store between tests
 @pytest.fixture(autouse=True)
 def reset_a2a_tasks() -> None:
     clear_a2a_tasks()
 
 
-# Test: public agent card exposes platform skills.
+# Verify public agent card exposes platform skills
 def test_public_agent_card_exposes_platform_skills() -> None:
     status_code, payload = dispatch_request(
         "GET",
@@ -94,7 +94,7 @@ def test_public_agent_card_exposes_platform_skills() -> None:
     assert any(skill["id"] == "t2d_enterprise_query" for skill in payload["skills"])
 
 
-# Test: platform a2a send returns completed task and stores it.
+# Verify platform A2A send returns completed task and stores it
 def test_platform_a2a_send_returns_completed_task_and_stores_it() -> None:
     runtime = StubRuntime()
     status_code, payload = dispatch_request(
@@ -127,7 +127,7 @@ def test_platform_a2a_send_returns_completed_task_and_stores_it() -> None:
     assert task_lookup["task"]["id"] == task_id
 
 
-# Test: trial evidence a2a send uses specialist trial surface.
+# Verify trial evidence A2A send uses specialist trial surface
 def test_trial_evidence_a2a_send_uses_specialist_trial_surface() -> None:
     status_code, payload = dispatch_request(
         "POST",
@@ -150,7 +150,7 @@ def test_trial_evidence_a2a_send_uses_specialist_trial_surface() -> None:
     assert response_payload["metadata"]["a2a_agent_id"] == "t2d-trial-evidence-agent"
 
 
-# Test: platform a2a stream returns sse task updates.
+# Verify platform A2A stream returns SSE task updates
 def test_platform_a2a_stream_returns_sse_task_updates() -> None:
     runtime = StubRuntime()
     try:

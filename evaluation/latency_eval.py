@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import time
@@ -6,7 +6,7 @@ import time
 from agents.orchestrator import T2DOrchestrator
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 DEMO_QUERIES = [
     "In tirzepatide-treated patients with established cardiovascular disease, which post-marketing FAERS safety signals merit closer review beyond the expected gastrointestinal profile?",
     "For weekly incretin selection, summarize the direct phase 3 HbA1c and weight efficacy gap between tirzepatide and semaglutide in SURPASS-2.",
@@ -15,7 +15,7 @@ DEMO_QUERIES = [
 ]
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> dict:
     orchestrator = T2DOrchestrator()
     results = []
@@ -40,7 +40,7 @@ def run() -> dict:
     return {"num_queries": len(results), "average_latency_ms": average, "results": results}
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     import json
 

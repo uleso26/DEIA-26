@@ -1,3 +1,3 @@
 """Storage builders for the offline MVP."""
 
-# Package marker for storage build steps.
+# Mark the processing package for imports and discovery

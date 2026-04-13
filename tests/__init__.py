@@ -1,3 +1,3 @@
 """Test package."""
 
-# Package marker for the automated test suite.
+# Mark the tests package for imports and discovery

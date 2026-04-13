@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from functools import lru_cache
@@ -12,13 +12,13 @@ from tools.context_tools import query_chembl, query_uniprot
 from agents.base_agent import citation, unique_strings
 
 
-# Load opentargets.
+# Load opentargets from the active data source
 @lru_cache(maxsize=1)
 def _load_opentargets() -> list[dict[str, object]]:
     return load_json(raw_input_path("opentargets.json"))
 
 
-# Molecule Agent.
+# Define the molecule agent and its specialist response logic
 class MoleculeAgent:
     """Summarize mechanism, target, and pharmacology context for Q4 queries."""
 

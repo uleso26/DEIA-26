@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import argparse
@@ -10,14 +10,14 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import WHO_GHO_DATA
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 COUNTRY_CODES = {
     "United Kingdom": "GBR",
     "United States": "USA",
 }
 
 
-# Extract values.
+# Extract values from the upstream payload
 def _extract_values(payload: object) -> list[dict[str, object]]:
     if isinstance(payload, dict):
         if isinstance(payload.get("value"), list):
@@ -27,7 +27,7 @@ def _extract_values(payload: object) -> list[dict[str, object]]:
     return []
 
 
-# Lookup indicator.
+# Look up the WHO indicator configuration for a requested measure
 def _lookup_indicator() -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("WHO_GHO_BASE_URL", "https://ghoapi.azureedge.net/api").rstrip("/")
     query = quote("contains(IndicatorName,'Diabetes prevalence')", safe="(),'")
@@ -70,7 +70,7 @@ def _lookup_indicator() -> tuple[dict[str, object] | None, dict[str, object]]:
     )
 
 
-# Fetch country record.
+# Fetch country record from the configured source
 def _fetch_country_record(seed_record: dict[str, object], indicator_code: str) -> tuple[dict[str, object] | None, dict[str, object]]:
     country = str(seed_record["country"])
     country_code = COUNTRY_CODES.get(country)
@@ -131,7 +131,7 @@ def _fetch_country_record(seed_record: dict[str, object], indicator_code: str) -
     )
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> str:
     use_live = live_ingestion_enabled("who")
     request_log: list[dict[str, object]] = []
@@ -177,13 +177,13 @@ def run() -> str:
     return str(path)
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write WHO GHO payload with optional live refresh.")
     parser.parse_args()
     print(run())
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -9,7 +9,7 @@ from core.paths import LOG_DIR, ensure_runtime_directories
 from core.runtime_utils import utc_now_iso
 
 
-# Trace Logger.
+# Define the trace logger that records workflow events and metadata
 class TraceLogger:
     """Collect and persist a lightweight execution trace for a single query."""
 

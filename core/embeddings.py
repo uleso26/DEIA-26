@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import os
@@ -14,7 +14,7 @@ from tools.ollama_client import OllamaClient
 logger = get_logger(__name__)
 
 
-# Normalize rows.
+# Normalize rows before reuse in the pipeline
 def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
     normalized: list[list[float]] = []
     for row in rows:
@@ -26,7 +26,7 @@ def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
     return normalized
 
 
-# Load sentence transformer.
+# Load sentence transformer from the active data source
 @lru_cache(maxsize=4)
 def _load_sentence_transformer(model_name: str, local_only: bool) -> Any:
     from sentence_transformers import SentenceTransformer  # type: ignore
@@ -34,7 +34,7 @@ def _load_sentence_transformer(model_name: str, local_only: bool) -> Any:
     return SentenceTransformer(model_name, local_files_only=local_only)
 
 
-# Embed with sentence transformers.
+# Generate embeddings with the local sentence transformers model
 def _embed_with_sentence_transformers(
     texts: list[str],
     model_name: str,
@@ -57,7 +57,7 @@ def _embed_with_sentence_transformers(
         }
 
 
-# Embed with Ollama.
+# Generate embeddings through the configured Ollama model
 def _embed_with_ollama(texts: list[str], model_name: str) -> tuple[list[list[float]] | None, dict[str, str]]:
     client = OllamaClient()
     vectors = client.embed(
@@ -78,7 +78,7 @@ def _embed_with_ollama(texts: list[str], model_name: str) -> tuple[list[list[flo
     }
 
 
-# Embed texts.
+# Generate embeddings for text batches with the active provider
 def embed_texts(
     texts: list[str],
     *,

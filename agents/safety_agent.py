@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from core.models import AgentSection
@@ -8,7 +8,7 @@ from tools.mcp_client import MCPClientManager
 from agents.base_agent import citation, unique_strings
 
 
-# Safety Agent.
+# Define the safety agent and its specialist response logic
 class SafetyAgent:
     """Assemble structured safety, label, and literature context for a drug."""
 

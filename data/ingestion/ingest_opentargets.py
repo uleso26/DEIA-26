@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import argparse
@@ -17,7 +17,7 @@ from data.ingestion.base import (
 from data.ingestion.seed_data import OPENTARGETS_DATA
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 TARGET_QUERY = """
 query TargetSummary($ensemblId: String!) {
   target(ensemblId: $ensemblId) {
@@ -29,7 +29,7 @@ query TargetSummary($ensemblId: String!) {
 """
 
 
-# Lookup ensembl id.
+# Look up the Ensembl identifier used for OpenTargets requests
 def _lookup_ensembl_id(symbol: str) -> tuple[str | None, dict[str, object]]:
     base_url = os.getenv("ENSEMBL_LOOKUP_BASE_URL", "https://rest.ensembl.org/lookup/symbol/homo_sapiens").rstrip("/")
     url = f"{base_url}/{symbol}?content-type=application/json"
@@ -50,7 +50,7 @@ def _lookup_ensembl_id(symbol: str) -> tuple[str | None, dict[str, object]]:
     )
 
 
-# Fetch live target.
+# Fetch live target from the configured source
 def _fetch_live_target(symbol: str) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
     ensembl_id, lookup_request = _lookup_ensembl_id(symbol)
     request_log = [lookup_request]
@@ -89,7 +89,7 @@ def _fetch_live_target(symbol: str) -> tuple[dict[str, object] | None, list[dict
     )
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> str:
     use_live = live_ingestion_enabled("opentargets")
     timestamp = utc_now_iso()
@@ -112,7 +112,7 @@ def run() -> str:
         if live_target:
             accepted_live_records += 1
             # Open Targets gives us live target identity. We keep the curated
-            # drug-target mapping so downstream questions stay stable.
+            # drug-target mapping so downstream questions stay stable
             normalized.update(
                 {
                     "canonical_target": live_target["approved_symbol"],
@@ -147,13 +147,13 @@ def run() -> str:
     return str(path)
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write OpenTargets payload with optional live target refresh.")
     parser.parse_args()
     print(run())
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

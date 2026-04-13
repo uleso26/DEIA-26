@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -8,7 +8,7 @@ from mcp_servers.base_server import BaseMCPStyleServer
 from core.storage import connect_sqlite
 
 
-# Safety Server.
+# Define the safety server and expose its MCP tools
 class SafetyServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("safety-mcp-server")
@@ -146,11 +146,11 @@ class SafetyServer(BaseMCPStyleServer):
         }
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     SafetyServer().run_cli()
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

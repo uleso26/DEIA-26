@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import re
@@ -13,11 +13,11 @@ from tools.query_understanding import ENTERPRISE_ROUTE_LABELS, build_query_under
 from tools.ollama_client import OllamaClient
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 VALID_ROUTE_LABELS = ENTERPRISE_ROUTE_LABELS
 
 
-# Router Agent.
+# Define the router agent and its specialist response logic
 class RouterAgent:
     """Route enterprise-core questions while keeping scope guardrails deterministic."""
 
@@ -47,7 +47,7 @@ class RouterAgent:
         match = re.search(r"\bQ[1-6]\b", (response or "").upper())
         label = match.group(0) if match else ""
         # Keep the heuristic route as the guardrail. Small local models are useful here,
-        # but they still drift on terse trial acronyms.
+        # but they still drift on terse trial acronyms
         if label in VALID_ROUTE_LABELS and label == fallback["question_class"]:
             return {**fallback, "question_class": label, "routing_mode": "ollama"}
         if label in VALID_ROUTE_LABELS:

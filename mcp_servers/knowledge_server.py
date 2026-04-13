@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import os
@@ -10,7 +10,7 @@ from data.canonical.resolver import get_resolver
 from mcp_servers.base_server import BaseMCPStyleServer
 
 
-# Knowledge Server.
+# Define the knowledge server and expose its MCP tools
 class KnowledgeServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("knowledge-mcp-server")
@@ -247,11 +247,11 @@ class KnowledgeServer(BaseMCPStyleServer):
         }
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     KnowledgeServer().run_cli()
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

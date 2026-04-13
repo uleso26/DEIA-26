@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -15,11 +15,11 @@ from governance.governance_checker import GovernanceChecker
 from tools.ollama_client import OllamaClient
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 LLM_SYNTHESIS_CLASSES = {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6"}
 
 
-# Synthesis Agent.
+# Define the synthesis agent and its specialist response logic
 class SynthesisAgent:
     """Merge agent sections into the final governed answer payload."""
 

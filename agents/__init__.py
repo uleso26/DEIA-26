@@ -1,3 +1,3 @@
 """Agent implementations."""
 
-# Package marker for the agent layer.
+# Mark the agents package for imports and discovery

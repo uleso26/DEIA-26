@@ -1,6 +1,6 @@
 """Compatibility facade over the split query, retrieval, and context helpers."""
 
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from tools.context_tools import (

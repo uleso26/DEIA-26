@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from core.paths import raw_input_path
@@ -10,7 +10,7 @@ from tools.mcp_client import MCPClientManager
 from agents.base_agent import citation, dedupe_citations, unique_strings
 
 
-# Knowledge Graph Agent.
+# Define the knowledge graph agent and its specialist response logic
 class KnowledgeGraphAgent:
     """Serve both pathway (Q3) and mechanism/graph (Q4) evidence flows."""
 

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -8,7 +8,7 @@ from mcp_servers.base_server import BaseMCPStyleServer
 from core.storage import load_collection_with_backend
 
 
-# Trials Server.
+# Define the trials server and expose its MCP tools
 class TrialsServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("trials-mcp-server")
@@ -97,11 +97,11 @@ class TrialsServer(BaseMCPStyleServer):
         }
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     TrialsServer().run_cli()
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

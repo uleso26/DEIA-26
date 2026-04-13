@@ -1,17 +1,17 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from core.models import AgentSection
 from agents.base_agent import citation, unique_strings
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 CDC_TYPE2_URL = "https://www.cdc.gov/diabetes/about/about-type-2-diabetes.html"
 CDC_COMPLICATIONS_URL = "https://www.cdc.gov/diabetes/diabetes-complications/"
 NHS_TYPE2_URL = "https://www.nhs.uk/conditions/type-2-diabetes/"
 
 
-# Scope Agent.
+# Define the scope agent that handles greetings help prompts and scope guardrails
 class ScopeAgent:
     """Handle scope, background, access, and urgent guardrail responses."""
 

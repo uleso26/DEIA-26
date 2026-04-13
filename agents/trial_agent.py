@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from core.models import AgentSection
@@ -8,7 +8,7 @@ from tools.mcp_client import MCPClientManager
 from agents.base_agent import citation, unique_strings
 
 
-# Trial Agent.
+# Define the trial agent and its specialist response logic
 class TrialAgent:
     """Handle trial-detail and efficacy-comparison questions."""
 

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -9,7 +9,7 @@ import pytest
 pytestmark = pytest.mark.integration
 
 
-# Test: safety mcp tool returns records.
+# Verify safety MCP tool returns records
 def test_safety_mcp_tool_returns_records(mcp_client) -> None:
     result = mcp_client.call_tool("safety", "search_adverse_events", {"drug": "tirzepatide"})
     assert result["canonical_entities"]["drug"]["canonical_id"] == "tirzepatide"
@@ -18,7 +18,7 @@ def test_safety_mcp_tool_returns_records(mcp_client) -> None:
     assert "requested_at" in result
 
 
-# Test: mcp list tools exposes structured schemas.
+# Verify MCP list tools exposes structured schemas
 def test_mcp_list_tools_exposes_structured_schemas(mcp_client) -> None:
     tools = mcp_client.list_tools("safety")
     assert len(tools) >= 1
@@ -27,7 +27,7 @@ def test_mcp_list_tools_exposes_structured_schemas(mcp_client) -> None:
     assert "outputSchema" in search_tool
 
 
-# Test: knowledge server falls back when live neo4j returns empty.
+# Verify knowledge server falls back when live Neo4j returns empty
 def test_knowledge_server_falls_back_when_live_neo4j_returns_empty() -> None:
     from mcp_servers.knowledge_server import KnowledgeServer
 
@@ -43,7 +43,7 @@ def test_knowledge_server_falls_back_when_live_neo4j_returns_empty() -> None:
     assert payload["source_metadata"]["storage"] == "neo4j_fallback"
 
 
-# Test: unknown drug safety tool returns empty records.
+# Verify unknown drug safety tool returns empty records
 def test_unknown_drug_safety_tool_returns_empty_records(mcp_client) -> None:
     result = mcp_client.call_tool("safety", "search_adverse_events", {"drug": "unknowncompound"})
     assert result["records"] == []

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import re
@@ -10,7 +10,7 @@ from core.storage import load_json
 from core.paths import CANONICAL_DIR
 
 
-# Canonical Match.
+# Define the canonical match data model shared across the platform
 @dataclass
 class CanonicalMatch:
     canonical_id: str
@@ -28,7 +28,7 @@ class CanonicalMatch:
         }
 
 
-# Canonical Resolver.
+# Define the canonical resolver used to normalize entity names
 class CanonicalResolver:
     """Resolve drugs, targets, and trials to the platform's canonical identifiers."""
 
@@ -120,7 +120,7 @@ class CanonicalResolver:
         return matches
 
 
-# Load canonical tables.
+# Load canonical tables from the active data source
 @lru_cache(maxsize=1)
 def _load_canonical_tables() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     return (
@@ -130,7 +130,7 @@ def _load_canonical_tables() -> tuple[dict[str, Any], dict[str, Any], dict[str, 
     )
 
 
-# Get resolver.
+# Fetch resolver for the downstream workflow
 @lru_cache(maxsize=1)
 def get_resolver() -> CanonicalResolver:
     return CanonicalResolver()

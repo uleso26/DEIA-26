@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from collections import defaultdict
@@ -8,7 +8,7 @@ from core.paths import ROOT
 from core.storage import load_json
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> dict:
     queries = load_json(ROOT / "evaluation" / "test_queries.json")
     router = RouterAgent()
@@ -32,7 +32,7 @@ def run() -> dict:
     }
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     import json
 

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -7,7 +7,7 @@ from core.models import AgentSection
 from agents.base_agent import unique_strings
 
 
-# Policy Agent.
+# Define the policy agent that handles clarification and evidence guardrails
 class PolicyAgent:
     """Handle clarification and answer-policy responses before domain execution."""
 

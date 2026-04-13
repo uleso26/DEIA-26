@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import argparse
@@ -9,7 +9,7 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import UNIPROT_DATA
 
 
-# Extract function.
+# Extract function from the upstream payload
 def _extract_function(comments: list[dict[str, object]], fallback: str) -> str:
     for comment in comments:
         comment_type = str(comment.get("commentType") or comment.get("type") or "")
@@ -23,7 +23,7 @@ def _extract_function(comments: list[dict[str, object]], fallback: str) -> str:
     return fallback
 
 
-# Fetch live target.
+# Fetch live target from the configured source
 def _fetch_live_target(seed_record: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("UNIPROT_BASE_URL", "https://rest.uniprot.org/uniprotkb").rstrip("/")
     accession = str(seed_record["uniprot_id"])
@@ -47,7 +47,7 @@ def _fetch_live_target(seed_record: dict[str, object]) -> tuple[dict[str, object
     if not has_record:
         return None, request_log
     # Keep the target mapping from the curated layer, but refresh the protein
-    # name and function text from UniProt when the live entry is available.
+    # name and function text from UniProt when the live entry is available
     normalized = {
         "canonical_target": seed_record["canonical_target"],
         "uniprot_id": accession,
@@ -59,7 +59,7 @@ def _fetch_live_target(seed_record: dict[str, object]) -> tuple[dict[str, object
     return normalized, request_log
 
 
-# Run.
+# Run the main workflow implemented by this module
 def run() -> str:
     use_live = live_ingestion_enabled("uniprot")
     records: list[dict[str, object]] = []
@@ -96,13 +96,13 @@ def run() -> str:
     return str(path)
 
 
-# Main.
+# Coordinate the main execution path for this module
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed UniProt payload.")
     parser.parse_args()
     print(run())
 
 
-# CLI entrypoint.
+# CLI entrypoint
 if __name__ == "__main__":
     main()

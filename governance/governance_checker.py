@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from typing import Any
@@ -8,7 +8,7 @@ import yaml
 from core.paths import ROOT
 
 
-# Governance Checker.
+# Define the governance checker that adds required caveats and framing
 class GovernanceChecker:
     """Apply answer-shaping rules and required caveats per question class."""
 

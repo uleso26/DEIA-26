@@ -1,3 +1,3 @@
 """Offline-first ingestion scripts."""
 
-# Package marker for ingestion adapters.
+# Mark the ingestion package for imports and discovery

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -26,7 +26,7 @@ from tools.native_tools import filter_recent_documents
 pytestmark = pytest.mark.integration
 
 
-# Test: auxiliary source tables are populated.
+# Verify auxiliary source tables are populated
 def test_auxiliary_source_tables_are_populated() -> None:
     connection = connect_sqlite()
     try:
@@ -52,7 +52,7 @@ def test_auxiliary_source_tables_are_populated() -> None:
         assert count >= 1
 
 
-# Test: backend status reports expected shape.
+# Verify backend status reports expected shape
 def test_backend_status_reports_expected_shape() -> None:
     status = backend_status()
     assert "sqlite" in status
@@ -64,7 +64,7 @@ def test_backend_status_reports_expected_shape() -> None:
     assert "chroma_dir" in status["fallback_files"]
 
 
-# Test: retrieval manifest and lineage artifacts exist.
+# Verify retrieval manifest and lineage artifacts exist
 def test_retrieval_manifest_and_lineage_artifacts_exist() -> None:
     assert RETRIEVAL_MANIFEST.exists()
     for source_name in ["openfda", "clinicaltrials", "pubmed"]:
@@ -72,7 +72,7 @@ def test_retrieval_manifest_and_lineage_artifacts_exist() -> None:
         assert (PROV_LINEAGE_DIR / f"{source_name}.jsonl").exists()
 
 
-# Test: pubmed live guard rejects semantic mismatch.
+# Verify PubMed live guard rejects semantic mismatch
 def test_pubmed_live_guard_rejects_semantic_mismatch() -> None:
     seed_document = {
         "title": "SGLT2 inhibitors and heart failure outcomes in type 2 diabetes",
@@ -86,7 +86,7 @@ def test_pubmed_live_guard_rejects_semantic_mismatch() -> None:
     assert not _summary_matches_seed(seed_document, mismatched_summary)
 
 
-# Test: filter recent documents skips malformed dates.
+# Verify filter recent documents skips malformed dates
 def test_filter_recent_documents_skips_malformed_dates() -> None:
     documents = [
         {"publication_date": "2026-03-01", "title": "valid"},
@@ -96,7 +96,7 @@ def test_filter_recent_documents_skips_malformed_dates() -> None:
     assert [item["title"] for item in filtered] == ["valid"]
 
 
-# Test: filter recent documents honors reference date.
+# Verify filter recent documents honors reference date
 def test_filter_recent_documents_honors_reference_date() -> None:
     documents = [
         {"publication_date": "2025-10-02", "title": "inside"},
@@ -106,7 +106,7 @@ def test_filter_recent_documents_honors_reference_date() -> None:
     assert [item["title"] for item in filtered] == ["inside"]
 
 
-# Test: build dense index and chroma search return expected match.
+# Verify build dense index and chroma search return expected match
 def test_build_dense_index_and_chroma_search_return_expected_match() -> None:
     documents = [
         {"title": "GLP1R therapy", "text": "GLP1R incretin pathway evidence."},
@@ -149,7 +149,7 @@ def test_build_dense_index_and_chroma_search_return_expected_match() -> None:
     assert results[0]["title"] == "GLP1R therapy"
 
 
-# Test: append prov manifest writes valid prov record.
+# Verify append PROV manifest writes valid PROV record
 def test_append_prov_manifest_writes_valid_prov_record() -> None:
     source_name = f"unit_test_prov_{uuid.uuid4().hex[:8]}"
     path = append_prov_manifest(
@@ -169,7 +169,7 @@ def test_append_prov_manifest_writes_valid_prov_record() -> None:
     assert record["used"][0]["status_code"] == 200
 
 
-# Test: validate records filters missing required fields.
+# Verify validate records filters missing required fields
 def test_validate_records_filters_missing_required_fields() -> None:
     records = [
         {"title": "valid", "text": "ok"},
@@ -179,7 +179,7 @@ def test_validate_records_filters_missing_required_fields() -> None:
     assert filtered == [{"title": "valid", "text": "ok"}]
 
 
-# Test: repo does not ship real secrets or absolute local paths.
+# Verify repo does not ship real secrets or absolute local paths
 def test_repo_does_not_ship_real_secrets_or_absolute_local_paths() -> None:
     sensitive_files = [
         Path("README.md"),

@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import threading
@@ -12,7 +12,7 @@ from api.http_server import create_http_server, dispatch_request, resolve_static
 pytestmark = pytest.mark.unit
 
 
-# Stub Runtime.
+# Provide a lightweight runtime stub for this test module
 class StubRuntime:
     def run_query(self, query: str) -> dict[str, object]:
         return {
@@ -30,7 +30,7 @@ class StubRuntime:
         return
 
 
-# Test: http api query endpoint returns json.
+# Verify HTTP API query endpoint returns JSON
 def test_http_api_query_endpoint_returns_json() -> None:
     status_code, payload = dispatch_request(
         "POST",
@@ -43,21 +43,21 @@ def test_http_api_query_endpoint_returns_json() -> None:
     assert payload["answer"] == "stub:What does SURPASS-3 show?"
 
 
-# Test: http api health endpoint returns ok.
+# Verify HTTP API health endpoint returns ok
 def test_http_api_health_endpoint_returns_ok() -> None:
     status_code, payload = dispatch_request("GET", "/health", None, StubRuntime())
     assert status_code == 200
     assert payload == {"ok": True}
 
 
-# Test: http api ignores query string on known path.
+# Verify HTTP API ignores query string on known path
 def test_http_api_ignores_query_string_on_known_path() -> None:
     status_code, payload = dispatch_request("GET", "/health?full=true", None, StubRuntime())
     assert status_code == 200
     assert payload == {"ok": True}
 
 
-# Test: static homepage asset resolves.
+# Verify static homepage asset resolves
 def test_static_homepage_asset_resolves() -> None:
     resolved = resolve_static_asset("/")
     assert resolved is not None
@@ -66,12 +66,12 @@ def test_static_homepage_asset_resolves() -> None:
     assert content_type == "text/html"
 
 
-# Test: static asset blocks traversal path.
+# Verify static asset blocks traversal path
 def test_static_asset_blocks_traversal_path() -> None:
     assert resolve_static_asset("/static/../README.md") is None
 
 
-# Test: stream answer chunks splits answer into sse sized segments.
+# Verify stream answer chunks splits answer into SSE sized segments
 def test_stream_answer_chunks_splits_answer_into_sse_sized_segments() -> None:
     chunks = stream_answer_chunks(
         "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen"
@@ -81,7 +81,7 @@ def test_stream_answer_chunks_splits_answer_into_sse_sized_segments() -> None:
     assert chunks[1] == "fifteen"
 
 
-# Test: sse query endpoint streams final payload.
+# Verify SSE query endpoint streams final payload
 def test_sse_query_endpoint_streams_final_payload() -> None:
     runtime = StubRuntime()
     try:

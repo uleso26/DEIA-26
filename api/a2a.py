@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -13,20 +13,20 @@ from core.models import FinalResponse
 from core.runtime_utils import utc_now_iso
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 PLATFORM_AGENT_KEY = "platform"
 TRIAL_AGENT_KEY = "trial-evidence"
 PUBLIC_AGENT_CARD_PATH = "/.well-known/agent-card.json"
 A2A_TASK_LIMIT = 128
 
 
-# A2A Runtime.
+# Define the runtime protocol expected by the thin A2A facade
 class A2ARuntime(Protocol):
     def run_query(self, query: str) -> dict[str, Any]:
         ...
 
 
-# A2A Stream Plan.
+# Define the A2A stream plan that describes one streamed request
 @dataclass(frozen=True)
 class A2AStreamPlan:
     agent_key: str
@@ -35,7 +35,7 @@ class A2AStreamPlan:
     base_url: str
 
 
-# TaskStore.
+# Keep a small in-memory task store for recent A2A request state
 class _TaskStore:
     """Keep a small in-memory record of recent A2A task results."""
 
@@ -70,20 +70,20 @@ class _TaskStore:
 _TASKS = _TaskStore()
 
 
-# Clear A2A tasks.
+# Clear A2A tasks from the in-memory runtime state
 def clear_a2a_tasks() -> None:
     """Reset in-memory A2A task state for tests."""
     _TASKS.clear()
 
 
-# Is A2A path.
+# Check whether A2A path applies to the current input
 def is_a2a_path(path: str) -> bool:
     """Return True when the path belongs to the thin A2A facade."""
     normalized_path = urlsplit(path).path or path
     return normalized_path == PUBLIC_AGENT_CARD_PATH or normalized_path.startswith("/a2a/")
 
 
-# Dispatch A2A request.
+# Dispatch A2A request to the appropriate handler
 def dispatch_a2a_request(
     method: str,
     path: str,
@@ -132,7 +132,7 @@ def dispatch_a2a_request(
     return 404, {"ok": False, "error": f"Unknown A2A path: {normalized_path}"}
 
 
-# Prepare A2A stream.
+# Prepare A2A stream for the next execution step
 def prepare_a2a_stream(
     path: str,
     payload: dict[str, Any] | None,
@@ -154,7 +154,7 @@ def prepare_a2a_stream(
     return A2AStreamPlan(agent_key=agent_key, request_payload=request_payload, query=query, base_url=base_url)
 
 
-# Generate stream payloads.
+# Generate stream payloads from the current runtime state
 def generate_stream_payloads(plan: A2AStreamPlan, runtime: A2ARuntime) -> Iterable[dict[str, Any]]:
     """Yield a small sequence of SSE-ready payloads for A2A streaming."""
     task_id = _new_task_id(plan.agent_key)
@@ -209,7 +209,7 @@ def generate_stream_payloads(plan: A2AStreamPlan, runtime: A2ARuntime) -> Iterab
     yield {"task": completed_task}
 
 
-# Build agent card.
+# Build agent card for the downstream execution path
 def build_agent_card(agent_key: str, base_url: str, *, extended: bool = False) -> dict[str, Any]:
     """Build an A2A-compatible agent card for the requested agent surface."""
     if agent_key == PLATFORM_AGENT_KEY:
@@ -313,7 +313,7 @@ def build_agent_card(agent_key: str, base_url: str, *, extended: bool = False) -
     return card
 
 
-# Extract message text.
+# Extract message text from the upstream payload
 def extract_message_text(payload: dict[str, Any]) -> str:
     """Extract a free-text request from a permissive A2A request body."""
     direct_query = payload.get("query") or payload.get("text")
@@ -340,7 +340,7 @@ def extract_message_text(payload: dict[str, Any]) -> str:
     return ""
 
 
-# Match A2A route.
+# Match A2A route against the supported routes or entities
 def _match_a2a_route(path: str) -> tuple[str, str, str | None] | None:
     normalized_path = urlsplit(path).path or path
     if normalized_path in {
@@ -377,7 +377,7 @@ def _match_a2a_route(path: str) -> tuple[str, str, str | None] | None:
     return None
 
 
-# Handle message send.
+# Handle message send within the current service surface
 def _handle_message_send(
     agent_key: str,
     payload: dict[str, Any],
@@ -415,7 +415,7 @@ def _handle_message_send(
     return 200, {"task": task}
 
 
-# Run A2A agent.
+# Run the selected A2A agent and normalize its response metadata
 def _run_a2a_agent(agent_key: str, query: str, runtime: A2ARuntime) -> dict[str, Any]:
     if agent_key == PLATFORM_AGENT_KEY:
         response_payload = runtime.run_query(query)
@@ -430,7 +430,7 @@ def _run_a2a_agent(agent_key: str, query: str, runtime: A2ARuntime) -> dict[str,
     return response_payload
 
 
-# Run trial specialist.
+# Run the trial specialist surface and synthesize its final answer
 def _run_trial_specialist(query: str, runtime: A2ARuntime) -> dict[str, Any]:
     trial_agent = getattr(runtime, "trial_agent", None)
     synthesis_agent = getattr(runtime, "synthesis_agent", None)
@@ -450,7 +450,7 @@ def _run_trial_specialist(query: str, runtime: A2ARuntime) -> dict[str, Any]:
     return final_response
 
 
-# Task payload.
+# Build the persisted task payload returned by the A2A facade
 def _task_payload(
     *,
     agent_key: str,
@@ -492,7 +492,7 @@ def _task_payload(
     return task
 
 
-# Artifacts for response.
+# Build response artifacts for completed A2A task payloads
 def _artifacts_for_response(task_id: str, response_payload: dict[str, Any]) -> list[dict[str, Any]]:
     return [
         {
@@ -512,7 +512,7 @@ def _artifacts_for_response(task_id: str, response_payload: dict[str, Any]) -> l
     ]
 
 
-# Skill.
+# Build a declared A2A skill record for an agent card
 def _skill(skill_id: str, description: str, tags: list[str], examples: list[str]) -> dict[str, Any]:
     return {
         "id": skill_id,
@@ -523,7 +523,7 @@ def _skill(skill_id: str, description: str, tags: list[str], examples: list[str]
     }
 
 
-# Agent id.
+# Build the stable A2A agent identifier for a given agent key
 def _agent_id(agent_key: str) -> str:
     return {
         PLATFORM_AGENT_KEY: "t2d-platform-orchestrator-agent",
@@ -531,7 +531,7 @@ def _agent_id(agent_key: str) -> str:
     }[agent_key]
 
 
-# Agent base path.
+# Build the base HTTP path for the selected A2A agent
 def _agent_base_path(agent_key: str) -> str:
     return {
         PLATFORM_AGENT_KEY: "/a2a/platform",
@@ -539,12 +539,12 @@ def _agent_base_path(agent_key: str) -> str:
     }[agent_key]
 
 
-# New task id.
+# Generate a new task identifier for the A2A facade
 def _new_task_id(agent_key: str) -> str:
     return f"{agent_key}-{uuid4().hex[:12]}"
 
 
-# Extract context id.
+# Extract the context identifier from an A2A task payload
 def _extract_context_id(payload: dict[str, Any]) -> str:
     context_id = payload.get("contextId")
     if isinstance(context_id, str) and context_id.strip():

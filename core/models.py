@@ -1,11 +1,11 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
-# Citation.
+# Define the citation data model shared across the platform
 @dataclass
 class Citation:
     source: str
@@ -19,7 +19,7 @@ class Citation:
         return asdict(self)
 
 
-# Agent Section.
+# Define the agent section data model shared across the platform
 @dataclass
 class AgentSection:
     agent: str
@@ -37,7 +37,7 @@ class AgentSection:
         return payload
 
 
-# Query Understanding.
+# Define the query understanding data model shared across the platform
 @dataclass
 class QueryUnderstanding:
     query: str
@@ -63,7 +63,7 @@ class QueryUnderstanding:
         return asdict(self)
 
 
-# Final Response.
+# Define the final response data model shared across the platform
 @dataclass
 class FinalResponse:
     question_class: str

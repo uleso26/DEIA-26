@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import json
@@ -13,7 +13,7 @@ from api.a2a import dispatch_a2a_request, generate_stream_payloads, is_a2a_path,
 from core.storage import backend_status
 
 
-# Query Runtime.
+# Define the runtime protocol expected by the local HTTP surface
 class QueryRuntime(Protocol):
     def run_query(self, query: str) -> dict[str, Any]:
         ...
@@ -22,13 +22,13 @@ class QueryRuntime(Protocol):
         ...
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 MAX_REQUEST_BYTES = 1_000_000
 SSE_WORD_CHUNK_SIZE = 14
 
 
-# Stream answer chunks.
+# Split answer text into small chunks for SSE streaming
 def stream_answer_chunks(answer: str, chunk_size_words: int = SSE_WORD_CHUNK_SIZE) -> list[str]:
     """Split an answer into small word chunks for local SSE streaming."""
     words = answer.split()
@@ -41,7 +41,7 @@ def stream_answer_chunks(answer: str, chunk_size_words: int = SSE_WORD_CHUNK_SIZ
     return chunks
 
 
-# Platform HTTP Request Handler.
+# Define the HTTP handler used by the local API surface
 class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
     """Small local HTTP surface for demo use; auth and rate limiting are out of scope."""
 
@@ -65,8 +65,8 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
-        # The local demo SSE endpoint emits a finite sequence of events per query.
-        # Closing the connection after the final event avoids hanging clients and CI tests.
+        # The local demo SSE endpoint emits a finite sequence of events per query
+        # Closing the connection after the final event avoids hanging clients and CI tests
         self.send_header("Connection", "close")
         self.end_headers()
 
@@ -182,7 +182,7 @@ class PlatformHTTPRequestHandler(BaseHTTPRequestHandler):
         self.close_connection = True
 
 
-# Dispatch request.
+# Dispatch request to the appropriate handler
 def dispatch_request(
     method: str,
     path: str,
@@ -217,7 +217,7 @@ def dispatch_request(
     return 405, {"ok": False, "error": f"Unsupported method: {method}"}
 
 
-# Resolve static asset.
+# Resolve a safe static asset path for the local UI
 def resolve_static_asset(path: str) -> tuple[Path, str] | None:
     normalized_path = urlsplit(path).path or path
     static_root = STATIC_DIR.resolve()
@@ -243,7 +243,7 @@ def resolve_static_asset(path: str) -> tuple[Path, str] | None:
     return resolved_asset_path, content_type
 
 
-# Create HTTP server.
+# Create HTTP server for the local runtime
 def create_http_server(host: str, port: int, runtime: QueryRuntime) -> ThreadingHTTPServer:
     """Create a local HTTP server bound to a supplied orchestrator-like runtime."""
     class PlatformHTTPServer(ThreadingHTTPServer):
@@ -256,7 +256,7 @@ def create_http_server(host: str, port: int, runtime: QueryRuntime) -> Threading
     return PlatformHTTPServer((host, port), Handler)
 
 
-# Serve HTTP API.
+# Start the local HTTP API and keep it serving requests
 def serve_http_api(host: str = "127.0.0.1", port: int = 8000) -> None:
     """Run the local HTTP API until interrupted."""
     runtime = T2DOrchestrator()

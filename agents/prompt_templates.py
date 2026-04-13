@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import sys
@@ -6,7 +6,7 @@ import sys
 from core.models import AgentSection
 
 
-# Module constants.
+# Define the constants lookup tables and settings used below
 ROUTER_SYSTEM_TEMPLATE = (
     "You are a strict diabetes-enterprise query router. "
     "Scoped routes such as Q0, Q7, Q8, and Q9 are handled before you run. "
@@ -59,16 +59,16 @@ PLAN_REFINEMENT_HUMAN_TEMPLATE = (
 )
 
 
-# Supports LangChain prompt rendering.
+# Check whether LangChain prompt rendering is safe in this runtime
 def _supports_langchain_prompt_rendering() -> bool:
     # LangChain prompt rendering is optional here. The main 3.11 runtime works
     # cleanly, but the local Anaconda 3.13 pytest interpreter imports a heavier
     # optional ML stack. Keep the guard explicit so 3.13 falls back to plain
-    # string formatting instead of failing silently during tests.
+    # string formatting instead of failing silently during tests
     return sys.version_info < (3, 13)
 
 
-# Render with LangChain.
+# Render with LangChain for the current interface
 def _render_with_langchain(system_template: str, human_template: str, **kwargs: str) -> tuple[str, str] | None:
     if not _supports_langchain_prompt_rendering():
         return None
@@ -90,7 +90,7 @@ def _render_with_langchain(system_template: str, human_template: str, **kwargs: 
         return None
 
 
-# Render Ollama messages.
+# Render Ollama messages for the current interface
 def render_ollama_messages(system_template: str, human_template: str, **kwargs: str) -> tuple[str, str]:
     rendered = _render_with_langchain(system_template, human_template, **kwargs)
     if rendered:
@@ -98,7 +98,7 @@ def render_ollama_messages(system_template: str, human_template: str, **kwargs: 
     return system_template, human_template.format(**kwargs)
 
 
-# Section block for prompt.
+# Build a reusable section block for synthesis prompts
 def section_block_for_prompt(sections: list[AgentSection]) -> str:
     return "\n\n".join(
         [

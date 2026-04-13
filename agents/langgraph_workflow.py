@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import operator
@@ -12,7 +12,7 @@ from core.tracing import TraceLogger
 from tools.query_understanding import assess_evidence_sufficiency, build_evidence_plan, question_class_name
 
 
-# Orchestrator State.
+# Define the state shape carried through the orchestration flow
 class OrchestratorState(TypedDict, total=False):
     query: str
     trace: TraceLogger
@@ -26,7 +26,7 @@ class OrchestratorState(TypedDict, total=False):
     response: dict[str, Any]
 
 
-# T2D Lang Graph Workflow.
+# Define the T2D LangGraph workflow that coordinates end to end query execution
 class T2DLangGraphWorkflow:
     """Graph-based execution plan for the T2D intelligence workflow."""
 

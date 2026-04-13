@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 from core.paths import GRAPH_FILE, RETRIEVAL_MANIFEST, SQLITE_DB
@@ -33,7 +33,7 @@ from core.runtime_utils import env_flag
 from tools.mcp_client import MCPClientManager
 
 
-# Bootstrap runtime.
+# Bootstrap local data stores and retrieval assets before serving queries
 def bootstrap_runtime(sync_to_mongodb: bool | None = None, sync_to_neo4j: bool | None = None) -> None:
     """Rebuild runtime artefacts from the current fixture or live-ingested data."""
     ingest_openfda()
@@ -59,7 +59,7 @@ def bootstrap_runtime(sync_to_mongodb: bool | None = None, sync_to_neo4j: bool |
     build_retrieval_index()
 
 
-# T2D Orchestrator.
+# Define the T2D orchestrator that wires runtime setup agents and workflows
 class T2DOrchestrator:
     """Coordinate query routing, specialist agent execution, and final synthesis."""
 

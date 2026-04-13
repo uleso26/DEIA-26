@@ -1,4 +1,4 @@
-# Imports.
+# Import the libraries helpers and shared models needed in this file
 from __future__ import annotations
 
 import argparse
@@ -9,7 +9,7 @@ from mcp.server.fastmcp import FastMCP
 from core.runtime_utils import utc_now_iso
 
 
-# Base MCP Style Server.
+# Define the base MCP style server and expose its MCP tools
 class BaseMCPStyleServer:
     """Thin wrapper around the MCP SDK while preserving local server ergonomics."""
 

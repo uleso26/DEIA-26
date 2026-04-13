@@ -1,3 +1,3 @@
 """Evaluation scripts for routing, retrieval, groundedness, and latency."""
 
-# Package marker for evaluation modules.
+# Mark the evaluation package for imports and discovery
