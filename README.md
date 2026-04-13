@@ -1,6 +1,6 @@
 # T2D Therapeutic Intelligence Platform
 
-This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intelligence platform. The implementation is deliberately dependency-light so it can run offline with curated seed data, while keeping clear upgrade points for MongoDB, Neo4j, local LLM orchestration, and dense retrieval backends.
+An enterprise intelligence platform for Type 2 diabetes that combines multi-source ingestion, multi-store serving, and governed agent-based evidence synthesis. The implementation stays dependency-light enough to run locally with curated seed data while preserving clear upgrade paths for MongoDB, Neo4j, local LLM orchestration, and dense retrieval backends.
 
 ## What is implemented
 
@@ -14,7 +14,7 @@ This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intell
 - Thin A2A-compatible interoperability surfaces for the platform orchestrator and a trial-evidence specialist, with agent cards, declared skills, task lookup, and streaming message endpoints
 - Evaluation scripts for retrieval, routing, groundedness, and latency
 - Native context tools for WHO population context plus DrugBank and synthetic clinical context
-- Ingestion lineage manifests written under `logs/ingestion_lineage/`
+- W3C PROV-style ingestion lineage manifests for source tracking and transformation history
 - A lightweight HTTP API for `/health`, `/backend-status`, and `/query`
 
 ## Architecture
@@ -22,7 +22,7 @@ This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intell
 ```mermaid
 graph TD
     subgraph Ingestion
-        S1[OpenFDA] --> RAW[runtime/raw/]
+        S1[OpenFDA] --> RAW[Runtime Raw Layer]
         S2[ClinicalTrials.gov] --> RAW
         S3[PubMed] --> RAW
         S4[OpenTargets] --> RAW
@@ -97,7 +97,7 @@ The platform now uses a broader routed scope instead of forcing every query into
 python3 main.py bootstrap
 ```
 
-Bootstrap writes refreshed runtime raw payloads under `runtime/raw/` so normal project use does not rewrite the tracked fixture files under `data/raw/`.
+Bootstrap refreshes the local runtime artifacts without modifying the tracked seed fixtures bundled with the codebase.
 
 Runtime configuration is environment-driven through `.env` or shell variables. There is no separate YAML runtime config layer to keep in sync with the code.
 
@@ -152,7 +152,7 @@ A2A-compatible interoperability endpoints:
 - `POST /a2a/trial-evidence/v1/message:stream`
 - `GET /a2a/trial-evidence/v1/tasks` and `GET /a2a/trial-evidence/v1/tasks/{task_id}`
 
-The built-in HTTP server is a local MVP surface. It now caps request bodies, but it still intentionally skips auth and rate limiting. Internal execution still runs through LangGraph and MCP; the A2A layer is a thin external interoperability facade rather than a replacement for the main runtime.
+The built-in HTTP server is a lightweight local serving surface. It now caps request bodies, but it still intentionally skips auth and rate limiting. Internal execution still runs through LangGraph and MCP; the A2A layer is a thin external interoperability facade rather than a replacement for the main runtime.
 
 5. Run evaluations:
 
@@ -163,7 +163,7 @@ python3 main.py eval latency
 python3 main.py eval retrieval
 ```
 
-Committed evaluation outputs are stored under `evaluation/results/`.
+Evaluation outputs are included with the codebase for reproducibility.
 
 ## Evaluation Results
 
@@ -174,15 +174,9 @@ Committed evaluation outputs are stored under `evaluation/results/`.
 | Groundedness | Pass rate (8 queries) | 1.0 |
 | Latency | Mean response time (4 queries) | 3668.35 ms |
 
-Detailed result bundles:
-- `evaluation/results/routing_results.json`
-- `evaluation/results/retrieval_results.json`
-- `evaluation/results/groundedness_results.json`
-- `evaluation/results/latency_results.json`
-
 ## Continuous Integration
 
-The repository now includes a minimal GitHub Actions workflow at `.github/workflows/ci.yml` that installs `requirements-dev.txt` on Python 3.11 and runs `pytest -q --tb=short`.
+The codebase includes a minimal GitHub Actions workflow that installs the development dependencies on Python 3.11 and runs `pytest -q --tb=short`.
 
 ## Docker-backed runtime
 
@@ -246,19 +240,6 @@ Supported now:
 - `Give me a last 6 months evidence update on SGLT2 inhibitors in heart failure, prioritizing meta-analyses and large real-world studies.`
 - `For service planning, what is the adult diabetes prevalence in the United Kingdom?`
 
-High-value future extensions, not yet supported cleanly in the current MVP:
+High-value future extensions, not yet supported cleanly in the current platform:
 - `What are the latest list-price differences between semaglutide and tirzepatide, and how might that influence formulary positioning?`
 - `How do payer access or reimbursement constraints differ between oral and injectable GLP-1 therapies in routine diabetes practice?`
-
-A reusable query pack is available in `evaluation/diabetes_team_queries.json`.
-
-## Notes
-
-- The local runtime uses curated seed data so the system is testable without network access, but OpenFDA, ClinicalTrials.gov, PubMed, OpenTargets, ChEMBL, UniProt, WHO GHO, and DrugBank Open all support live-backed refresh paths when explicitly enabled.
-- Synthetic patient profiles are included as an auxiliary privacy-safe context layer, while the main MVP still centers on public biomedical data rather than real patient records.
-- `SQLite` is the prototype relational store; the code keeps separate integration points for production migration to PostgreSQL.
-- File-backed fallbacks are used when `pymongo`, `neo4j`, Ollama, or a formal `mcp` package are unavailable.
-- The retrieval layer now uses chunked hybrid retrieval: ChromaDB-backed dense search when embeddings are available, plus lexical retrieval and domain-aware reranking as the local fallback.
-- A notebook demo for the WHO and clinical context tools is available at `notebooks/source_context_demo.ipynb`.
-- Operational and privacy notes are summarized in `SECURITY.md`.
-- The serving flow is now expressed as a LangGraph state graph, while keeping the domain agents, MCP tool contracts, and governance rules explicit in plain Python. Prompt rendering stays lightweight and only uses optional LangChain-core formatting where the local interpreter supports it cleanly.
