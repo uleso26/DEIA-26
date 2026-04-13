@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -7,6 +8,7 @@ from mcp_servers.base_server import BaseMCPStyleServer
 from core.storage import connect_sqlite
 
 
+# Safety Server.
 class SafetyServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("safety-mcp-server")
@@ -144,9 +146,11 @@ class SafetyServer(BaseMCPStyleServer):
         }
 
 
+# Main.
 def main() -> None:
     SafetyServer().run_cli()
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

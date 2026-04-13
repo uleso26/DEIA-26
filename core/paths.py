@@ -1,6 +1,8 @@
+# Imports.
 from pathlib import Path
 
 
+# Module constants.
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 FIXTURE_RAW_DIR = DATA_DIR / "raw"
@@ -18,11 +20,13 @@ GRAPH_FILE = PROCESSED_DIR / "neo4j_graph.json"
 RETRIEVAL_MANIFEST = PROCESSED_DIR / "retrieval_manifest.json"
 
 
+# Ensure runtime directories.
 def ensure_runtime_directories() -> None:
     for path in (RAW_DIR, PROCESSED_DIR, CHROMA_DIR, MONGO_DIR, LOG_DIR, LINEAGE_DIR, PROV_LINEAGE_DIR):
         path.mkdir(parents=True, exist_ok=True)
 
 
+# Raw input path.
 def raw_input_path(filename: str) -> Path:
     """Read from runtime/raw when present, otherwise fall back to tracked fixtures."""
     runtime_path = RAW_DIR / filename
@@ -31,6 +35,7 @@ def raw_input_path(filename: str) -> Path:
     return FIXTURE_RAW_DIR / filename
 
 
+# Relative runtime path.
 def relative_runtime_path(path: Path) -> str:
     try:
         return str(path.resolve().relative_to(ROOT))

@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -10,12 +11,14 @@ from agents.router_agent import RouterAgent
 pytestmark = pytest.mark.integration
 
 
+# Test: canonical drug resolution.
 def test_canonical_drug_resolution(resolver) -> None:
     resolved = resolver.resolve_drug("Wegovy safety")
     assert resolved is not None
     assert resolved["canonical_id"] == "semaglutide"
 
 
+# Test: router falls back when ollama returns empty response.
 def test_router_falls_back_when_ollama_returns_empty_response() -> None:
     router = RouterAgent()
     with patch.object(router.ollama, "enabled", return_value=True), patch.object(
@@ -27,6 +30,7 @@ def test_router_falls_back_when_ollama_returns_empty_response() -> None:
     assert payload["question_class"] == "Q2"
 
 
+# Test: empty query defaults to q0.
 def test_empty_query_defaults_to_q0() -> None:
     router = RouterAgent()
     with patch.object(router.ollama, "enabled", return_value=False):
@@ -34,12 +38,32 @@ def test_empty_query_defaults_to_q0() -> None:
     assert payload["question_class"] == "Q0"
 
 
+# Test: greeting query routes to q0 conversation opening.
+def test_greeting_query_routes_to_q0_conversation_opening(orchestrator) -> None:
+    response = orchestrator.run_query("hi")
+    assert response["question_class"] == "Q0"
+    assert response["metadata"]["route_reason"] == "conversation_opening"
+    assert "outside the current t2d enterprise intelligence scope" not in response["answer"].lower()
+    assert "i can help with t2d" in response["answer"].lower()
+
+
+# Test: capability probe routes to q0 capability response.
+def test_capability_probe_routes_to_q0_capability_response(orchestrator) -> None:
+    response = orchestrator.run_query("what can you do?")
+    assert response["question_class"] == "Q0"
+    assert response["metadata"]["route_reason"] == "capability_probe"
+    assert "first-line treatment" in response["answer"].lower()
+    assert "outside the current t2d enterprise intelligence scope" not in response["answer"].lower()
+
+
+# Test: general disease question routes to q7.
 def test_general_disease_question_routes_to_q7(orchestrator) -> None:
     response = orchestrator.run_query("Can diabetes lead to death? How serious is this disease?")
     assert response["question_class"] == "Q7"
     assert "can contribute to death" in response["answer"].lower()
 
 
+# Test: broad best drug query routes to treatment selection.
 def test_broad_best_drug_query_routes_to_treatment_selection(orchestrator) -> None:
     response = orchestrator.run_query("which drug is the best effective one for curing the T2D")
     assert response["question_class"] == "Q3"
@@ -48,18 +72,38 @@ def test_broad_best_drug_query_routes_to_treatment_selection(orchestrator) -> No
     assert response["metadata"].get("needs_clarification")
 
 
+# Test: initial treatment query routes to q3.
+def test_initial_treatment_query_routes_to_q3(orchestrator) -> None:
+    response = orchestrator.run_query("When a patient is newly diagnosed with T2D, what is the first Rx medicine?")
+    assert response["question_class"] == "Q3"
+    assert response["metadata"]["route_reason"] == "initial_treatment_selection"
+    assert "metformin is the first-line pharmacotherapy" in response["answer"].lower()
+
+
+# Test: ambiguous t2d scope query requests clarification instead of q7.
+def test_ambiguous_t2d_scope_query_requests_clarification_instead_of_q7(orchestrator) -> None:
+    response = orchestrator.run_query("Tell me about T2D medicines.")
+    assert response["question_class"] == "Q0"
+    assert response["metadata"]["route_reason"] == "t2d_scope_clarification"
+    assert response["metadata"].get("needs_clarification")
+    assert "arbitrary free-form tasks" not in " ".join(response["caveats"]).lower()
+
+
+# Test: pricing query routes to q8.
 def test_pricing_query_routes_to_q8(orchestrator) -> None:
     response = orchestrator.run_query("What is the latest list price difference between semaglutide and tirzepatide?")
     assert response["question_class"] == "Q8"
     assert "does not include a live pricing" in response["answer"].lower()
 
 
+# Test: personal urgent query routes to q9.
 def test_personal_urgent_query_routes_to_q9(orchestrator) -> None:
     response = orchestrator.run_query("I have diabetes and chest pain right now, what should I do?")
     assert response["question_class"] == "Q9"
     assert "not designed for emergency triage" in response["answer"].lower()
 
 
+# Test: creative request routes to q0.
 def test_creative_request_routes_to_q0(orchestrator) -> None:
     response = orchestrator.run_query("Write a poem about tirzepatide.")
     assert response["question_class"] == "Q0"

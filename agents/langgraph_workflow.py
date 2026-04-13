@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import operator
@@ -11,6 +12,7 @@ from core.tracing import TraceLogger
 from tools.query_understanding import assess_evidence_sufficiency, build_evidence_plan, question_class_name
 
 
+# Orchestrator State.
 class OrchestratorState(TypedDict, total=False):
     query: str
     trace: TraceLogger
@@ -24,6 +26,7 @@ class OrchestratorState(TypedDict, total=False):
     response: dict[str, Any]
 
 
+# T2D Lang Graph Workflow.
 class T2DLangGraphWorkflow:
     """Graph-based execution plan for the T2D intelligence workflow."""
 
@@ -163,7 +166,11 @@ class T2DLangGraphWorkflow:
         return {"sections": [section]}
 
     def _scope_node(self, state: OrchestratorState) -> OrchestratorState:
-        section = self.scope_agent.run(state["query"], question_class=state["understanding"]["question_class"])
+        section = self.scope_agent.run(
+            state["query"],
+            question_class=state["understanding"]["question_class"],
+            route_reason=state["understanding"].get("route_reason"),
+        )
         state["trace"].add_event("agent_section", section.to_dict())
         return {"sections": [section]}
 

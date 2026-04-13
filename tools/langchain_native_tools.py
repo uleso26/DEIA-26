@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -16,6 +17,7 @@ from tools.retrieval import (
 )
 
 
+# Search retrieval index native.
 @tool("search_retrieval_index_native")
 def search_retrieval_index_native(query: str, top_k: int = 4) -> dict[str, Any]:
     """Search the hybrid literature retrieval layer for evidence relevant to a query."""
@@ -34,18 +36,21 @@ def search_retrieval_index_native(query: str, top_k: int = 4) -> dict[str, Any]:
     }
 
 
+# Get population context native.
 @tool("get_population_context_native")
 def get_population_context_native(country: str | None = None, top_k: int = 2) -> dict[str, Any]:
     """Return WHO population surveillance context for a country or population query."""
     return get_population_context(country=country, top_k=top_k)
 
 
+# Get clinical context native.
 @tool("get_clinical_context_native")
 def get_clinical_context_native(query: str) -> dict[str, Any]:
     """Return DrugBank and synthetic patient context matched to the query."""
     return get_clinical_context(query)
 
 
+# Fetch trial results native.
 @tool("fetch_trial_results_native")
 def fetch_trial_results_native(query: str) -> dict[str, Any]:
     """Return curated trial-result records matched to the query."""
@@ -62,6 +67,7 @@ def fetch_trial_results_native(query: str) -> dict[str, Any]:
     }
 
 
+# Search PubMed safety native.
 @tool("search_pubmed_safety_native")
 def search_pubmed_safety_native(drug: str, top_k: int = 2) -> dict[str, Any]:
     """Return safety-oriented PubMed matches for a drug query."""
@@ -79,6 +85,7 @@ def search_pubmed_safety_native(drug: str, top_k: int = 2) -> dict[str, Any]:
     }
 
 
+# Module constants.
 NATIVE_LANGCHAIN_TOOLS: dict[str, BaseTool] = {
     item.name: item
     for item in [
@@ -91,6 +98,7 @@ NATIVE_LANGCHAIN_TOOLS: dict[str, BaseTool] = {
 }
 
 
+# Invoke native tool.
 def invoke_native_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     """Invoke a native LangChain tool and normalize the result payload."""
     if name not in NATIVE_LANGCHAIN_TOOLS:
@@ -101,6 +109,7 @@ def invoke_native_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+# Describe native tools.
 def describe_native_tools(tool_names: list[str] | None = None) -> list[dict[str, Any]]:
     """Describe the selected native LangChain tools for planner prompts."""
     selected_names = tool_names or list(NATIVE_LANGCHAIN_TOOLS)

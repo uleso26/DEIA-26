@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -17,6 +18,7 @@ from data.ingestion.base import (
 from data.ingestion.seed_data import DRUGBANK_OPEN_DATA
 
 
+# First match.
 def _first_match(patterns: list[str], text: str) -> str | None:
     for pattern in patterns:
         match = re.search(pattern, text, flags=re.IGNORECASE | re.DOTALL)
@@ -25,6 +27,7 @@ def _first_match(patterns: list[str], text: str) -> str | None:
     return None
 
 
+# Extract drug class.
 def _extract_drug_class(html: str, fallback: str) -> str:
     for label in [
         "Dual GIP/GLP-1 receptor agonist",
@@ -39,6 +42,7 @@ def _extract_drug_class(html: str, fallback: str) -> str:
     return fallback
 
 
+# Extract API drug class.
 def _extract_api_drug_class(payload: dict[str, object], fallback: str) -> str:
     for key in ["indication", "description", "mechanism_of_action"]:
         value = payload.get(key)
@@ -53,6 +57,7 @@ def _extract_api_drug_class(payload: dict[str, object], fallback: str) -> str:
     return fallback
 
 
+# Fetch live API drug.
 def _fetch_live_api_drug(seed_record: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object] | None]:
     api_key = os.getenv("DRUGBANK_API_KEY", "").strip()
     if not api_key:
@@ -95,6 +100,7 @@ def _fetch_live_api_drug(seed_record: dict[str, object]) -> tuple[dict[str, obje
     return normalized, request_log
 
 
+# Fetch live page drug.
 def _fetch_live_page_drug(seed_record: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object]]:
     page_url = f"https://go.drugbank.com/drugs/{seed_record['drugbank_id']}"
     response = fetch_text_response(
@@ -148,6 +154,7 @@ def _fetch_live_page_drug(seed_record: dict[str, object]) -> tuple[dict[str, obj
     return normalized, request_log
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("drugbank_open")
     request_log: list[dict[str, object]] = []
@@ -205,11 +212,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write DrugBank Open payload with optional live page scrape.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

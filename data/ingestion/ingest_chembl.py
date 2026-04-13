@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -8,6 +9,7 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import CHEMBL_DATA
 
 
+# Infer status.
 def _infer_status(max_phase: int, fallback: str) -> str:
     if max_phase >= 4:
         return "marketed"
@@ -16,6 +18,7 @@ def _infer_status(max_phase: int, fallback: str) -> str:
     return fallback
 
 
+# Normalize max phase.
 def _normalize_max_phase(value: object, fallback: int) -> int:
     try:
         return int(float(value))
@@ -23,6 +26,7 @@ def _normalize_max_phase(value: object, fallback: int) -> int:
         return fallback
 
 
+# Fetch live chembl.
 def _fetch_live_chembl(seed_record: dict[str, object]) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
     base_url = os.getenv("CHEMBL_BASE_URL", "https://www.ebi.ac.uk/chembl/api/data").rstrip("/")
     chembl_id = str(seed_record["chembl_id"])
@@ -77,6 +81,7 @@ def _fetch_live_chembl(seed_record: dict[str, object]) -> tuple[dict[str, object
     return normalized, request_log
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("chembl")
     records: list[dict[str, object]] = []
@@ -113,11 +118,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed ChEMBL payload.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

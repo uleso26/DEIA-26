@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import json
@@ -14,11 +15,13 @@ from core.runtime_utils import env_flag, utc_now_iso
 logger = get_logger(__name__)
 
 
+# Live ingestion enabled.
 def live_ingestion_enabled(source_name: str) -> bool:
     source_flag = f"USE_LIVE_{source_name.upper()}_INGESTION"
     return env_flag(source_flag, env_flag("USE_LIVE_INGESTION", False))
 
 
+# Write raw payload.
 def write_raw_payload(filename: str, payload: object) -> Path:
     ensure_runtime_directories()
     # Live and seed refreshes land in runtime/raw so normal project use does not
@@ -29,6 +32,7 @@ def write_raw_payload(filename: str, payload: object) -> Path:
     return path
 
 
+# Clone records.
 def clone_records(records: list[dict[str, object]], timestamp_fields: list[str] | None = None) -> list[dict[str, object]]:
     cloned_records = [dict(record) for record in records]
     if not timestamp_fields:
@@ -40,6 +44,7 @@ def clone_records(records: list[dict[str, object]], timestamp_fields: list[str] 
     return cloned_records
 
 
+# Validate records.
 def validate_records(
     records: list[dict[str, object]],
     required_fields: list[str],
@@ -66,6 +71,7 @@ def validate_records(
     return valid_records
 
 
+# Write seed payload.
 def write_seed_payload(
     source_name: str,
     filename: str,
@@ -91,6 +97,7 @@ def write_seed_payload(
     return str(path)
 
 
+# Validated remote url.
 def _validated_remote_url(url: str) -> str | None:
     parsed = urlsplit(url)
     if parsed.scheme not in {"http", "https"}:
@@ -100,6 +107,7 @@ def _validated_remote_url(url: str) -> str | None:
     return url
 
 
+# Build request.
 def _build_request(
     url: str,
     *,
@@ -114,6 +122,7 @@ def _build_request(
     return Request(safe_url, headers=headers or {}, data=data, method=method)
 
 
+# Try fetch JSON.
 def try_fetch_json(url: str, headers: dict[str, str] | None = None) -> object | None:
     request = _build_request(url, headers=headers)
     if request is None:
@@ -125,6 +134,7 @@ def try_fetch_json(url: str, headers: dict[str, str] | None = None) -> object | 
         return None
 
 
+# Fetch JSON response.
 def fetch_json_response(url: str, headers: dict[str, str] | None = None) -> dict[str, object]:
     request = _build_request(url, headers=headers)
     if request is None:
@@ -150,6 +160,7 @@ def fetch_json_response(url: str, headers: dict[str, str] | None = None) -> dict
         return {"ok": False, "url": url, "status_code": None, "payload": None, "error": str(exc)}
 
 
+# Post JSON response.
 def post_json_response(url: str, payload: dict[str, object], headers: dict[str, str] | None = None) -> dict[str, object]:
     request_headers = {"Content-Type": "application/json", **(headers or {})}
     request = _build_request(url, headers=request_headers, payload=payload, method="POST")
@@ -176,6 +187,7 @@ def post_json_response(url: str, payload: dict[str, object], headers: dict[str, 
         return {"ok": False, "url": url, "status_code": None, "payload": None, "error": str(exc)}
 
 
+# Fetch text response.
 def fetch_text_response(url: str, headers: dict[str, str] | None = None) -> dict[str, object]:
     request = _build_request(url, headers=headers)
     if request is None:
@@ -201,6 +213,7 @@ def fetch_text_response(url: str, headers: dict[str, str] | None = None) -> dict
         return {"ok": False, "url": url, "status_code": None, "payload": None, "error": str(exc)}
 
 
+# Append lineage manifest.
 def append_lineage_manifest(source_name: str, payload: dict[str, object]) -> Path:
     ensure_runtime_directories()
     path = LINEAGE_DIR / f"{source_name}.jsonl"
@@ -221,6 +234,7 @@ def append_lineage_manifest(source_name: str, payload: dict[str, object]) -> Pat
     return path
 
 
+# PROV payload.
 def _prov_payload(source_name: str, payload: dict[str, object]) -> dict[str, object]:
     recorded_at = str(payload.get("recorded_at") or utc_now_iso())
     raw_files = payload.get("raw_files") or {}
@@ -275,6 +289,7 @@ def _prov_payload(source_name: str, payload: dict[str, object]) -> dict[str, obj
     }
 
 
+# Append PROV manifest.
 def append_prov_manifest(source_name: str, payload: dict[str, object]) -> Path:
     ensure_runtime_directories()
     path = PROV_LINEAGE_DIR / f"{source_name}.jsonl"

@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -6,6 +7,7 @@ from core.models import AgentSection
 from agents.base_agent import unique_strings
 
 
+# Policy Agent.
 class PolicyAgent:
     """Handle clarification and answer-policy responses before domain execution."""
 
@@ -41,6 +43,7 @@ class PolicyAgent:
                 "clarification_reason": understanding.get("clarification_reason"),
                 "clarification_prompt": clarification_prompt,
                 "original_query": query,
+                "suppress_default_q0_caveat": question_class == "Q0",
                 "force_deterministic_synthesis": True,
             },
         )

@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import os
@@ -11,6 +12,7 @@ from core.runtime_utils import env_flag
 logger = get_logger(__name__)
 
 
+# Ollama Client.
 class OllamaClient:
     def __init__(self, base_url: str | None = None) -> None:
         configured_base_url = base_url or os.getenv("OLLAMA_BASE_URL") or "http://localhost:11434"

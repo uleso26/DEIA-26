@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import json
@@ -15,6 +16,7 @@ from tools.langchain_native_tools import describe_native_tools
 from tools.ollama_client import OllamaClient
 
 
+# Module constants.
 REACT_ELIGIBLE_QUESTION_CLASSES = {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6"}
 ALLOWED_EXECUTION_NODES = {
     "Q1": ["safety", "literature_q6"],
@@ -43,6 +45,7 @@ NATIVE_TOOL_HINTS = {
 }
 
 
+# Evidence Planner Agent.
 class EvidencePlannerAgent:
     """Bounded evidence planner that can refine execution steps without opening the workflow too far."""
 

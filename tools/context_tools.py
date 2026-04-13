@@ -1,5 +1,6 @@
 """Context and lookup helpers used by agents and native LangChain tools."""
 
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -10,6 +11,7 @@ from data.canonical.resolver import get_resolver
 from tools.retrieval import search_pubmed
 
 
+# Module constants.
 COUNTRY_ALIASES = {
     "united kingdom": "United Kingdom",
     "uk": "United Kingdom",
@@ -23,6 +25,7 @@ COUNTRY_ALIASES = {
 }
 
 
+# Query chembl.
 def query_chembl(drug: str) -> list[dict[str, Any]]:
     """Return ChEMBL records for a resolved drug name."""
     resolver = get_resolver()
@@ -33,6 +36,7 @@ def query_chembl(drug: str) -> list[dict[str, Any]]:
     return [item for item in documents if item["canonical_drug"] == resolved["canonical_id"]]
 
 
+# Query uniprot.
 def query_uniprot(target: str) -> list[dict[str, Any]]:
     """Return UniProt records for a resolved target name."""
     resolver = get_resolver()
@@ -43,6 +47,7 @@ def query_uniprot(target: str) -> list[dict[str, Any]]:
     return [item for item in documents if item["canonical_target"] == resolved["canonical_id"]]
 
 
+# Fetch trial results.
 def fetch_trial_results(query: str) -> list[dict[str, Any]]:
     """Return clinical-trial records matched by trial name or mentioned drugs."""
     resolver = get_resolver()
@@ -61,6 +66,7 @@ def fetch_trial_results(query: str) -> list[dict[str, Any]]:
     ]
 
 
+# Search external intelligence.
 def search_external_intelligence(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     """Search the external-intelligence collection with simple token overlap."""
     query_tokens = tokenize(query)
@@ -76,6 +82,7 @@ def search_external_intelligence(query: str, top_k: int = 3) -> list[dict[str, A
     return [item for _, item in scored[:top_k]]
 
 
+# Get population context.
 def get_population_context(country: str | None = None, top_k: int = 3) -> dict[str, Any]:
     """Return WHO population surveillance records from SQLite."""
     connection = connect_sqlite()
@@ -124,6 +131,7 @@ def get_population_context(country: str | None = None, top_k: int = 3) -> dict[s
     }
 
 
+# Infer country from query.
 def infer_country_from_query(query: str) -> str | None:
     """Resolve a supported country alias from a free-form query."""
     token_string = " ".join(tokenize(query))
@@ -133,6 +141,7 @@ def infer_country_from_query(query: str) -> str | None:
     return None
 
 
+# Get clinical context.
 def get_clinical_context(query: str, top_k: int = 2) -> dict[str, Any]:
     """Return DrugBank and synthetic-profile context matched to the query."""
     resolver = get_resolver()
@@ -266,6 +275,7 @@ def get_clinical_context(query: str, top_k: int = 2) -> dict[str, Any]:
     }
 
 
+# Get guideline context.
 def get_guideline_context(query: str) -> list[dict[str, Any]]:
     """Return quick guideline-oriented literature context for a query."""
     return search_pubmed(f"{query} guideline NICE ADA CKD", top_k=2)

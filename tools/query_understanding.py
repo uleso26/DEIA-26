@@ -1,5 +1,6 @@
 """Query classification, structured understanding, and evidence-plan helpers."""
 
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -9,6 +10,7 @@ from data.canonical.resolver import get_resolver
 from tools.context_tools import infer_country_from_query
 
 
+# Module constants.
 QUESTION_CLASS_DETAILS = {
     "Q0": {
         "name": "Out-of-Scope Or Clarification",
@@ -220,23 +222,106 @@ NON_ENTERPRISE_REQUEST_TERMS = {
     "email draft",
     "cover letter",
 }
+GREETING_TERMS = {
+    "hi",
+    "hello",
+    "hey",
+    "good morning",
+    "good afternoon",
+    "good evening",
+    "hiya",
+}
+CAPABILITY_PROBE_TERMS = {
+    "what can you do",
+    "how can you help",
+    "help",
+    "what do you do",
+    "what can this do",
+}
+INITIAL_TREATMENT_TERMS = {
+    "first rx",
+    "first-line",
+    "first line",
+    "initial therapy",
+    "initial treatment",
+    "newly diagnosed",
+    "just diagnosed",
+    "starting medicine",
+    "starting medication",
+    "first prescription",
+    "start treatment",
+    "start with",
+    "first medicine",
+    "first medication",
+}
+INITIAL_TREATMENT_CONTEXT_TERMS = {
+    "medicine",
+    "medication",
+    "drug",
+    "therapy",
+    "treatment",
+    "rx",
+    "prescription",
+    "pharmacotherapy",
+}
+DISEASE_BACKGROUND_TERMS = {
+    "what is t2d",
+    "what is type 2 diabetes",
+    "what is diabetes",
+    "type 2 diabetes is",
+    "complication",
+    "complications",
+    "serious",
+    "dangerous",
+    "fatal",
+    "life expectancy",
+    "lead to death",
+    "die from diabetes",
+    "affect kidneys",
+    "affect eyes",
+    "affect heart",
+}
 
 
+# Question class name.
 def question_class_name(question_class: str) -> str:
     """Return the user-facing label for a routed question class."""
     return QUESTION_CLASS_DETAILS.get(question_class, {}).get("name", question_class)
 
 
-def interaction_mode_name(question_class: str) -> str:
-    """Map a routed question class to the broader interaction mode."""
+# Interaction mode name.
+def interaction_mode_name(question_class: str, route_reason: str | None = None) -> str:
+    """Map a routed question to the broader interaction mode."""
+    if route_reason == "conversation_opening":
+        return "conversation_opening"
+    if route_reason == "capability_probe":
+        return "capability_probe"
+    if route_reason == "t2d_scope_clarification":
+        return "needs_clarification"
     scope_family = QUESTION_CLASS_DETAILS.get(question_class, {}).get("scope_family", "scope_guardrail")
     return INTERACTION_MODE_BY_SCOPE.get(scope_family, "out_of_scope")
 
 
+# Primary intent name.
+def primary_intent_name(question_class: str, route_reason: str | None = None) -> str:
+    """Map a routed question to the more specific response intent."""
+    if route_reason == "conversation_opening":
+        return "conversation_opening"
+    if route_reason == "capability_probe":
+        return "capability_probe"
+    if route_reason == "initial_treatment_selection":
+        return "initial_treatment"
+    if route_reason == "t2d_scope_clarification":
+        return "scope_clarification"
+    return PRIMARY_INTENT_BY_QUESTION_CLASS[question_class]
+
+
+# Empty scores.
 def _empty_scores() -> dict[str, int]:
     return {question_class: 0 for question_class in QUESTION_CLASS_DETAILS}
 
 
+# Route payload.
 def _route_payload(question_class: str, scores: dict[str, int], route_reason: str) -> dict[str, Any]:
     details = QUESTION_CLASS_DETAILS[question_class]
     return {
@@ -248,6 +333,7 @@ def _route_payload(question_class: str, scores: dict[str, int], route_reason: st
     }
 
 
+# Infer objective terms.
 def _infer_objective_terms(lowered: str) -> list[str]:
     objectives: list[str] = []
     for objective_name, hints in DECISION_OBJECTIVE_HINTS.items():
@@ -256,6 +342,33 @@ def _infer_objective_terms(lowered: str) -> list[str]:
     return objectives
 
 
+# Is capability probe.
+def _is_capability_probe(lowered: str) -> bool:
+    return lowered in CAPABILITY_PROBE_TERMS or any(term in lowered for term in CAPABILITY_PROBE_TERMS if len(term) > 4)
+
+
+# Is initial treatment query.
+def _is_initial_treatment_query(lowered: str) -> bool:
+    has_initial_marker = any(term in lowered for term in INITIAL_TREATMENT_TERMS)
+    if not has_initial_marker:
+        return False
+    return any(term in lowered for term in INITIAL_TREATMENT_CONTEXT_TERMS) or any(
+        term in lowered
+        for term in [
+            "diagnosed with t2d",
+            "diagnosed with type 2 diabetes",
+            "type 2 diabetes",
+            "t2d",
+        ]
+    )
+
+
+# Is explicit disease background query.
+def _is_explicit_disease_background_query(lowered: str) -> bool:
+    return any(term in lowered for term in DISEASE_BACKGROUND_TERMS)
+
+
+# Confidence from scores.
 def _confidence_from_scores(question_class: str, scores: dict[str, int]) -> str:
     if question_class not in ENTERPRISE_ROUTE_LABELS:
         return "high"
@@ -269,6 +382,7 @@ def _confidence_from_scores(question_class: str, scores: dict[str, int]) -> str:
     return "medium"
 
 
+# Extract query entities.
 def extract_query_entities(query: str) -> dict[str, Any]:
     """Resolve the main structured entities needed for routing and planning."""
     resolver = get_resolver()
@@ -284,6 +398,7 @@ def extract_query_entities(query: str) -> dict[str, Any]:
     }
 
 
+# Build query understanding.
 def build_query_understanding(query: str) -> QueryUnderstanding:
     """Turn a raw query into the structured routing state used by the workflow."""
     route = classify_query(query)
@@ -299,12 +414,19 @@ def build_query_understanding(query: str) -> QueryUnderstanding:
     needs_clarification = False
     clarification_reason = None
     clarification_prompt = None
-    if route["question_class"] == "Q3" and asks_for_best and not objective_terms:
+    if route["question_class"] == "Q3" and asks_for_best and not objective_terms and route["route_reason"] != "initial_treatment_selection":
         needs_clarification = True
         clarification_reason = "treatment_goal_missing"
         clarification_prompt = (
             "What outcome matters most here: HbA1c lowering, weight loss, CKD/HF benefit, "
             "lower hypoglycaemia risk, or lower cost?"
+        )
+    elif route["route_reason"] == "t2d_scope_clarification":
+        needs_clarification = True
+        clarification_reason = "t2d_intent_unspecified"
+        clarification_prompt = (
+            "Please narrow this to one T2D task such as first-line treatment, a guideline pathway, "
+            "a trial result, a safety signal, a mechanism question, or a literature summary."
         )
 
     return QueryUnderstanding(
@@ -313,8 +435,8 @@ def build_query_understanding(query: str) -> QueryUnderstanding:
         question_class_name=route["question_class_name"],
         scope_family=route["scope_family"],
         route_reason=route["route_reason"],
-        interaction_mode=interaction_mode_name(route["question_class"]),
-        primary_intent=PRIMARY_INTENT_BY_QUESTION_CLASS[route["question_class"]],
+        interaction_mode=interaction_mode_name(route["question_class"], route["route_reason"]),
+        primary_intent=primary_intent_name(route["question_class"], route["route_reason"]),
         scores=route["scores"],
         entities=entities,
         asks_for_comparison=asks_for_comparison,
@@ -327,6 +449,7 @@ def build_query_understanding(query: str) -> QueryUnderstanding:
     )
 
 
+# Build evidence plan.
 def build_evidence_plan(understanding: dict[str, Any]) -> dict[str, Any]:
     """Build the first-pass execution plan before bounded refinement."""
     question_class = understanding["question_class"]
@@ -350,12 +473,13 @@ def build_evidence_plan(understanding: dict[str, Any]) -> dict[str, Any]:
     if question_class == "Q1" and any(term in lowered_query for term in ["publication", "recent", "evidence"]):
         execution_nodes = [*execution_nodes, "literature_q6"]
     return {
-        "plan_name": PRIMARY_INTENT_BY_QUESTION_CLASS[question_class],
+        "plan_name": understanding.get("primary_intent", PRIMARY_INTENT_BY_QUESTION_CLASS[question_class]),
         "execution_nodes": execution_nodes,
         "requires_evidence_review": True,
     }
 
 
+# Assess evidence sufficiency.
 def assess_evidence_sufficiency(
     understanding: dict[str, Any],
     sections: list[dict[str, Any] | Any],
@@ -400,6 +524,7 @@ def assess_evidence_sufficiency(
     return {"status": "sufficient", "reason": "grounded_evidence_present"}
 
 
+# Has domain context.
 def _has_domain_context(query: str, lowered: str) -> bool:
     resolver = get_resolver()
     if any(term in lowered for term in DOMAIN_HINT_TERMS):
@@ -413,12 +538,18 @@ def _has_domain_context(query: str, lowered: str) -> bool:
     return False
 
 
+# Classify query.
 def classify_query(query: str) -> dict[str, Any]:
     """Classify a query into the platform scope lanes using deterministic heuristics."""
     lowered = query.lower().strip()
+    normalized_lowered = lowered.strip("!?., ")
     scores = _empty_scores()
     if not lowered:
         return _route_payload("Q0", scores, "empty_query")
+    if normalized_lowered in GREETING_TERMS:
+        return _route_payload("Q0", scores, "conversation_opening")
+    if normalized_lowered in CAPABILITY_PROBE_TERMS or _is_capability_probe(lowered):
+        return _route_payload("Q0", scores, "capability_probe")
 
     domain_context = _has_domain_context(query, lowered)
     guideline_intent = any(
@@ -435,6 +566,9 @@ def classify_query(query: str) -> dict[str, Any]:
     if domain_context and not guideline_intent and any(term in lowered for term in PRICING_ACCESS_TERMS):
         scores["Q8"] = 3
         return _route_payload("Q8", scores, "pricing_or_market_access")
+    if domain_context and _is_initial_treatment_query(lowered):
+        scores["Q3"] = 3
+        return _route_payload("Q3", scores, "initial_treatment_selection")
     if domain_context and (
         any(term in lowered for term in TREATMENT_SELECTION_TERMS)
         or (
@@ -484,9 +618,11 @@ def classify_query(query: str) -> dict[str, Any]:
 
     top_score = max(scores[question_class] for question_class in ENTERPRISE_ROUTE_LABELS)
     if top_score == 0:
-        if domain_context:
+        if domain_context and _is_explicit_disease_background_query(lowered):
             scores["Q7"] = 1
             return _route_payload("Q7", scores, "general_disease_background")
+        if domain_context:
+            return _route_payload("Q0", scores, "t2d_scope_clarification")
         return _route_payload("Q0", scores, "outside_t2d_scope")
 
     tied = [question_class for question_class in ENTERPRISE_ROUTE_LABELS if scores[question_class] == top_score]

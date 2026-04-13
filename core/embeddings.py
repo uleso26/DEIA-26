@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import os
@@ -13,6 +14,7 @@ from tools.ollama_client import OllamaClient
 logger = get_logger(__name__)
 
 
+# Normalize rows.
 def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
     normalized: list[list[float]] = []
     for row in rows:
@@ -24,6 +26,7 @@ def _normalize_rows(rows: list[list[float]]) -> list[list[float]]:
     return normalized
 
 
+# Load sentence transformer.
 @lru_cache(maxsize=4)
 def _load_sentence_transformer(model_name: str, local_only: bool) -> Any:
     from sentence_transformers import SentenceTransformer  # type: ignore
@@ -31,6 +34,7 @@ def _load_sentence_transformer(model_name: str, local_only: bool) -> Any:
     return SentenceTransformer(model_name, local_files_only=local_only)
 
 
+# Embed with sentence transformers.
 def _embed_with_sentence_transformers(
     texts: list[str],
     model_name: str,
@@ -53,6 +57,7 @@ def _embed_with_sentence_transformers(
         }
 
 
+# Embed with Ollama.
 def _embed_with_ollama(texts: list[str], model_name: str) -> tuple[list[list[float]] | None, dict[str, str]]:
     client = OllamaClient()
     vectors = client.embed(
@@ -73,6 +78,7 @@ def _embed_with_ollama(texts: list[str], model_name: str) -> tuple[list[list[flo
     }
 
 
+# Embed texts.
 def embed_texts(
     texts: list[str],
     *,

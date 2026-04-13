@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from data.canonical.resolver import get_resolver
@@ -15,6 +16,7 @@ from tools.retrieval import (
 from agents.base_agent import citation, latest_record, unique_strings
 
 
+# Literature Agent.
 class LiteratureAgent:
     """Handle literature, population, and competitor-intelligence evidence pulls."""
 

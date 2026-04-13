@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from core.models import AgentSection
@@ -7,6 +8,7 @@ from tools.mcp_client import MCPClientManager
 from agents.base_agent import citation, unique_strings
 
 
+# Trial Agent.
 class TrialAgent:
     """Handle trial-detail and efficacy-comparison questions."""
 

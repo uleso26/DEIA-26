@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -14,9 +15,11 @@ from governance.governance_checker import GovernanceChecker
 from tools.ollama_client import OllamaClient
 
 
+# Module constants.
 LLM_SYNTHESIS_CLASSES = {"Q1", "Q2", "Q3", "Q4", "Q5", "Q6"}
 
 
+# Synthesis Agent.
 class SynthesisAgent:
     """Merge agent sections into the final governed answer payload."""
 

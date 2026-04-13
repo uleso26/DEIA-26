@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -6,6 +7,7 @@ from core.paths import RETRIEVAL_MANIFEST, raw_input_path
 from core.storage import build_chroma_index, build_lexical_index, chunk_retrieval_documents, dump_json, load_json
 
 
+# With retrieval text.
 def _with_retrieval_text(documents: list[dict]) -> list[dict]:
     enriched_documents = []
     for document in documents:
@@ -23,6 +25,7 @@ def _with_retrieval_text(documents: list[dict]) -> list[dict]:
     return enriched_documents
 
 
+# Run.
 def run() -> str:
     documents = load_json(raw_input_path("pubmed_documents.json"))
     guideline_path = raw_input_path("guideline_excerpts.json")
@@ -51,11 +54,13 @@ def run() -> str:
     return str(RETRIEVAL_MANIFEST)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build retrieval manifest with lexical fallback indexing.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

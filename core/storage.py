@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import json
@@ -20,30 +21,36 @@ DEFAULT_CHUNK_MAX_CHARS = 550
 logger = get_logger(__name__)
 
 
+# Load JSON.
 def load_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
+# Dump JSON.
 def dump_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         json.dump(payload, handle, indent=2, ensure_ascii=True)
 
 
+# Connect SQLite.
 def connect_sqlite() -> sqlite3.Connection:
     ensure_runtime_directories()
     return sqlite3.connect(SQLITE_DB)
 
 
+# Use live MongoDB.
 def use_live_mongodb(prefer_service: bool = False) -> bool:
     return prefer_service or env_flag("USE_MONGODB_BACKEND", False)
 
 
+# Use live Neo4j.
 def use_live_neo4j(prefer_service: bool = False) -> bool:
     return prefer_service or env_flag("USE_NEO4J_BACKEND", False)
 
 
+# Get Mongo client.
 @lru_cache(maxsize=4)
 def _get_mongo_client(mongodb_uri: str) -> Any | None:
     try:
@@ -53,6 +60,7 @@ def _get_mongo_client(mongodb_uri: str) -> Any | None:
     return MongoClient(mongodb_uri, serverSelectionTimeoutMS=2000)
 
 
+# Load collection from MongoDB.
 def load_collection_from_mongodb(name: str) -> tuple[list[dict[str, Any]], bool]:
     mongodb_uri = os.getenv("MONGODB_URI")
     database_name = os.getenv("MONGODB_DATABASE", "t2d_intelligence")
@@ -70,6 +78,7 @@ def load_collection_from_mongodb(name: str) -> tuple[list[dict[str, Any]], bool]
         return [], False
 
 
+# Load collection with backend.
 def load_collection_with_backend(name: str, prefer_service: bool = False) -> tuple[list[dict[str, Any]], str]:
     if use_live_mongodb(prefer_service):
         documents, loaded = load_collection_from_mongodb(name)
@@ -81,10 +90,12 @@ def load_collection_with_backend(name: str, prefer_service: bool = False) -> tup
     return load_json(path), "mongo_fallback"
 
 
+# Load collection.
 def load_collection(name: str, prefer_service: bool = False) -> list[dict[str, Any]]:
     return load_collection_with_backend(name, prefer_service=prefer_service)[0]
 
 
+# Run Neo4j query.
 def _run_neo4j_query(query: str, parameters: dict[str, Any] | None = None) -> tuple[list[dict[str, Any]], bool]:
     uri = os.getenv("NEO4J_URI")
     user = os.getenv("NEO4J_USER")
@@ -109,6 +120,7 @@ def _run_neo4j_query(query: str, parameters: dict[str, Any] | None = None) -> tu
         driver.close()
 
 
+# Run Neo4j query with backend.
 def run_neo4j_query_with_backend(
     query: str,
     parameters: dict[str, Any] | None = None,
@@ -121,10 +133,12 @@ def run_neo4j_query_with_backend(
     return [], "neo4j_fallback"
 
 
+# Run Neo4j query.
 def run_neo4j_query(query: str, parameters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     return run_neo4j_query_with_backend(query, parameters)[0]
 
 
+# Backend status.
 def backend_status() -> dict[str, Any]:
     mongo_documents, mongo_backend = load_collection_with_backend("clinical_trials", prefer_service=True)
     neo4j_probe_records, neo4j_backend = run_neo4j_query_with_backend("RETURN 1 AS ok", prefer_service=True)
@@ -174,23 +188,27 @@ def backend_status() -> dict[str, Any]:
     }
 
 
+# Load graph.
 def load_graph() -> dict[str, Any]:
     if not GRAPH_FILE.exists():
         return {"nodes": [], "edges": []}
     return load_json(GRAPH_FILE)
 
 
+# Load retrieval manifest.
 def load_retrieval_manifest() -> dict[str, Any]:
     if not RETRIEVAL_MANIFEST.exists():
         return {"documents": [], "idf": {}, "doc_vectors": {}, "dense_vectors": {}}
     return load_json(RETRIEVAL_MANIFEST)
 
 
+# Tokenize.
 def tokenize(text: str) -> list[str]:
     cleaned = "".join(char.lower() if char.isalnum() else " " for char in text)
     return [token for token in cleaned.split() if token]
 
 
+# Embed texts.
 def _embed_texts(
     texts: list[str],
     *,
@@ -203,6 +221,7 @@ def _embed_texts(
     return embed_texts(texts, provider=provider, model_name=model_name)
 
 
+# Build lexical index.
 def build_lexical_index(documents: list[dict[str, Any]], text_key: str = "text") -> dict[str, Any]:
     doc_term_counts: dict[str, Counter[str]] = {}
     document_frequency: Counter[str] = Counter()
@@ -231,6 +250,7 @@ def build_lexical_index(documents: list[dict[str, Any]], text_key: str = "text")
     return {"documents": stored_documents, "idf": idf, "doc_vectors": doc_vectors}
 
 
+# Chunk retrieval documents.
 def chunk_retrieval_documents(
     documents: list[dict[str, Any]],
     *,
@@ -284,6 +304,7 @@ def chunk_retrieval_documents(
     return chunked_documents
 
 
+# Build dense index.
 def build_dense_index(documents: list[dict[str, Any]], text_key: str = "text") -> dict[str, Any] | None:
     """Build an in-memory dense vector index payload for small local runs."""
     stored_documents: list[dict[str, Any]] = []
@@ -313,6 +334,7 @@ def build_dense_index(documents: list[dict[str, Any]], text_key: str = "text") -
     }
 
 
+# Build chroma index.
 def build_chroma_index(
     documents: list[dict[str, Any]],
     text_key: str = "text",
@@ -382,6 +404,7 @@ def build_chroma_index(
     }
 
 
+# Search lexical index.
 def search_lexical_index(query: str, manifest: dict[str, Any], top_k: int = 3) -> list[dict[str, Any]]:
     query_terms = Counter(tokenize(query))
     if not query_terms:
@@ -406,6 +429,7 @@ def search_lexical_index(query: str, manifest: dict[str, Any], top_k: int = 3) -
     return results
 
 
+# Search dense index.
 def search_dense_index(query: str, manifest: dict[str, Any], top_k: int = 3) -> list[dict[str, Any]]:
     """Search the dense retrieval backend, preferring Chroma when configured."""
     collection_name = manifest.get("chroma_collection")

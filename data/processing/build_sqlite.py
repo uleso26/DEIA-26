@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -6,6 +7,7 @@ from core.paths import CANONICAL_DIR, raw_input_path
 from core.storage import connect_sqlite, load_json
 
 
+# Module constants.
 DDL = [
     """
     CREATE TABLE IF NOT EXISTS drug_labels (
@@ -93,6 +95,7 @@ DDL = [
 ]
 
 
+# Insert drug labels.
 def _insert_drug_labels(cursor) -> None:
     labels = load_json(raw_input_path("drug_labels.json"))
     cursor.execute("DELETE FROM drug_labels")
@@ -116,6 +119,7 @@ def _insert_drug_labels(cursor) -> None:
     )
 
 
+# Insert adverse events.
 def _insert_adverse_events(cursor) -> None:
     events = load_json(raw_input_path("openfda_adverse_events.json"))
     cursor.execute("DELETE FROM adverse_events")
@@ -140,6 +144,7 @@ def _insert_adverse_events(cursor) -> None:
     )
 
 
+# Insert canonical tables.
 def _insert_canonical_tables(cursor) -> None:
     cursor.execute("DELETE FROM drug_synonyms")
     drug_synonyms = load_json(CANONICAL_DIR / "drug_synonyms.json")
@@ -184,6 +189,7 @@ def _insert_canonical_tables(cursor) -> None:
     )
 
 
+# Insert auxiliary reference tables.
 def _insert_auxiliary_reference_tables(cursor) -> None:
     cursor.execute("DELETE FROM who_gho_diabetes_stats")
     who_path = raw_input_path("who_gho.json")
@@ -258,6 +264,7 @@ def _insert_auxiliary_reference_tables(cursor) -> None:
         )
 
 
+# Run.
 def run() -> str:
     connection = connect_sqlite()
     try:
@@ -274,11 +281,13 @@ def run() -> str:
     return "data/processed/t2d_platform.db"
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build SQLite storage artifacts.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

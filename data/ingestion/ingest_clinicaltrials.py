@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -8,6 +9,7 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import CLINICAL_TRIALS
 
 
+# Normalize phase.
 def _normalize_phase(values: list[str], fallback: str) -> str:
     if not values:
         return fallback
@@ -18,17 +20,20 @@ def _normalize_phase(values: list[str], fallback: str) -> str:
     return str(values[0]).replace("_", " ").title()
 
 
+# Normalize status.
 def _normalize_status(value: str | None, fallback: str) -> str:
     if not value:
         return fallback
     return value.replace("_", " ").title()
 
 
+# Extract interventions.
 def _extract_interventions(items: list[dict[str, object]], fallback: list[str]) -> list[str]:
     names = [str(item.get("name")) for item in items if item.get("name")]
     return names or fallback
 
 
+# Extract primary endpoint.
 def _extract_primary_endpoint(items: list[dict[str, object]], fallback: str) -> str:
     if not items:
         return fallback
@@ -41,6 +46,7 @@ def _extract_primary_endpoint(items: list[dict[str, object]], fallback: str) -> 
     return fallback
 
 
+# Extract publication pmid.
 def _extract_publication_pmid(items: list[dict[str, object]], trial_name: str, fallback: str) -> str:
     for item in items:
         pmid = item.get("pmid")
@@ -79,6 +85,7 @@ def _extract_publication_pmid(items: list[dict[str, object]], trial_name: str, f
     return fallback
 
 
+# Fetch live trial.
 def _fetch_live_trial(seed_trial: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("CLINICALTRIALS_BASE_URL", "https://clinicaltrials.gov/api/v2").rstrip("/")
     url = f"{base_url}/studies/{seed_trial['nct_id']}"
@@ -141,6 +148,7 @@ def _fetch_live_trial(seed_trial: dict[str, object]) -> tuple[dict[str, object] 
     return normalized, request_log
 
 
+# Seed trial.
 def _seed_trial(seed_trial: dict[str, object]) -> dict[str, object]:
     normalized = dict(seed_trial)
     normalized["ingested_at"] = utc_now_iso()
@@ -148,6 +156,7 @@ def _seed_trial(seed_trial: dict[str, object]) -> dict[str, object]:
     return normalized
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("clinicaltrials")
     normalized_trials: list[dict[str, object]] = []
@@ -194,11 +203,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed ClinicalTrials.gov payload.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

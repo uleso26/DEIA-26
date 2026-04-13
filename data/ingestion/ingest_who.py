@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -9,12 +10,14 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import WHO_GHO_DATA
 
 
+# Module constants.
 COUNTRY_CODES = {
     "United Kingdom": "GBR",
     "United States": "USA",
 }
 
 
+# Extract values.
 def _extract_values(payload: object) -> list[dict[str, object]]:
     if isinstance(payload, dict):
         if isinstance(payload.get("value"), list):
@@ -24,6 +27,7 @@ def _extract_values(payload: object) -> list[dict[str, object]]:
     return []
 
 
+# Lookup indicator.
 def _lookup_indicator() -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("WHO_GHO_BASE_URL", "https://ghoapi.azureedge.net/api").rstrip("/")
     query = quote("contains(IndicatorName,'Diabetes prevalence')", safe="(),'")
@@ -66,6 +70,7 @@ def _lookup_indicator() -> tuple[dict[str, object] | None, dict[str, object]]:
     )
 
 
+# Fetch country record.
 def _fetch_country_record(seed_record: dict[str, object], indicator_code: str) -> tuple[dict[str, object] | None, dict[str, object]]:
     country = str(seed_record["country"])
     country_code = COUNTRY_CODES.get(country)
@@ -126,6 +131,7 @@ def _fetch_country_record(seed_record: dict[str, object], indicator_code: str) -
     )
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("who")
     request_log: list[dict[str, object]] = []
@@ -171,11 +177,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write WHO GHO payload with optional live refresh.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -9,6 +10,7 @@ from core.storage import dump_json, load_json
 from data.ingestion.seed_data import EXTERNAL_INTELLIGENCE
 
 
+# Sync to MongoDB.
 def _sync_to_mongodb(collections: dict[str, list[dict]]) -> None:
     mongodb_uri = os.getenv("MONGODB_URI")
     database_name = os.getenv("MONGODB_DATABASE", "t2d_intelligence")
@@ -45,6 +47,7 @@ def _sync_to_mongodb(collections: dict[str, list[dict]]) -> None:
                 client.close()
 
 
+# Run.
 def run(sync: bool = False) -> dict[str, str]:
     MONGO_DIR.mkdir(parents=True, exist_ok=True)
     collections = {
@@ -60,6 +63,7 @@ def run(sync: bool = False) -> dict[str, str]:
     return {name: str(MONGO_DIR / f"{name}.json") for name in collections}
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build Mongo-style collection artifacts.")
     parser.add_argument("--sync", action="store_true", help="Attempt to sync to MongoDB if pymongo is available.")
@@ -67,5 +71,6 @@ def main() -> None:
     print(run(sync=args.sync))
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

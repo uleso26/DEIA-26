@@ -1,8 +1,10 @@
+# Imports.
 from __future__ import annotations
 
 from tools.native_tools import search_retrieval_index
 
 
+# Module constants.
 RETRIEVAL_CASES = [
     {
         "query": "SGLT2 inhibitors heart failure recent literature",
@@ -19,6 +21,7 @@ RETRIEVAL_CASES = [
 ]
 
 
+# Run.
 def run() -> dict:
     hits = 0
     reciprocal_rank_total = 0.0
@@ -51,6 +54,7 @@ def run() -> dict:
     }
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     import json
 

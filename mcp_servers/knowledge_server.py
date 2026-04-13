@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import os
@@ -9,6 +10,7 @@ from data.canonical.resolver import get_resolver
 from mcp_servers.base_server import BaseMCPStyleServer
 
 
+# Knowledge Server.
 class KnowledgeServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("knowledge-mcp-server")
@@ -245,9 +247,11 @@ class KnowledgeServer(BaseMCPStyleServer):
         }
 
 
+# Main.
 def main() -> None:
     KnowledgeServer().run_cli()
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

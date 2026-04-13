@@ -1,5 +1,6 @@
 """Hybrid retrieval and lightweight PubMed search helpers."""
 
+# Imports.
 from __future__ import annotations
 
 from calendar import monthrange
@@ -36,10 +37,12 @@ SURVEILLANCE_BOOST = 1.5
 HEART_FAILURE_BOOST = 3.0
 
 
+# Pubmed documents.
 def _pubmed_documents() -> list[dict[str, Any]]:
     return load_json(raw_input_path("pubmed_documents.json"))
 
 
+# Retrieval documents.
 def _retrieval_documents() -> list[dict[str, Any]]:
     documents = []
     source_documents = [*_pubmed_documents()]
@@ -60,6 +63,7 @@ def _retrieval_documents() -> list[dict[str, Any]]:
     return documents
 
 
+# Search retrieval index.
 def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     """Run hybrid retrieval over chunked literature and guideline evidence."""
     manifest = load_retrieval_manifest()
@@ -144,6 +148,7 @@ def search_retrieval_index(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     return reranked[:top_k]
 
 
+# Search PubMed.
 def search_pubmed(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     """Run a simple keyword match over the curated PubMed corpus."""
     documents = _pubmed_documents()
@@ -160,16 +165,19 @@ def search_pubmed(query: str, top_k: int = 3) -> list[dict[str, Any]]:
     return [item for _, item in scored[:top_k]]
 
 
+# Search PubMed safety.
 def search_pubmed_safety(drug: str, top_k: int = 2) -> list[dict[str, Any]]:
     """Search safety-oriented PubMed records for a therapy."""
     return search_pubmed(f"{drug} safety faers adverse", top_k=top_k)
 
 
+# Get guideline context.
 def get_guideline_context(query: str) -> list[dict[str, Any]]:
     """Fetch guideline-flavoured literature context for a free-form query."""
     return search_pubmed(f"{query} guideline NICE ADA CKD", top_k=2)
 
 
+# Filter recent documents.
 def filter_recent_documents(documents: list[dict[str, Any]], months: int = 6, reference_date: date | None = None) -> list[dict[str, Any]]:
     """Keep documents within a recent-months window, skipping malformed dates."""
     today = reference_date or date.today()

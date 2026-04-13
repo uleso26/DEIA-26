@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -7,6 +8,7 @@ import yaml
 from core.paths import ROOT
 
 
+# Governance Checker.
 class GovernanceChecker:
     """Apply answer-shaping rules and required caveats per question class."""
 
@@ -25,7 +27,10 @@ class GovernanceChecker:
         metadata = metadata or {}
         normalized_caveats = list(caveats)
         rules = self.rules.get(question_class, {})
-        for caveat in rules.get("required_caveats", []):
+        required_caveats = rules.get("required_caveats", [])
+        if question_class == "Q0" and metadata.get("suppress_default_q0_caveat"):
+            required_caveats = []
+        for caveat in required_caveats:
             if caveat not in normalized_caveats:
                 normalized_caveats.append(caveat)
 

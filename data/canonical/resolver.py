@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import re
@@ -9,6 +10,7 @@ from core.storage import load_json
 from core.paths import CANONICAL_DIR
 
 
+# Canonical Match.
 @dataclass
 class CanonicalMatch:
     canonical_id: str
@@ -26,6 +28,7 @@ class CanonicalMatch:
         }
 
 
+# Canonical Resolver.
 class CanonicalResolver:
     """Resolve drugs, targets, and trials to the platform's canonical identifiers."""
 
@@ -117,6 +120,7 @@ class CanonicalResolver:
         return matches
 
 
+# Load canonical tables.
 @lru_cache(maxsize=1)
 def _load_canonical_tables() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     return (
@@ -126,6 +130,7 @@ def _load_canonical_tables() -> tuple[dict[str, Any], dict[str, Any], dict[str, 
     )
 
 
+# Get resolver.
 @lru_cache(maxsize=1)
 def get_resolver() -> CanonicalResolver:
     return CanonicalResolver()

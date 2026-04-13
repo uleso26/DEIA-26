@@ -1,9 +1,11 @@
+# Imports.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
+# Citation.
 @dataclass
 class Citation:
     source: str
@@ -17,6 +19,7 @@ class Citation:
         return asdict(self)
 
 
+# Agent Section.
 @dataclass
 class AgentSection:
     agent: str
@@ -34,6 +37,7 @@ class AgentSection:
         return payload
 
 
+# Query Understanding.
 @dataclass
 class QueryUnderstanding:
     query: str
@@ -59,6 +63,7 @@ class QueryUnderstanding:
         return asdict(self)
 
 
+# Final Response.
 @dataclass
 class FinalResponse:
     question_class: str

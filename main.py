@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -12,6 +13,7 @@ from evaluation.retrieval_eval import run as retrieval_eval
 from evaluation.routing_eval import run as routing_eval
 
 
+# Print response.
 def print_response(payload: dict) -> None:
     question_class_name = payload.get("metadata", {}).get("question_class_name")
     if question_class_name:
@@ -30,6 +32,7 @@ def print_response(payload: dict) -> None:
     print(f"Trace ID: {payload['trace_id']}")
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="T2D Therapeutic Intelligence Platform CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -89,5 +92,6 @@ def main() -> None:
             print(json.dumps(retrieval_eval(), indent=2))
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

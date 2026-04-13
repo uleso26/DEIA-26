@@ -11,6 +11,7 @@ This repository contains a runnable MVP for a Type 2 Diabetes therapeutic intell
 - File-backed fallbacks for MongoDB-style collections, Neo4j-style graph data, and retrieval manifests
 - Three stdio MCP tool servers: safety, trials, and knowledge
 - LangGraph-based multi-agent orchestration with centralized prompt templates, automatic local Ollama-assisted routing and synthesis when Ollama is reachable, deterministic fallback, governance, and JSON trace logging
+- Thin A2A-compatible interoperability surfaces for the platform orchestrator and a trial-evidence specialist, with agent cards, declared skills, task lookup, and streaming message endpoints
 - Evaluation scripts for retrieval, routing, groundedness, and latency
 - Native context tools for WHO population context plus DrugBank and synthetic clinical context
 - Ingestion lineage manifests written under `logs/ingestion_lineage/`
@@ -65,6 +66,8 @@ graph TD
     GOV --> RESPONSE[Governed Response]
     RESPONSE --> HTTP[HTTP API / UI]
     RESPONSE --> CLI[CLI]
+    RESPONSE --> A2A[A2A Facade / Agent Cards]
+    A2A --> EXT[External Agents / Clients]
 ```
 
 ## Question Scope
@@ -138,7 +141,18 @@ Available endpoints:
 - `POST /query` with JSON body `{"query": "What does SURPASS-3 show?"}`
 - `GET /query/stream?query=...` for local SSE-style answer streaming
 
-The built-in HTTP server is a local MVP surface. It now caps request bodies, but it still intentionally skips auth and rate limiting.
+A2A-compatible interoperability endpoints:
+- `GET /.well-known/agent-card.json` for the public platform agent card
+- `GET /a2a/platform/v1/agent-card.json`
+- `GET /a2a/trial-evidence/v1/agent-card.json`
+- `POST /a2a/platform/v1/message:send`
+- `POST /a2a/platform/v1/message:stream`
+- `GET /a2a/platform/v1/tasks` and `GET /a2a/platform/v1/tasks/{task_id}`
+- `POST /a2a/trial-evidence/v1/message:send`
+- `POST /a2a/trial-evidence/v1/message:stream`
+- `GET /a2a/trial-evidence/v1/tasks` and `GET /a2a/trial-evidence/v1/tasks/{task_id}`
+
+The built-in HTTP server is a local MVP surface. It now caps request bodies, but it still intentionally skips auth and rate limiting. Internal execution still runs through LangGraph and MCP; the A2A layer is a thin external interoperability facade rather than a replacement for the main runtime.
 
 5. Run evaluations:
 

@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -13,6 +14,7 @@ from tools.native_tools import build_evidence_plan, build_query_understanding
 pytestmark = pytest.mark.integration
 
 
+# Test: langgraph workflow exposes expected nodes.
 def test_langgraph_workflow_exposes_expected_nodes(orchestrator) -> None:
     mermaid = orchestrator.workflow.mermaid_diagram()
     assert "understand" in mermaid
@@ -26,6 +28,7 @@ def test_langgraph_workflow_exposes_expected_nodes(orchestrator) -> None:
     assert "clarify" in mermaid
 
 
+# Test: evidence planner returns bounded trial plan.
 def test_evidence_planner_returns_bounded_trial_plan() -> None:
     planner = EvidencePlannerAgent()
     understanding = build_query_understanding("What does SURPASS-3 show?").to_dict()
@@ -38,6 +41,7 @@ def test_evidence_planner_returns_bounded_trial_plan() -> None:
     assert "literature_q6" in plan["allowed_execution_nodes"]
 
 
+# Test: evidence planner refines with fallback node when evidence is limited.
 def test_evidence_planner_refines_with_fallback_node_when_evidence_is_limited() -> None:
     planner = EvidencePlannerAgent()
     understanding = build_query_understanding("What does SURPASS-3 show?").to_dict()
@@ -56,6 +60,7 @@ def test_evidence_planner_refines_with_fallback_node_when_evidence_is_limited() 
     assert refined["planning_mode"] == "react_refinement_fallback"
 
 
+# Test: governance checker does not mutate caveats.
 def test_governance_checker_does_not_mutate_caveats() -> None:
     caveats = ["Original caveat."]
     original = list(caveats)
@@ -65,6 +70,7 @@ def test_governance_checker_does_not_mutate_caveats() -> None:
     assert len(updated) >= len(original)
 
 
+# Test: scope routes skip ollama synthesis.
 def test_scope_routes_skip_ollama_synthesis() -> None:
     agent = SynthesisAgent()
     with patch.object(agent.ollama, "enabled", return_value=True), patch.object(

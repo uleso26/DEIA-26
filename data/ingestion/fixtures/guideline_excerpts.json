@@ -1,5 +1,35 @@
 [
   {
+    "id": "GUIDE_ADA_2025_INITIAL",
+    "title": "ADA Standards of Care 2025: initial pharmacotherapy for newly diagnosed type 2 diabetes",
+    "journal": "ADA Standards of Care",
+    "publication_date": "2025-01-01",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "ADA",
+      "Type 2 Diabetes",
+      "metformin",
+      "newly diagnosed"
+    ],
+    "text": "For most adults with newly diagnosed type 2 diabetes, ADA Standards of Care 2025 retain metformin as usual initial pharmacotherapy alongside lifestyle intervention and ongoing reassessment, provided it is tolerated and not contraindicated.",
+    "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+  },
+  {
+    "id": "GUIDE_NICE_NG28_2026_INITIAL",
+    "title": "NICE NG28 2026 update: first-line drug treatment at diagnosis",
+    "journal": "NICE Guideline",
+    "publication_date": "2026-02-18",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "NICE",
+      "Type 2 Diabetes",
+      "metformin",
+      "newly diagnosed"
+    ],
+    "text": "NICE NG28 continues to recommend metformin as first-line drug treatment for adults with type 2 diabetes, with alternative choices considered when metformin is contraindicated or not tolerated.",
+    "source_url": "https://www.nice.org.uk/guidance/ng28"
+  },
+  {
     "id": "GUIDE_NICE_NG28_2026_CKD",
     "title": "NICE NG28 2026 update: CKD and cardiorenal sequencing after metformin",
     "journal": "NICE Guideline",

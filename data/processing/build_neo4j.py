@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -10,14 +11,17 @@ from core.storage import dump_json, load_json
 from data.ingestion.seed_data import GUIDELINE_GRAPH
 
 
+# Clean properties.
 def _clean_properties(properties: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in properties.items() if value is not None}
 
 
+# Clear graph.
 def _clear_graph(tx: Any) -> None:
     tx.run("MATCH (n) DETACH DELETE n").consume()
 
 
+# Write graph.
 def _write_graph(tx: Any, graph: dict[str, Any]) -> None:
     for node in graph["nodes"]:
         tx.run(
@@ -55,6 +59,7 @@ def _write_graph(tx: Any, graph: dict[str, Any]) -> None:
         ).consume()
 
 
+# Sync to Neo4j.
 def _sync_to_neo4j(graph: dict) -> None:
     uri = os.getenv("NEO4J_URI")
     user = os.getenv("NEO4J_USER")
@@ -98,6 +103,7 @@ def _sync_to_neo4j(graph: dict) -> None:
         raise RuntimeError(f"Neo4j sync failed after {retries} attempts: {last_error}") from last_error
 
 
+# Run.
 def run(sync: bool = False) -> str:
     graph = {
         "nodes": [dict(node) for node in GUIDELINE_GRAPH["nodes"]],
@@ -151,6 +157,7 @@ def run(sync: bool = False) -> str:
     return str(GRAPH_FILE)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build Neo4j-style graph artifact.")
     parser.add_argument("--sync", action="store_true", help="Attempt to sync to Neo4j if the driver is available.")
@@ -158,5 +165,6 @@ def main() -> None:
     print(run(sync=args.sync))
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

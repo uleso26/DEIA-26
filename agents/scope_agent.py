@@ -1,18 +1,21 @@
+# Imports.
 from __future__ import annotations
 
 from core.models import AgentSection
 from agents.base_agent import citation, unique_strings
 
 
+# Module constants.
 CDC_TYPE2_URL = "https://www.cdc.gov/diabetes/about/about-type-2-diabetes.html"
 CDC_COMPLICATIONS_URL = "https://www.cdc.gov/diabetes/diabetes-complications/"
 NHS_TYPE2_URL = "https://www.nhs.uk/conditions/type-2-diabetes/"
 
 
+# Scope Agent.
 class ScopeAgent:
     """Handle scope, background, access, and urgent guardrail responses."""
 
-    def run(self, query: str, question_class: str) -> AgentSection:
+    def run(self, query: str, question_class: str, route_reason: str | None = None) -> AgentSection:
         """Return a direct scoped response without invoking the enterprise evidence stack."""
         query_lower = query.lower()
 
@@ -83,6 +86,51 @@ class ScopeAgent:
                 caveats=["This platform does not provide emergency triage or personal medical advice."],
                 evidence_tiers=unique_strings(["Tier 1"]),
                 metadata={"mode": "urgent_guardrail"},
+            )
+
+        if route_reason == "conversation_opening":
+            summary = (
+                "Hello. I can help with T2D first-line treatment questions, guideline pathways, trial readouts, "
+                "safety signals, mechanisms, literature evidence, and population burden. Try: "
+                "'When a patient is newly diagnosed with T2D, what is the first Rx medicine?'; "
+                "'What does SURPASS-3 show?'; 'ADA pathway after metformin for obesity'; "
+                "'What safety signals exist for tirzepatide?'; "
+                "'Which drugs share the GLP1R mechanism?'"
+            )
+            return AgentSection(
+                agent="Scope Agent",
+                question_class="Q0",
+                summary=summary,
+                citations=[],
+                caveats=[],
+                evidence_tiers=[],
+                metadata={
+                    "mode": "conversation_opening",
+                    "suppress_default_q0_caveat": True,
+                    "force_deterministic_synthesis": True,
+                },
+            )
+
+        if route_reason == "capability_probe":
+            summary = (
+                "I answer T2D-focused intelligence questions across first-line treatment, guideline sequencing, "
+                "trial efficacy, safety surveillance, mechanism mapping, literature updates, and population evidence. "
+                "For example, ask: 'What is the first-line medicine for newly diagnosed T2D?'; "
+                "'How does ADA differ from NICE after metformin for obesity?'; "
+                "'What does SURPASS-2 show?'; 'Summarize recent SGLT2 literature in heart failure.'"
+            )
+            return AgentSection(
+                agent="Scope Agent",
+                question_class="Q0",
+                summary=summary,
+                citations=[],
+                caveats=[],
+                evidence_tiers=[],
+                metadata={
+                    "mode": "capability_probe",
+                    "suppress_default_q0_caveat": True,
+                    "force_deterministic_synthesis": True,
+                },
             )
 
         summary = (

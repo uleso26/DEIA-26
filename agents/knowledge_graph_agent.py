@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from core.paths import raw_input_path
@@ -9,6 +10,7 @@ from tools.mcp_client import MCPClientManager
 from agents.base_agent import citation, dedupe_citations, unique_strings
 
 
+# Knowledge Graph Agent.
 class KnowledgeGraphAgent:
     """Serve both pathway (Q3) and mechanism/graph (Q4) evidence flows."""
 
@@ -22,6 +24,7 @@ class KnowledgeGraphAgent:
             lowered = query.lower()
             comparison_requested = any(token in lowered for token in ["versus", " vs ", "compare", "differ", "difference"])
             explicit_guideline_comparison = "ada" in lowered and "nice" in lowered
+            initial_treatment_requested = self._is_initial_treatment_query(lowered)
             broad_treatment_selection = self._is_broad_treatment_selection_query(lowered)
             start_drug = "metformin" if "metformin" in query.lower() else (self.resolver.resolve_drug(query) or {}).get("canonical_id", "metformin")
             comorbidity = None
@@ -73,6 +76,8 @@ class KnowledgeGraphAgent:
                     comorbidity=comorbidity,
                     phenotype_terms=phenotype_terms,
                 )
+            if initial_treatment_requested and not explicit_guideline_comparison:
+                return self._initial_treatment_response(query)
             if broad_treatment_selection and not explicit_guideline_comparison and not comorbidity:
                 return self._broad_treatment_selection_response(query)
             context_query = query
@@ -331,6 +336,79 @@ class KnowledgeGraphAgent:
                 any(term in lowered for term in ["which drug", "which medicine", "which medication"])
                 and any(term in lowered for term in ["best", "effective", "cure", "curing", "treatment", "therapy"])
             )
+        )
+
+    def _is_initial_treatment_query(self, lowered: str) -> bool:
+        return any(
+            term in lowered
+            for term in [
+                "first rx",
+                "first-line",
+                "first line",
+                "initial therapy",
+                "initial treatment",
+                "newly diagnosed",
+                "just diagnosed",
+                "starting medicine",
+                "starting medication",
+                "first prescription",
+                "start treatment",
+                "start with",
+                "first medicine",
+                "first medication",
+            ]
+        )
+
+    def _initial_treatment_response(self, query: str) -> AgentSection:
+        guideline_excerpts = load_json(raw_input_path("guideline_excerpts.json"))
+        relevant_titles = [
+            "ADA Standards of Care 2025: initial pharmacotherapy for newly diagnosed type 2 diabetes",
+            "NICE NG28 2026 update: first-line drug treatment at diagnosis",
+            "ADA Standards of Care 2025: cardiorenal-first add-on therapy",
+            "ADA Standards of Care 2025: insulin initiation for marked hyperglycemia",
+        ]
+        selected_excerpts = [item for item in guideline_excerpts if item.get("title") in relevant_titles]
+        summary = (
+            "Usually, metformin is the first-line pharmacotherapy for newly diagnosed Type 2 Diabetes alongside "
+            "lifestyle measures when it is tolerated and not contraindicated. Treatment can be adjusted early when "
+            "cardiorenal disease, obesity, or drug intolerance materially change priorities, and insulin may be "
+            "appropriate if hyperglycaemia is severe or catabolic features are present."
+        )
+        citations = []
+        for item in selected_excerpts:
+            source_name = "ADA Standards of Care" if "ADA" in item["title"] else "NICE NG28"
+            reference_id = item["id"]
+            citations.append(
+                citation(
+                    source_name,
+                    item["title"],
+                    reference_id,
+                    item.get("source_url") or "https://www.nice.org.uk/guidance/ng28",
+                    "Tier 1",
+                    item.get("publication_date"),
+                )
+            )
+        return AgentSection(
+            agent="Knowledge Graph Agent",
+            question_class="Q3",
+            summary=summary,
+            citations=dedupe_citations(citations),
+            caveats=[
+                "This reflects general first-line treatment logic, not individualized prescribing advice.",
+                "Contraindications, intolerance, cardiorenal disease, obesity priorities, and severity of hyperglycaemia can change the initial regimen.",
+            ],
+            evidence_tiers=unique_strings(["Tier 1"]),
+            tool_outputs=[
+                {
+                    "tool_name": "guideline_excerpt_bundle",
+                    "records": selected_excerpts,
+                    "raw_provenance": {"query": query, "response_mode": "initial_treatment_selection"},
+                }
+            ],
+            metadata={
+                "guideline_mode": "initial_treatment_selection",
+                "force_deterministic_synthesis": True,
+            },
         )
 
     def _broad_treatment_selection_response(self, query: str) -> AgentSection:

@@ -1,16 +1,46 @@
 [
   {
-    "id": "GUIDE_NICE_NG28_2024",
-    "title": "NICE NG28 2024 update: therapy sequencing after metformin",
+    "id": "GUIDE_ADA_2025_INITIAL",
+    "title": "ADA Standards of Care 2025: initial pharmacotherapy for newly diagnosed type 2 diabetes",
+    "journal": "ADA Standards of Care",
+    "publication_date": "2025-01-01",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "ADA",
+      "Type 2 Diabetes",
+      "metformin",
+      "newly diagnosed"
+    ],
+    "text": "For most adults with newly diagnosed type 2 diabetes, ADA Standards of Care 2025 retain metformin as usual initial pharmacotherapy alongside lifestyle intervention and ongoing reassessment, provided it is tolerated and not contraindicated.",
+    "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+  },
+  {
+    "id": "GUIDE_NICE_NG28_2026_INITIAL",
+    "title": "NICE NG28 2026 update: first-line drug treatment at diagnosis",
     "journal": "NICE Guideline",
-    "publication_date": "2024-12-10",
+    "publication_date": "2026-02-18",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "NICE",
+      "Type 2 Diabetes",
+      "metformin",
+      "newly diagnosed"
+    ],
+    "text": "NICE NG28 continues to recommend metformin as first-line drug treatment for adults with type 2 diabetes, with alternative choices considered when metformin is contraindicated or not tolerated.",
+    "source_url": "https://www.nice.org.uk/guidance/ng28"
+  },
+  {
+    "id": "GUIDE_NICE_NG28_2026_CKD",
+    "title": "NICE NG28 2026 update: CKD and cardiorenal sequencing after metformin",
+    "journal": "NICE Guideline",
+    "publication_date": "2026-02-18",
     "evidence_type": "guideline excerpt",
     "mesh_terms": [
       "NICE",
       "Type 2 Diabetes",
       "CKD"
     ],
-    "text": "For adults with type 2 diabetes and chronic kidney disease, NICE NG28 prioritizes SGLT2 inhibitors after metformin when renal function and clinical context allow.",
+    "text": "For adults with type 2 diabetes and chronic kidney disease, NICE NG28 prioritizes SGLT2 inhibitors after metformin when renal function and clinical context allow. The 2026 update also reviewed medicines for people with no relevant comorbidities and common comorbidities.",
     "source_url": "https://www.nice.org.uk/guidance/ng28"
   },
   {
@@ -25,6 +55,53 @@
       "obesity"
     ],
     "text": "ADA Standards of Care 2025 support GLP-1 receptor agonists when additional weight loss and cardiometabolic benefit are priorities after metformin.",
+    "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+  },
+  {
+    "id": "GUIDE_ADA_2025_CARDIORENAL",
+    "title": "ADA Standards of Care 2025: cardiorenal-first add-on therapy",
+    "journal": "ADA Standards of Care",
+    "publication_date": "2025-01-01",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "ADA",
+      "Type 2 Diabetes",
+      "Heart Failure",
+      "CKD",
+      "ASCVD"
+    ],
+    "text": "ADA Standards of Care 2025 prioritize SGLT2 inhibitors for heart failure and chronic kidney disease and favor incretin-based therapy with cardiovascular benefit when atherosclerotic risk and weight management are central treatment goals.",
+    "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
+  },
+  {
+    "id": "GUIDE_NICE_NG28_2026_LOW_COST",
+    "title": "NICE NG28 2026 update: lower-cost add-on options",
+    "journal": "NICE Guideline",
+    "publication_date": "2026-02-18",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "NICE",
+      "Type 2 Diabetes",
+      "sulfonylurea",
+      "pioglitazone",
+      "DPP-4 inhibitor"
+    ],
+    "text": "For adults without a dominant cardiorenal indication, NICE NG28 includes individualized add-on options such as DPP-4 inhibitors, pioglitazone, or sulfonylureas, with cost, hypoglycemia risk, and weight effects considered explicitly.",
+    "source_url": "https://www.nice.org.uk/guidance/ng28/chapter/update-information"
+  },
+  {
+    "id": "GUIDE_ADA_2025_INSULIN",
+    "title": "ADA Standards of Care 2025: insulin initiation for marked hyperglycemia",
+    "journal": "ADA Standards of Care",
+    "publication_date": "2025-01-01",
+    "evidence_type": "guideline excerpt",
+    "mesh_terms": [
+      "ADA",
+      "Type 2 Diabetes",
+      "insulin",
+      "severe hyperglycemia"
+    ],
+    "text": "ADA Standards of Care 2025 support insulin initiation when hyperglycemia is severe, catabolic features are present, or rapid glycemic control is needed while longer-term therapy is being established.",
     "source_url": "https://diabetesjournals.org/care/issue/48/Supplement_1"
   }
 ]

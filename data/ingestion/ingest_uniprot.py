@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -8,6 +9,7 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import UNIPROT_DATA
 
 
+# Extract function.
 def _extract_function(comments: list[dict[str, object]], fallback: str) -> str:
     for comment in comments:
         comment_type = str(comment.get("commentType") or comment.get("type") or "")
@@ -21,6 +23,7 @@ def _extract_function(comments: list[dict[str, object]], fallback: str) -> str:
     return fallback
 
 
+# Fetch live target.
 def _fetch_live_target(seed_record: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("UNIPROT_BASE_URL", "https://rest.uniprot.org/uniprotkb").rstrip("/")
     accession = str(seed_record["uniprot_id"])
@@ -56,6 +59,7 @@ def _fetch_live_target(seed_record: dict[str, object]) -> tuple[dict[str, object
     return normalized, request_log
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("uniprot")
     records: list[dict[str, object]] = []
@@ -92,11 +96,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed UniProt payload.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

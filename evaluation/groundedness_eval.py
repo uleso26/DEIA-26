@@ -1,8 +1,10 @@
+# Imports.
 from __future__ import annotations
 
 from agents.orchestrator import T2DOrchestrator
 
 
+# Module constants.
 DEMO_QUERIES = [
     "What adverse event signals are emerging for tirzepatide in cardiac patients?",
     "Compare HbA1c reduction across Phase 3 trials for semaglutide vs tirzepatide",
@@ -15,6 +17,7 @@ DEMO_QUERIES = [
 ]
 
 
+# Check response.
 def _check_response(response: dict) -> list[str]:
     issues = []
     if not response.get("citations"):
@@ -43,6 +46,7 @@ def _check_response(response: dict) -> list[str]:
     return issues
 
 
+# Check query specific expectations.
 def _check_query_specific_expectations(query: str, response: dict) -> list[str]:
     issues = []
     answer = response["answer"]
@@ -67,6 +71,7 @@ def _check_query_specific_expectations(query: str, response: dict) -> list[str]:
     return issues
 
 
+# Run.
 def run() -> dict:
     orchestrator = T2DOrchestrator()
     results = []
@@ -94,6 +99,7 @@ def run() -> dict:
     }
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     import json
 

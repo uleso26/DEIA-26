@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -10,6 +11,7 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import PUBMED_DOCUMENTS
 
 
+# Tokenize.
 def _tokenize(text: str) -> set[str]:
     return {
         token
@@ -18,6 +20,7 @@ def _tokenize(text: str) -> set[str]:
     }
 
 
+# Normalize pubdate.
 def _normalize_pubdate(raw_value: object, fallback: str) -> str:
     text = str(raw_value or "").strip()
     if re.match(r"^\d{4}-\d{2}-\d{2}$", text):
@@ -29,6 +32,7 @@ def _normalize_pubdate(raw_value: object, fallback: str) -> str:
     return fallback
 
 
+# Summary matches seed.
 def _summary_matches_seed(seed_document: dict[str, object], summary: dict[str, object]) -> bool:
     seed_tokens = _tokenize(
         f"{seed_document['title']} {' '.join(seed_document['mesh_terms'])} {seed_document['text']}"
@@ -40,6 +44,7 @@ def _summary_matches_seed(seed_document: dict[str, object], summary: dict[str, o
     return len(overlap) >= 2
 
 
+# Fetch PubMed summary.
 def _fetch_pubmed_summary(seed_document: dict[str, object]) -> tuple[dict[str, object] | None, dict[str, object]]:
     base_url = os.getenv("PUBMED_BASE_URL", "https://eutils.ncbi.nlm.nih.gov/entrez/eutils").rstrip("/")
     pmid = str(seed_document["pmid"])
@@ -78,12 +83,14 @@ def _fetch_pubmed_summary(seed_document: dict[str, object]) -> tuple[dict[str, o
     return normalized, request_log
 
 
+# Seed document.
 def _seed_document(seed_document: dict[str, object]) -> dict[str, object]:
     normalized = dict(seed_document)
     normalized["data_mode"] = "seed_curated_literature"
     return normalized
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("pubmed")
     normalized_documents: list[dict[str, object]] = []
@@ -131,11 +138,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed PubMed payload.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

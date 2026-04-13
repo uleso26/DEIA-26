@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -16,6 +17,7 @@ from data.ingestion.base import (
 from data.ingestion.seed_data import OPENTARGETS_DATA
 
 
+# Module constants.
 TARGET_QUERY = """
 query TargetSummary($ensemblId: String!) {
   target(ensemblId: $ensemblId) {
@@ -27,6 +29,7 @@ query TargetSummary($ensemblId: String!) {
 """
 
 
+# Lookup ensembl id.
 def _lookup_ensembl_id(symbol: str) -> tuple[str | None, dict[str, object]]:
     base_url = os.getenv("ENSEMBL_LOOKUP_BASE_URL", "https://rest.ensembl.org/lookup/symbol/homo_sapiens").rstrip("/")
     url = f"{base_url}/{symbol}?content-type=application/json"
@@ -47,6 +50,7 @@ def _lookup_ensembl_id(symbol: str) -> tuple[str | None, dict[str, object]]:
     )
 
 
+# Fetch live target.
 def _fetch_live_target(symbol: str) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
     ensembl_id, lookup_request = _lookup_ensembl_id(symbol)
     request_log = [lookup_request]
@@ -85,6 +89,7 @@ def _fetch_live_target(symbol: str) -> tuple[dict[str, object] | None, list[dict
     )
 
 
+# Run.
 def run() -> str:
     use_live = live_ingestion_enabled("opentargets")
     timestamp = utc_now_iso()
@@ -142,11 +147,13 @@ def run() -> str:
     return str(path)
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write OpenTargets payload with optional live target refresh.")
     parser.parse_args()
     print(run())
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

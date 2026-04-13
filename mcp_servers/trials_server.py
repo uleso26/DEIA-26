@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from typing import Any
@@ -7,6 +8,7 @@ from mcp_servers.base_server import BaseMCPStyleServer
 from core.storage import load_collection_with_backend
 
 
+# Trials Server.
 class TrialsServer(BaseMCPStyleServer):
     def __init__(self) -> None:
         super().__init__("trials-mcp-server")
@@ -95,9 +97,11 @@ class TrialsServer(BaseMCPStyleServer):
         }
 
 
+# Main.
 def main() -> None:
     TrialsServer().run_cli()
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

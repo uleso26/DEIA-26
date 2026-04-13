@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import re
@@ -12,9 +13,11 @@ from tools.query_understanding import ENTERPRISE_ROUTE_LABELS, build_query_under
 from tools.ollama_client import OllamaClient
 
 
+# Module constants.
 VALID_ROUTE_LABELS = ENTERPRISE_ROUTE_LABELS
 
 
+# Router Agent.
 class RouterAgent:
     """Route enterprise-core questions while keeping scope guardrails deterministic."""
 

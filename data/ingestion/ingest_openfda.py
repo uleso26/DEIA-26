@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 import argparse
@@ -8,10 +9,12 @@ from data.ingestion.base import append_lineage_manifest, fetch_json_response, li
 from data.ingestion.seed_data import OPENFDA_DATA
 
 
+# Module constants.
 LABEL_ENDPOINT = "https://api.fda.gov/drug/label.json"
 EVENT_ENDPOINT = "https://api.fda.gov/drug/event.json"
 
 
+# Normalize text values.
 def _normalize_text_values(value: object, fallback: list[str]) -> list[str]:
     if isinstance(value, str):
         items = [part.strip(" -*\n\t") for part in value.replace("\r", "\n").split("\n") if part.strip()]
@@ -24,12 +27,14 @@ def _normalize_text_values(value: object, fallback: list[str]) -> list[str]:
     return fallback
 
 
+# Format label version.
 def _format_label_version(raw_value: str | None, fallback: str) -> str:
     if raw_value and len(raw_value) >= 6 and raw_value[:6].isdigit():
         return f"{raw_value[:4]}-{raw_value[4:6]}"
     return fallback
 
 
+# Signal strength.
 def _signal_strength(count: int) -> str:
     if count >= 500:
         return "high_reporting_volume"
@@ -40,6 +45,7 @@ def _signal_strength(count: int) -> str:
     return "low_volume_signal"
 
 
+# Fetch live label.
 def _fetch_live_label(seed_label: dict[str, object]) -> tuple[dict[str, object] | None, list[dict[str, object]]]:
     requests: list[dict[str, object]] = []
     search_candidates = [
@@ -90,6 +96,7 @@ def _fetch_live_label(seed_label: dict[str, object]) -> tuple[dict[str, object] 
     return None, requests
 
 
+# Fetch live events.
 def _fetch_live_events(seed_label: dict[str, object]) -> tuple[list[dict[str, object]] | None, list[dict[str, object]]]:
     requests: list[dict[str, object]] = []
     search_terms = [str(seed_label["canonical_drug"]), *[str(brand) for brand in seed_label.get("brand_names", [])]]
@@ -132,6 +139,7 @@ def _fetch_live_events(seed_label: dict[str, object]) -> tuple[list[dict[str, ob
     return None, requests
 
 
+# Run.
 def run() -> dict[str, str]:
     use_live = live_ingestion_enabled("openfda")
     labels: list[dict[str, object]] = []
@@ -189,6 +197,7 @@ def run() -> dict[str, str]:
     return {"adverse_events": str(events_path), "drug_labels": str(labels_path)}
 
 
+# Main.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Write seed OpenFDA payloads.")
     parser.parse_args()
@@ -196,5 +205,6 @@ def main() -> None:
     print(result)
 
 
+# CLI entrypoint.
 if __name__ == "__main__":
     main()

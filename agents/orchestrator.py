@@ -1,3 +1,4 @@
+# Imports.
 from __future__ import annotations
 
 from core.paths import GRAPH_FILE, RETRIEVAL_MANIFEST, SQLITE_DB
@@ -32,6 +33,7 @@ from core.runtime_utils import env_flag
 from tools.mcp_client import MCPClientManager
 
 
+# Bootstrap runtime.
 def bootstrap_runtime(sync_to_mongodb: bool | None = None, sync_to_neo4j: bool | None = None) -> None:
     """Rebuild runtime artefacts from the current fixture or live-ingested data."""
     ingest_openfda()
@@ -57,6 +59,7 @@ def bootstrap_runtime(sync_to_mongodb: bool | None = None, sync_to_neo4j: bool |
     build_retrieval_index()
 
 
+# T2D Orchestrator.
 class T2DOrchestrator:
     """Coordinate query routing, specialist agent execution, and final synthesis."""
 
