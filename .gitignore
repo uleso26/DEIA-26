@@ -1,14 +1,6 @@
 .env
 .env.*
 !.env.example
-.claude/
 __pycache__/
 .pytest_cache/
 .DS_Store
-brief/
-logs/
-data/processed/
-runtime/
-.Rhistory
-report/~$*.docx
-report/
